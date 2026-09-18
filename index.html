@@ -1,0 +1,1559 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#007A8C">
+<meta name="author" content="Elias costa NEGRET'S">
+<meta name="description" content="PoolApp Universal — manutenção de piscina: pH, cloro, turbidez, alcalinidade e dureza com dose calculada.">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>PoolApp Universal — Manutenção de Piscina</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --teal:#007A8C;
+    --teal-deep:#035A67;
+    --ink:#0D3038;
+    --sub:#5B7680;
+    --bg:#F2F7F8;
+    --card:rgba(255,255,255,.9);
+    --line:rgba(13,48,56,.08);
+    --mint:#2FBF8F;
+    --amber:#E28743;
+    --radius:24px;
+    --shadow:0 1px 2px rgba(9,48,56,.04), 0 16px 36px -14px rgba(0,90,104,.18);
+    --mono:'IBM Plex Mono',ui-monospace,'SFMono-Regular',monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  [hidden]{display:none!important}
+  html{
+    scroll-behavior:smooth;
+    -webkit-text-size-adjust:100%;text-size-adjust:100%;
+  }
+  body{
+    font-family:'Hanken Grotesk',system-ui,-apple-system,sans-serif;
+    background:var(--bg); color:var(--ink);
+    min-height:100vh; min-height:100dvh;
+    overflow-x:hidden;
+    -webkit-font-smoothing:antialiased;
+  }
+  body.locked{overflow:hidden}
+  .mono{font-family:var(--mono)}
+  .app{max-width:430px;margin:0 auto;padding:16px 16px calc(40px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:14px;width:100%}
+  button{font-family:inherit;border:none;background:none;cursor:pointer;color:inherit;touch-action:manipulation}
+  button:active{transform:scale(.985)}
+  :focus-visible{outline:2px solid var(--teal);outline-offset:2px;border-radius:8px}
+
+  /* ---------- cards base ---------- */
+  .card{
+    background:var(--card);
+    backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
+    border:1px solid rgba(255,255,255,.7);
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+    min-width:0;
+  }
+  .lbl{font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--sub)}
+
+  /* ---------- badges ---------- */
+  .badge{
+    display:inline-flex;align-items:center;gap:6px;white-space:nowrap;flex:none;
+    font-size:11.5px;font-weight:700;letter-spacing:.02em;line-height:1;
+    padding:6px 10px;border-radius:999px;
+  }
+  .badge i{width:6px;height:6px;border-radius:50%;flex:none}
+  .badge.mint{background:rgba(47,191,143,.14);color:#14724E}
+  .badge.mint i{background:var(--mint)}
+  .badge.amber{background:rgba(226,135,67,.15);color:#96521A}
+  .badge.amber i{background:var(--amber)}
+
+  /* ---------- header ---------- */
+  .brand{display:flex;align-items:center;gap:12px;padding:8px 2px 2px;flex-wrap:wrap}
+  .logo{
+    width:42px;height:42px;flex:none;border-radius:14px;background:var(--teal);
+    display:grid;place-items:center;color:#fff;box-shadow:0 6px 14px -6px rgba(0,122,140,.55);
+  }
+  .logo svg{width:22px;height:22px}
+  .brand-t{flex:1;min-width:0}
+  .brand h1{font-size:clamp(17px,4.5vw,19px);font-weight:800;letter-spacing:-.01em;overflow-wrap:break-word}
+  .brand h1 span{color:var(--teal);font-weight:500}
+  .brand p{font-size:12.5px;color:var(--sub);font-weight:500;margin-top:1px}
+  .btn-install{
+    display:inline-flex;align-items:center;gap:6px;flex:none;
+    font-size:12.5px;font-weight:700;color:var(--teal);
+    border:1.5px solid rgba(0,122,140,.35);border-radius:999px;padding:8px 13px;
+  }
+  .btn-install svg{width:14px;height:14px}
+
+  /* ---------- config ---------- */
+  .config{padding:18px 18px 16px;display:flex;flex-direction:column;gap:10px;min-width:0}
+  .pills{display:flex;flex-wrap:wrap;gap:6px;background:rgba(13,48,56,.05);padding:4px;border-radius:999px}
+  .pill{
+    flex:1 1 auto;min-width:0;padding:9px 4px;border-radius:999px;font-size:12.5px;font-weight:700;
+    color:var(--sub);white-space:nowrap;transition:all .22s ease;
+  }
+  .pill.active{background:var(--teal);color:#fff;box-shadow:0 4px 10px -4px rgba(0,122,140,.6)}
+  .div{border:none;border-top:1px solid var(--line);margin:4px 0 2px}
+
+  /* ---------- clima (chip + tooltip) ---------- */
+  .cfg-row{
+    position:relative;
+    display:flex;align-items:center;justify-content:space-between;gap:10px;
+    flex-wrap:wrap;min-width:0;
+  }
+  .w-chip{
+    display:inline-flex;align-items:center;gap:6px;flex:none;
+    background:rgba(0,122,140,.08);border-radius:999px;padding:7px 12px;
+    font-size:12.5px;font-weight:700;color:var(--teal-deep);
+    transition:background .2s;
+  }
+  .w-chip:active{transform:scale(.96);background:rgba(0,122,140,.14)}
+  .w-chip b{font-family:var(--mono);font-weight:600;letter-spacing:-.01em}
+  .w-city{color:var(--sub);font-weight:600;white-space:nowrap}
+  @media (max-width:389px){.w-city{display:none}}
+  .w-pop{
+    position:absolute;top:calc(100% + 8px);right:0;z-index:20;
+    width:min(270px,calc(100vw - 64px));
+    background:#fff;border-radius:16px;padding:14px 14px 10px;
+    box-shadow:0 1px 2px rgba(9,48,56,.06), 0 18px 40px -14px rgba(0,90,104,.3);
+    border:1px solid rgba(13,48,56,.06);
+    opacity:0;visibility:hidden;transform:translateY(-6px);
+    transition:opacity .25s ease, transform .25s ease, visibility 0s .25s;
+  }
+  .w-pop.show{
+    opacity:1;visibility:visible;transform:none;
+    transition:opacity .25s ease, transform .25s ease;
+  }
+  .wp-head{display:flex;align-items:center;gap:10px;padding-bottom:10px}
+  .wp-e{font-size:22px;flex:none;line-height:1}
+  .wp-t{flex:1;min-width:0}
+  .wp-t b{display:block;font-size:13.5px;font-weight:800;overflow-wrap:break-word}
+  .wp-t span{font-size:11.5px;color:var(--sub);font-weight:600;overflow-wrap:break-word}
+  .wp-tv{font-size:18px;font-weight:600;color:var(--teal-deep);flex:none}
+  .wp-row{
+    display:flex;align-items:center;justify-content:space-between;gap:10px;
+    padding:9px 2px;border-top:1px solid var(--line);
+    font-size:12.5px;color:var(--sub);font-weight:600;
+  }
+  .wp-row b{font-family:var(--mono);font-weight:600;color:var(--ink)}
+  .wp-alert{
+    display:flex;gap:8px;align-items:flex-start;margin-top:10px;
+    background:rgba(226,90,67,.09);border:1px solid rgba(226,90,67,.3);
+    border-radius:12px;padding:10px 12px;
+  }
+  .wp-alert svg{width:15px;height:15px;color:#B03A22;flex:none;margin-top:1px}
+  .wp-alert p{font-size:12px;line-height:1.45;font-weight:700;color:#B03A22;overflow-wrap:break-word}
+  .wp-dica{
+    margin-top:10px;background:rgba(226,135,67,.09);
+    border:1px solid rgba(226,135,67,.26);
+    border-radius:12px;padding:10px 12px;
+  }
+  .wp-dica .lbl{color:#96521A;margin-bottom:3px}
+  .wp-dica p:last-child{font-size:12.5px;line-height:1.5;font-weight:600;color:#96521A;overflow-wrap:break-word}
+  .wp-time{text-align:center;font-size:10px;color:var(--sub);font-family:var(--mono);margin-top:8px;overflow-wrap:break-word}
+
+  /* ---------- campo volume: 64px FIXO ---------- */
+  .vol-row{display:flex;gap:10px;min-width:0}
+  .volume-wrap{
+    flex:1 1 150px;min-width:0;
+    max-height:80px;
+  }
+  .volume-input{
+    position:relative;
+    display:flex;align-items:center;
+    height:64px !important;
+    min-height:64px !important;
+    max-height:64px !important;
+    padding:12px 40px 12px 16px !important;
+    font-size:22px !important;
+    line-height:1 !important;
+    background:#fff;
+    border:1.5px solid rgba(0,122,140,.28);
+    border-radius:14px;
+    transition:border-color .2s;
+  }
+  .volume-input:focus-within{border-color:var(--teal)}
+  .volume-input input{
+    flex:1;min-width:0;width:100%;
+    height:40px !important;
+    max-height:40px !important;
+    font-family:var(--mono);
+    font-size:22px !important;
+    line-height:1 !important;
+    font-weight:600;color:var(--ink);
+    border:none;outline:none;background:none;
+    appearance:none;-webkit-appearance:none;
+  }
+  .volume-input input::-webkit-outer-spin-button,
+  .volume-input input::-webkit-inner-spin-button{-webkit-appearance:none!important;margin:0}
+  .volume-input input[type=number]{-moz-appearance:textfield;appearance:textfield}
+  .volume-input .unit{
+    position:absolute;right:16px;top:50%;transform:translateY(-50%);
+    font-size:14px;font-weight:700;color:var(--sub);pointer-events:none;
+  }
+  .vol-live{
+    flex:0 1 auto;min-width:0;background:rgba(0,122,140,.07);border-radius:14px;padding:7px 14px;
+    display:flex;flex-direction:column;align-items:flex-end;justify-content:center;gap:2px;
+    text-align:right;font-family:var(--mono);font-size:13px;line-height:1.4;color:var(--teal-deep);white-space:nowrap;
+  }
+  .vol-live b{font-weight:600;color:var(--ink)}
+  .hint{font-size:12px;color:var(--sub);line-height:1.45}
+  @media (max-width:400px){
+    .vol-row{flex-direction:column}
+    .volume-wrap{flex:1 1 auto}
+    .vol-live{flex-direction:row;align-items:baseline;justify-content:flex-start;gap:8px;text-align:left}
+  }
+
+  /* ---------- válvula seletora ---------- */
+  .valve-card{padding:18px 16px 14px;display:flex;flex-direction:column;gap:4px}
+  .vc-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:0 4px}
+  .valve-stage{
+    position:relative;width:100%;max-width:300px;aspect-ratio:1;margin:2px auto 0;
+    user-select:none;-webkit-user-select:none;
+  }
+  .v-plate{
+    position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+    width:47%;max-width:150px;aspect-ratio:1;border-radius:50%;
+    background:#fff;box-shadow:var(--shadow), inset 0 0 0 1px rgba(13,48,56,.05);
+    touch-action:none;cursor:grab;z-index:2;
+  }
+  .v-plate:active{cursor:grabbing}
+  .v-plate::before{content:'';position:absolute;inset:7%;border-radius:50%;box-shadow:inset 0 0 0 1.5px rgba(0,122,140,.14);pointer-events:none}
+  .v-tick{position:absolute;left:50%;top:50%;width:100%;height:100%;transform:translate(-50%,-50%) rotate(var(--a));pointer-events:none}
+  .v-tick::before{content:'';position:absolute;left:50%;top:5%;transform:translateX(-50%);width:2.5px;height:7%;border-radius:2px;background:rgba(13,48,56,.2)}
+  .v-lever{
+    position:absolute;inset:0;border-radius:50%;
+    transition:transform .7s cubic-bezier(.3,1.35,.45,1);
+    transform:rotate(0deg);
+  }
+  .v-lever.no-anim{transition:none}
+  .v-stick{
+    position:absolute;left:50%;top:10%;width:12%;height:40%;
+    transform:translateX(-50%);border-radius:99px;background:var(--teal);
+    box-shadow:0 2px 6px rgba(0,122,140,.35);
+  }
+  .v-cap{
+    position:absolute;left:50%;top:2.5%;width:31%;aspect-ratio:1;
+    transform:translateX(-50%);border-radius:50%;background:var(--teal-deep);
+    border:2px solid rgba(255,255,255,.65);
+    box-shadow:inset 0 2px 4px rgba(255,255,255,.35), 0 3px 8px rgba(3,60,70,.35);
+  }
+  .v-screw{
+    position:absolute;left:50%;top:50%;width:20%;aspect-ratio:1;z-index:3;
+    transform:translate(-50%,-50%);border-radius:50%;background:#fff;
+    box-shadow:inset 0 0 0 2px rgba(13,48,56,.12), 0 1px 3px rgba(9,48,56,.2);
+    pointer-events:none;
+  }
+  .v-screw::before,.v-screw::after{
+    content:'';position:absolute;left:50%;top:50%;background:rgba(13,48,56,.22);
+    border-radius:2px;transform:translate(-50%,-50%);
+  }
+  .v-screw::before{width:52%;height:2px}
+  .v-screw::after{width:2px;height:52%}
+  .station{
+    position:absolute;display:flex;flex-direction:column;align-items:center;gap:4px;
+    padding:5px;border-radius:12px;transform:translate(-50%,-50%);
+  }
+  .station.up{flex-direction:column-reverse}
+  .st-0{left:50%;top:17%}
+  .st-1{left:79%;top:33.5%}
+  .st-2{left:79%;top:66.5%}
+  .st-3{left:50%;top:83%}
+  .st-4{left:21%;top:66.5%}
+  .st-5{left:21%;top:33.5%}
+  .v-num{
+    width:30px;height:30px;border-radius:50%;background:#fff;
+    border:2px solid rgba(13,48,56,.14);color:var(--sub);
+    font-family:var(--mono);font-size:12px;font-weight:600;
+    display:grid;place-items:center;transition:all .25s ease;
+    box-shadow:0 1px 3px rgba(9,48,56,.08);
+  }
+  .station.active .v-num{
+    background:var(--teal);border-color:var(--teal);color:#fff;
+    box-shadow:0 4px 10px -4px rgba(0,122,140,.55);transform:scale(1.08);
+  }
+  .v-name{font-size:9.5px;font-weight:700;letter-spacing:.05em;color:var(--sub);white-space:nowrap;transition:color .25s}
+  .station.active .v-name{color:var(--teal-deep)}
+  .v-foot{display:flex;gap:10px;align-items:flex-start;padding:12px 6px 4px;border-top:1px solid var(--line);margin-top:10px}
+  .v-foot svg{width:16px;height:16px;color:#96521A;flex:none;margin-top:2px}
+  .v-foot p{font-size:12px;line-height:1.5;color:var(--sub);font-weight:500;overflow-wrap:break-word}
+  .v-foot b{color:#96521A}
+
+  /* ---------- grid parâmetros ---------- */
+  .sec-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:6px 4px 0}
+  .sec-head h3{font-size:17px;font-weight:800;letter-spacing:-.01em}
+  .sec-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .sec-head span{font-size:12px;color:var(--sub)}
+  .chip{
+    display:inline-flex;align-items:center;gap:6px;flex:none;
+    font-size:12.5px;font-weight:700;color:var(--teal);
+    background:rgba(0,122,140,.08);border-radius:999px;padding:8px 14px;
+  }
+  .chip svg{width:15px;height:15px}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  @media (max-width:359px){
+    .grid{grid-template-columns:1fr}
+    .pill{font-size:12px;padding:9px 2px}
+  }
+  .pcard{padding:16px 16px 14px;display:flex;flex-direction:column;gap:10px;cursor:pointer;transition:transform .18s ease, box-shadow .18s ease;min-width:0}
+  .pcard:hover{transform:translateY(-2px)}
+  .pcard:active{transform:scale(.98)}
+  .pcard.full{grid-column:1/-1}
+  .pc-top{display:flex;align-items:flex-start;gap:8px;flex-wrap:wrap;row-gap:6px}
+  .pc-ico{
+    width:32px;height:32px;flex:none;border-radius:11px;background:rgba(0,122,140,.09);
+    color:var(--teal);display:grid;place-items:center;
+  }
+  .pc-ico svg{width:17px;height:17px}
+  .pc-lbl{font-size:12.5px;font-weight:700;flex:1;min-width:0;line-height:1.25;overflow-wrap:break-word}
+  .pc-top .badge{margin-left:auto}
+  .pc-val{display:flex;align-items:baseline;gap:5px;flex-wrap:wrap}
+  .pc-val .mono{font-size:clamp(23px,6.5vw,26px);font-weight:600;letter-spacing:-.02em;line-height:1}
+  .pc-val em{font-style:normal;font-size:12px;font-weight:600;color:var(--sub)}
+  .mini{display:flex;flex-direction:column;gap:5px;margin-top:auto;min-width:0}
+  .m-bar{position:relative;height:8px;border-radius:99px;background:rgba(13,48,56,.07)}
+  .m-zone{position:absolute;top:0;bottom:0;border-radius:99px;background:rgba(47,191,143,.22)}
+  .m-fill{position:absolute;top:0;bottom:0;left:0;border-radius:99px;background:var(--teal);transition:background .25s}
+  .m-fill.warn{background:var(--amber)}
+  .m-knob{
+    position:absolute;top:50%;width:14px;height:14px;border-radius:50%;background:#fff;
+    border:2.5px solid var(--teal);transform:translate(-50%,-50%);
+    box-shadow:0 1px 4px rgba(9,48,56,.25);transition:border-color .25s;
+  }
+  .m-knob.warn{border-color:var(--amber)}
+  .m-scale{display:flex;justify-content:space-between;gap:4px;font-size:9.5px;color:var(--sub);font-family:var(--mono)}
+  .pc-note{font-size:12px;font-weight:600;color:#96521A;line-height:1.45}
+  .pc-time{font-size:10.5px;color:var(--sub);font-family:var(--mono);overflow-wrap:break-word}
+
+  /* ---------- rodapé / dica ---------- */
+  .tip{padding:15px 16px;display:flex;gap:12px;align-items:flex-start}
+  .tip-ico{
+    width:34px;height:34px;flex:none;border-radius:12px;background:rgba(0,122,140,.09);
+    color:var(--teal);display:grid;place-items:center;
+  }
+  .tip-ico svg{width:17px;height:17px}
+  .tip p{font-size:13.5px;line-height:1.5;margin-top:3px;font-weight:500;overflow-wrap:break-word}
+  .offline-note{text-align:center;font-size:11.5px;color:var(--sub);padding-top:2px;line-height:1.7}
+  .offline-note b{color:var(--teal-deep);font-weight:700}
+
+  /* ---------- bottom sheets ---------- */
+  .scrim{
+    position:fixed;inset:0;background:rgba(9,40,46,.45);z-index:60;
+    opacity:0;visibility:hidden;transition:opacity .35s ease, visibility 0s .35s;
+  }
+  .scrim.show{opacity:1;visibility:visible;transition:opacity .35s ease}
+  .sheet{
+    position:fixed;left:50%;bottom:0;z-index:70;width:100%;max-width:430px;
+    transform:translate(-50%,105%);visibility:hidden;pointer-events:none;
+    background:#fff;border-radius:24px 24px 0 0;padding:8px 20px calc(22px + env(safe-area-inset-bottom));
+    box-shadow:0 -12px 40px rgba(9,48,56,.18);
+    transition:transform .44s cubic-bezier(.32,.72,.24,1), visibility 0s .44s;
+    max-height:92vh;max-height:92dvh;overflow-y:auto;overscroll-behavior:contain;
+  }
+  .sheet.open{
+    transform:translate(-50%,0);visibility:visible;pointer-events:auto;
+    transition:transform .44s cubic-bezier(.32,.72,.24,1);
+  }
+  .grab-zone{padding:10px 0 6px;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none}
+  .grab{display:block;width:44px;height:5px;border-radius:99px;background:rgba(13,48,56,.16);margin:0 auto}
+  .sh-head{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+  .sh-ico{
+    width:40px;height:40px;flex:none;border-radius:13px;background:rgba(0,122,140,.09);
+    color:var(--teal);display:grid;place-items:center;
+  }
+  .sh-ico svg{width:20px;height:20px}
+  .sh-head h3{font-size:17px;font-weight:800;letter-spacing:-.01em;overflow-wrap:break-word}
+  .sh-head p{font-size:12px;color:var(--sub);font-family:var(--mono);margin-top:1px;overflow-wrap:break-word}
+  .sh-head>div{flex:1;min-width:0}
+  .sh-close{
+    width:34px;height:34px;flex:none;border-radius:50%;background:rgba(13,48,56,.06);
+    color:var(--sub);display:grid;place-items:center;
+  }
+  .sh-close svg{width:15px;height:15px}
+  .sh-valrow{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:6px}
+  .sh-val{font-size:clamp(38px,11vw,46px);font-weight:600;letter-spacing:-.03em;line-height:1}
+  .sh-unit{font-size:15px;font-weight:700;color:var(--sub)}
+  .sh-valrow .badge{margin-left:auto;align-self:center}
+  .track{padding:16px 0 4px;touch-action:none;user-select:none;-webkit-user-select:none}
+  .t-bar{position:relative;height:10px;border-radius:99px;background:rgba(13,48,56,.08)}
+  .t-zone{position:absolute;top:0;bottom:0;border-radius:99px;background:rgba(47,191,143,.22)}
+  .t-fill{position:absolute;top:0;bottom:0;left:0;border-radius:99px;background:var(--teal)}
+  .t-fill.warn{background:var(--amber)}
+  .t-target{position:absolute;top:-5px;width:2.5px;height:20px;border-radius:2px;background:rgba(13,48,56,.4);transform:translateX(-50%)}
+  .t-knob{
+    position:absolute;top:50%;width:28px;height:28px;border-radius:50%;background:#fff;
+    border:3px solid var(--teal);transform:translate(-50%,-50%);
+    box-shadow:0 2px 8px rgba(9,48,56,.3);transition:border-color .25s;
+  }
+  .t-knob.warn{border-color:var(--amber)}
+  .t-labels{display:flex;justify-content:space-between;gap:6px;font-size:10.5px;color:var(--sub);padding-top:9px;font-family:var(--mono)}
+  .t-labels span:nth-child(2){color:var(--teal-deep);font-weight:600;text-align:center;flex:1;min-width:0;overflow-wrap:break-word}
+  .sh-inputrow{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:12px 0 14px}
+  .sh-inputrow>span:first-child{font-size:13px;font-weight:600;color:var(--sub)}
+  .sh-input{
+    display:flex;align-items:center;gap:6px;background:#fff;border:1.5px solid rgba(0,122,140,.28);
+    border-radius:13px;padding:0 13px;height:46px;flex:1 1 150px;max-width:170px;min-width:0;transition:border-color .2s;
+  }
+  .sh-input:focus-within{border-color:var(--teal)}
+  .sh-input input{
+    flex:1;min-width:0;width:100%;border:none;outline:none;background:none;text-align:right;
+    font-family:var(--mono);font-size:17px;font-weight:600;color:var(--ink);
+  }
+  .sh-input input::-webkit-outer-spin-button,.sh-input input::-webkit-inner-spin-button{-webkit-appearance:none}
+  .sh-input input[type=number]{-moz-appearance:textfield;appearance:textfield}
+  .sh-input em{font-style:normal;font-size:12px;font-weight:700;color:var(--sub)}
+  .dose{border-radius:16px;padding:14px 16px;background:rgba(0,122,140,.06);border:1px solid rgba(0,122,140,.12);margin-bottom:14px;min-width:0}
+  .dose.mint{background:rgba(47,191,143,.09);border-color:rgba(47,191,143,.28)}
+  .dose.amber{background:rgba(226,135,67,.09);border-color:rgba(226,135,67,.3)}
+  .dose-main{display:flex;align-items:baseline;gap:8px;margin-top:5px;flex-wrap:wrap}
+  .dose-main strong{font-family:var(--mono);font-size:clamp(22px,6.5vw,26px);font-weight:600;letter-spacing:-.02em}
+  .dose-main span{font-size:13.5px;font-weight:600;color:var(--sub);min-width:0}
+  .dose-sub{font-size:11.5px;color:var(--sub);line-height:1.5;margin-top:6px;font-family:var(--mono);overflow-wrap:break-word}
+  .dose-title{font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--sub)}
+  .dose.instr .dose-text{font-size:15px;font-weight:800;line-height:1.45;margin-top:5px;overflow-wrap:break-word}
+  .dose.instr.amber .dose-text{color:#96521A}
+  .dose.instr.mint .dose-text{color:#14724E}
+  .sh-last{text-align:center;font-size:12px;color:var(--sub);margin-top:12px;font-family:var(--mono);overflow-wrap:break-word}
+
+  /* conteúdo do sheet da válvula */
+  .v-resume{font-size:14px;line-height:1.55;font-weight:500;margin-bottom:14px;overflow-wrap:break-word}
+  .v-steps{list-style:none;display:flex;flex-direction:column;gap:9px;margin-bottom:14px}
+  .v-steps li{display:flex;gap:10px;font-size:13px;line-height:1.5;min-width:0}
+  .vs-n{
+    flex:none;width:22px;height:22px;border-radius:50%;background:rgba(0,122,140,.1);
+    color:var(--teal-deep);font-family:var(--mono);font-size:11px;font-weight:600;
+    display:grid;place-items:center;margin-top:1px;
+  }
+  .v-warn{
+    display:flex;gap:10px;background:rgba(226,135,67,.09);border:1px solid rgba(226,135,67,.28);
+    border-radius:14px;padding:12px 14px;margin-bottom:16px;
+  }
+  .v-warn svg{width:17px;height:17px;color:#96521A;flex:none;margin-top:1px}
+  .v-warn p{font-size:12.5px;line-height:1.5;color:#96521A;font-weight:600;overflow-wrap:break-word}
+
+  /* ---------- toast ---------- */
+  .toasts{
+    position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom));transform:translateX(-50%);
+    z-index:90;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none;
+    width:min(430px,calc(100vw - 32px));
+  }
+  .toast{
+    display:flex;align-items:center;gap:9px;max-width:100%;background:var(--ink);color:#fff;
+    font-size:13px;font-weight:600;padding:11px 16px;border-radius:14px;
+    box-shadow:0 10px 28px -8px rgba(9,48,56,.5);
+    opacity:0;transform:translateY(14px);transition:all .35s cubic-bezier(.32,.72,.24,1);
+  }
+  .toast svg{width:15px;height:15px;color:#4FE0AE;flex:none}
+  .toast.warn svg{color:#FFB77C}
+  .toast.show{opacity:1;transform:translateY(0)}
+
+  @media (prefers-reduced-motion:reduce){
+    *,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- ===== Header ===== -->
+  <header class="brand">
+    <div class="logo" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 3.5C15.5 7.6 18 10.4 18 13.4A6 6 0 1 1 6 13.4C6 10.4 8.5 7.6 12 3.5Z"/>
+        <path d="M8.2 14.6c1.2-.8 2.4-.8 3.6 0s2.4.8 3.6 0" stroke-width="1.5"/>
+      </svg>
+    </div>
+    <div class="brand-t">
+      <h1>PoolApp <span>Universal</span></h1>
+      <p>Piscina · Casa</p>
+    </div>
+    <button class="btn-install" id="installBtn" hidden>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v10m-4.5-4L12 14.5 16.5 10M5 19.5h14"/></svg>
+      Instalar
+    </button>
+  </header>
+
+  <!-- ===== Configuração ===== -->
+  <section class="card config" aria-label="Configuração da piscina">
+    <div class="cfg-row">
+      <p class="lbl">Tipo de piscina</p>
+      <button class="w-chip" id="wChip" type="button" hidden aria-expanded="false" aria-controls="wPop" aria-label="Detalhes do clima">
+        <span id="wEmoji" aria-hidden="true">☀️</span>
+        <b id="wTemp">—°C</b>
+        <span class="w-city" id="wCity"></span>
+      </button>
+      <div class="w-pop" id="wPop" role="dialog" aria-label="Detalhes do clima">
+        <div class="wp-head">
+          <span class="wp-e" id="wpEmoji" aria-hidden="true">☀️</span>
+          <div class="wp-t"><b id="wpCond">—</b><span id="wpCity"></span></div>
+          <b class="wp-tv mono" id="wpTemp"></b>
+        </div>
+        <div class="wp-row"><span>Umidade</span><b class="mono" id="wpHum">—</b></div>
+        <div class="wp-row"><span>Vento</span><b class="mono" id="wpWind">—</b></div>
+        <div class="wp-alert" id="wpAlert" hidden>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4.5 20.8 19.5H3.2Z"/><path d="M12 10.2v3.6"/><circle cx="12" cy="16.6" r=".9" fill="currentColor" stroke="none"/></svg>
+          <p id="wpAlertText"></p>
+        </div>
+        <div class="wp-dica">
+          <p class="lbl">Dica</p>
+          <p id="wpDica">—</p>
+        </div>
+        <p class="wp-time" id="wpTime"></p>
+      </div>
+    </div>
+    <div class="pills" id="typePills" role="tablist">
+      <button class="pill active" data-type="vinil" role="tab" aria-selected="true">Vinil</button>
+      <button class="pill" data-type="fibra" role="tab" aria-selected="false">Fibra</button>
+      <button class="pill" data-type="alvenaria" role="tab" aria-selected="false">Alvenaria</button>
+      <button class="pill" data-type="infinity" role="tab" aria-selected="false">Infinity</button>
+    </div>
+    <hr class="div">
+    <p class="lbl">Volume da piscina</p>
+    <div class="vol-row">
+      <div class="volume-wrap">
+        <label class="volume-input">
+          <input id="volInput" type="number" inputmode="numeric" min="1000" max="200000" step="500" value="30000" aria-label="Volume em litros">
+          <span class="unit">L</span>
+        </label>
+      </div>
+      <div class="vol-live" id="volLive" aria-live="polite"><b>30.000 L</b><span>= 30 m³</span></div>
+    </div>
+    <p class="hint">Entre 1.000 L e 200.000 L — as doses são ajustadas ao seu volume.</p>
+  </section>
+
+  <!-- ===== Válvula seletora ===== -->
+  <section class="card valve-card" aria-label="Válvula seletora do filtro">
+    <div class="vc-head">
+      <p class="lbl">Válvula do filtro</p>
+      <span class="badge mint" id="valveBadge"><i></i><b id="valveBadgeT">Filtrar</b></span>
+    </div>
+    <div class="valve-stage" id="valveStage">
+      <div class="v-plate" id="vPlate" role="group" aria-label="Manopla da válvula — arraste ou toque para girar">
+        <div class="v-lever" id="vLever">
+          <span class="v-stick"></span>
+          <span class="v-cap"></span>
+        </div>
+        <span class="v-screw"></span>
+      </div>
+    </div>
+    <div class="v-foot">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4.5 20.8 19.5H3.2Z"/><path d="M12 10.2v3.6"/><circle cx="12" cy="16.6" r=".9" fill="currentColor" stroke="none"/></svg>
+      <p><b>Regra de ouro:</b> desligue a bomba antes de girar a manopla. Toque na manopla ou arraste-a para escolher a posição.</p>
+    </div>
+  </section>
+
+  <!-- ===== Parâmetros ===== -->
+  <div class="sec-head">
+    <h3>Parâmetros</h3>
+    <div class="sec-right">
+      <span class="mono" id="todayLbl"></span>
+      <button class="chip" onclick="openSheet('cloro')" aria-label="Adicionar cloro">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6M10 3v4.5L6.6 13a5 5 0 1 0 10.8 0L14 7.5V3"/><circle cx="12" cy="15" r=".9" fill="currentColor" stroke="none"/><circle cx="10.3" cy="16.8" r=".8" fill="currentColor" stroke="none"/><circle cx="13.7" cy="16.8" r=".8" fill="currentColor" stroke="none"/></svg>
+        Cloro
+      </button>
+    </div>
+  </div>
+  <section class="grid" id="grid"></section>
+
+  <!-- ===== Dica no rodapé ===== -->
+  <footer class="tip card">
+    <span class="tip-ico" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.2"/><path d="M12 11.2v4.6"/><circle cx="12" cy="8" r="1" fill="currentColor" stroke="none"/></svg>
+    </span>
+    <div>
+      <p class="lbl" id="tipTitle">Dica · Vinil</p>
+      <p id="tipText">Use bicarbonato, nunca cal. pH 7,0-7,4 evita rugas no vinil</p>
+    </div>
+  </footer>
+
+  <p class="offline-note">
+    Funciona offline · dados salvos neste dispositivo<br>
+    Criado por <b>Elias costa NEGRET'S</b>
+  </p>
+</div>
+
+<!-- ===== Bottom sheet parâmetros ===== -->
+<div class="scrim" id="scrim"></div>
+<section class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="shTitle">
+  <div class="grab-zone" id="grabZone"><span class="grab"></span></div>
+  <header class="sh-head">
+    <span class="sh-ico" id="shIco" aria-hidden="true"></span>
+    <div>
+      <h3 id="shTitle">pH</h3>
+      <p id="shRange"></p>
+    </div>
+    <button class="sh-close" id="shClose" aria-label="Fechar">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
+    </button>
+  </header>
+
+  <div class="sh-valrow">
+    <span class="sh-val mono" id="shVal">0</span>
+    <span class="sh-unit" id="shUnit"></span>
+    <span class="badge" id="shBadge"><i></i><b style="font-weight:700"></b></span>
+  </div>
+
+  <div class="track" id="track">
+    <div class="t-bar" id="tBar">
+      <div class="t-zone" id="tZone"></div>
+      <div class="t-fill" id="tFill"></div>
+      <div class="t-target" id="tTarget" hidden></div>
+      <div class="t-knob" id="tKnob"></div>
+    </div>
+    <div class="t-labels mono"><span id="tMin"></span><span id="tIdeal"></span><span id="tMax"></span></div>
+  </div>
+
+  <label class="sh-inputrow">
+    <span>Valor medido</span>
+    <span class="sh-input">
+      <input id="shInput" type="number" inputmode="decimal">
+      <em id="shInputUnit"></em>
+    </span>
+  </label>
+
+  <div class="dose" id="doseBox"></div>
+
+  <button class="btn primary" id="shSave">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>
+    Salvar Medição
+  </button>
+  <p class="sh-last" id="shLast"></p>
+</section>
+
+<!-- ===== Bottom sheet válvula ===== -->
+<section class="sheet" id="valveSheet" role="dialog" aria-modal="true" aria-labelledby="vsTitle">
+  <div class="grab-zone" id="vGrabZone"><span class="grab"></span></div>
+  <header class="sh-head">
+    <span class="sh-ico" id="vsIco" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13.5" r="7"/><path d="M12 13.5V5.8"/><circle cx="12" cy="4.6" r="1.7" fill="currentColor" stroke="none"/><path d="M6.2 11.2l1.4.7M17.8 11.2l-1.4.7" stroke-width="1.4"/></svg>
+    </span>
+    <div>
+      <h3 id="vsTitle">Filtrar</h3>
+      <p id="vsPos">Posição 1 de 6</p>
+    </div>
+    <button class="sh-close" id="vsClose" aria-label="Fechar">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
+    </button>
+  </header>
+  <p class="v-resume" id="vsResume"></p>
+  <ol class="v-steps" id="vsSteps"></ol>
+  <div class="v-warn" id="vsWarn">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4.5 20.8 19.5H3.2Z"/><path d="M12 10.2v3.6"/><circle cx="12" cy="16.6" r=".9" fill="currentColor" stroke="none"/></svg>
+    <p id="vsWarnText"></p>
+  </div>
+  <button class="btn primary" id="vsOk">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>
+    Entendi
+  </button>
+</section>
+
+<div class="toasts" id="toasts" aria-live="polite"></div>
+
+<script>
+/* ============================================================
+   PoolApp Universal — por Elias costa NEGRET'S
+============================================================ */
+const ICONS = {
+  ph:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5C15.5 7.6 18 10.4 18 13.4A6 6 0 1 1 6 13.4C6 10.4 8.5 7.6 12 3.5Z"/><path d="M8.2 14.6c1.2-.8 2.4-.8 3.6 0s2.4.8 3.6 0" stroke-width="1.4"/></svg>',
+  cloro:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6M10 3v4.5L6.6 13a5 5 0 1 0 10.8 0L14 7.5V3"/><circle cx="12" cy="15" r=".9" fill="currentColor" stroke="none"/><circle cx="10.3" cy="16.8" r=".8" fill="currentColor" stroke="none"/><circle cx="13.7" cy="16.8" r=".8" fill="currentColor" stroke="none"/></svg>',
+  turbidez:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="8.2"/><circle cx="9" cy="10.5" r="1" fill="currentColor" stroke="none"/><circle cx="14.5" cy="9.8" r=".8" fill="currentColor" stroke="none"/><circle cx="12.5" cy="13.8" r="1.1" fill="currentColor" stroke="none"/><circle cx="9.6" cy="14.6" r=".7" fill="currentColor" stroke="none"/><circle cx="15" cy="13.5" r=".6" fill="currentColor" stroke="none"/></svg>',
+  alcalinidade:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9c2.2 0 2.2 1.8 4.5 1.8S9.8 9 12 9s2.2 1.8 4.5 1.8S18.8 9 21 9"/><path d="M3 15c2.2 0 2.2 1.8 4.5 1.8S9.8 15 12 15s2.2 1.8 4.5 1.8S18.8 15 21 15"/></svg>',
+  dureza:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.6 20.5 8 12 12.4 3.5 8Z"/><path d="M20.5 12.5 12 16.9 3.5 12.5"/><path d="M20.5 16.5 12 20.9 3.5 16.5"/></svg>',
+  check:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>',
+  alert:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4.5 20.8 19.5H3.2Z"/><path d="M12 10.2v3.6"/><circle cx="12" cy="16.6" r=".9" fill="currentColor" stroke="none"/></svg>'
+};
+
+const DEFAULTS = { ph:7.2, cloro:2.5, turbidez:35, alcalinidade:90, dureza:240 };
+
+const PARAMS = {
+  ph:{
+    label:'pH', unit:'', dec:1, min:6, max:8.5, step:0.1, idealMin:7, idealMax:7.4, value:DEFAULTS.ph,
+    dose:{ target:7.2, per:100, up:'barrilha (bicarbonato de sódio)', downName:'redutor de pH' }
+  },
+  cloro:{
+    label:'Cloro livre', unit:'ppm', dec:1, min:0, max:5, step:0.1, idealMin:1, idealMax:3, value:DEFAULTS.cloro,
+    dose:{ target:2, per:60, up:'cloro granulado', downMsg:'Cloro acima do alvo — não adicione produto; aguarde o decaimento natural.' }
+  },
+  turbidez:{
+    label:'Turbidez', unit:'%', dec:0, min:0, max:100, step:1, idealMin:0, idealMax:20, value:DEFAULTS.turbidez, full:true
+  },
+  alcalinidade:{
+    label:'Alcalinidade Total', unit:'ppm', dec:0, min:0, max:200, step:5, idealMin:80, idealMax:120, target:100, value:DEFAULTS.alcalinidade,
+    dose:{ target:100, per:45, up:'bicarbonato de sódio', downMsg:'Alcalinidade acima do alvo — reduza com ácido muriático em etapas curtas.' }
+  },
+  dureza:{
+    label:'Dureza Cálcica', unit:'ppm', dec:0, min:0, max:500, step:10, idealMin:200, idealMax:400, value:DEFAULTS.dureza,
+    dose:{ target:250, per:30, up:'cloreto de cálcio', downMsg:'Dureza acima do alvo — dilua 20–30% da água com água nova.' }
+  }
+};
+
+const TIPS = {
+  vinil:     'Use bicarbonato, nunca cal. pH 7,0-7,4 evita rugas no vinil',
+  fibra:     'Evite ácido em excesso, agride gel coat',
+  alvenaria: 'Pode usar cal hidratada',
+  infinity:  'Atenção perda na borda'
+};
+
+/* ---------- válvula multiport: 6 posições ---------- */
+const VALVE_POS = [
+  { id:'filtrar',    label:'FILTRAR',     full:'Filtrar',        angle:0   },
+  { id:'lavar',      label:'RETRO-LAVAR', full:'Retro-lavar',    angle:60  },
+  { id:'enxaguar',   label:'ENXAGUAR',    full:'Enxaguar',       angle:120 },
+  { id:'recircular', label:'RECIRCULAR',  full:'Recircular',     angle:180 },
+  { id:'dreno',      label:'DRENO',       full:'Dreno / Waste',  angle:240 },
+  { id:'fechado',    label:'FECHADO',     full:'Fechado',        angle:300 }
+];
+
+const VALVE_INFO = {
+  filtrar:{
+    resume:'A posição do dia a dia: a água sai da piscina, atravessa a areia do filtro e volta limpa.',
+    steps:[
+      'Filtre de 6 a 8 h por dia no verão (4 a 6 h no inverno)',
+      'Limpe o pré-filtro da bomba a cada 15 dias',
+      'Retro-lave quando o manômetro subir ~8 psi acima do normal'
+    ],
+    warn:'Girou a manopla com a bomba ligada? Desligue SEMPRE antes — girar sob pressão rompe a junta da válvula.'
+  },
+  lavar:{
+    resume:'Inverte o fluxo: a água atravessa a areia ao contrário e leva a sujeira do filtro direto para o esgoto.',
+    steps:[
+      'Desligue a bomba e gire para RETRO-LAVAR',
+      'Ligue e deixe rodar de 2 a 3 minutos',
+      'Observe o visor de vidro: pare quando a água ficar transparente'
+    ],
+    warn:'Faça a cada 1–2 semanas, ou sempre que o manômetro marcar 8–10 psi acima do normal.'
+  },
+  enxaguar:{
+    resume:'Assenta a areia do filtro depois da retro-lavagem e enxágua o resto da tubulação.',
+    steps:[
+      'Vem sempre DEPOIS do retro-lavar',
+      'Desligue, gire para ENXAGUAR e ligue por 20–30 segundos',
+      'Volte para FILTRAR e ligue a bomba'
+    ],
+    warn:'Pular o enxágue manda areia solta direto para a piscina.'
+  },
+  recircular:{
+    resume:'A água circula SEM passar pelo filtro — nada é filtrado nesse caminho.',
+    steps:[
+      'Use para dissolver cloro granulado num balde e espalhar com a água circulando',
+      'Útil também para rodar o aquecedor enquanto o filtro está em manutenção'
+    ],
+    warn:'Esqueceu a válvula aqui por dias? Água sem filtrar vira água verde. Confira antes de sair.'
+  },
+  dreno:{
+    resume:'Joga a água direto no esgoto, sem passar pelo filtro — o nível da piscina desce.',
+    steps:[
+      'Use para baixar o nível depois de chuva forte',
+      'Ideal para aspirar: a sujeira pesada sai da piscina em vez de voltar',
+      'Ao aspirar no dreno, mantenha a bomba em baixa rotação'
+    ],
+    warn:'Fique de olho no nível: não deixe a água descer além da metade do skimmer.'
+  },
+  fechado:{
+    resume:'Bloqueia a passagem de água em todas as linhas — usado no inverno ou em manutenção.',
+    steps:[
+      'Confirme que a bomba está DESLIGADA',
+      'Para reabrir: gire para FILTRAR e ligue a bomba'
+    ],
+    warn:'NUNCA ligue a bomba com a válvula em FECHADO — a pressão presa na tubulação pode romper o filtro.'
+  }
+};
+
+/* ---------- estado persistido ---------- */
+let state = { type:'vinil', volume:30000, values:{...DEFAULTS} };
+let measures = {};
+let valveIndex = 0;
+let leverAngle = 0;
+
+try{
+  const s = JSON.parse(localStorage.getItem('poolapp.state')||'null');
+  if(s){ state.type = s.type||'vinil'; state.volume = s.volume||30000; Object.assign(state.values, s.values||{}); }
+  measures = JSON.parse(localStorage.getItem('poolapp.measures')||'{}');
+  valveIndex = Math.min(5, Math.max(0, parseInt(localStorage.getItem('poolapp.valve'),10)||0));
+}catch(e){}
+
+const persist = ()=> localStorage.setItem('poolapp.state', JSON.stringify({type:state.type, volume:state.volume, values:state.values}));
+const persistMeasures = ()=> localStorage.setItem('poolapp.measures', JSON.stringify(measures));
+
+/* ---------- utilitários ---------- */
+const $ = id => document.getElementById(id);
+const nf0 = new Intl.NumberFormat('pt-BR');
+const fmt = (v,d)=> v.toLocaleString('pt-BR',{minimumFractionDigits:d, maximumFractionDigits:d});
+const fmtGrams = g => g>=20 ? nf0.format(Math.round(g))+' g' : fmt(Math.round(g*10)/10,1)+' g';
+const pct = (key,v)=>{ const p=PARAMS[key]; return Math.min(1,Math.max(0,(v-p.min)/(p.max-p.min)))*100; };
+
+function statusOf(key,v){
+  const p = PARAMS[key];
+  if(key==='alcalinidade'){
+    if(v>=100 && v<=p.idealMax) return {t:'Ideal', c:'mint'};
+    if(v<100) return {t:'Baixa', c:'amber'};
+    return {t:'Alta', c:'amber'};
+  }
+  if(v>=p.idealMin && v<=p.idealMax) return {t:'Ideal', c:'mint'};
+  if(key==='turbidez') return {t:'Atenção', c:'amber'};
+  return {t: v<p.idealMin ? 'Baixo':'Alto', c:'amber'};
+}
+
+function timeAgo(at){
+  const d = Date.now()-at;
+  if(d<60e3) return 'agora';
+  if(d<3600e3) return 'há '+Math.floor(d/60e3)+' min';
+  if(d<86400e3) return 'há '+Math.floor(d/3600e3)+' h';
+  return new Date(at).toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'});
+}
+
+function toast(msg, warn=false){
+  const box = document.createElement('div');
+  box.className = 'toast'+(warn?' warn':'');
+  box.innerHTML = (warn?ICONS.alert:ICONS.check) + '<span></span>';
+  box.querySelector('span').textContent = msg;
+  $('toasts').appendChild(box);
+  requestAnimationFrame(()=> box.classList.add('show'));
+  setTimeout(()=>{ box.classList.remove('show'); setTimeout(()=>box.remove(),400); }, 3000);
+}
+
+/* ============================================================
+   CLIMA — WeatherAPI (primária) → Open-Meteo (fallback)
+   GPS alta precisão real; Burnier é SÓ fallback de GPS negado.
+============================================================ */
+
+/* ╔══════════════════════════════════════════════════════╗
+   ║  COLE SUA KEY GRÁTIS DO WEATHERAPI.COM AQUI          ║
+   ║  (crie conta em weatherapi.com → copie a key → cole) ║
+   ║  Enquanto estiver vazia, o app usa Open-Meteo.       ║
+   ╚══════════════════════════════════════════════════════╝ */
+const WEATHER_API_KEY = "";   // ex.: "a1b2c3d4e5f6g7h8i9j10k12l13m14n"
+
+const W_FALLBACK = { lat:-20.43606, lon:-43.7722, city:'Miguel Burnier' };
+let wCache = null;        // último clima exibido
+let lastFix  = null;      // última posição REAL usada (base do gatilho de 5 km)
+let watchId  = null;      // id do watchPosition
+try{ wCache = JSON.parse(localStorage.getItem('poolapp.weather')||'null'); }catch(e){}
+
+function hasKey(){
+  return WEATHER_API_KEY && WEATHER_API_KEY !== 'SUA_KEY_AQUI' && WEATHER_API_KEY.trim().length > 10;
+}
+
+/* distância haversine em km */
+function distKm(a,b){
+  const R=6371, rad=Math.PI/180;
+  const dLat=(b.lat-a.lat)*rad, dLon=(b.lon-a.lon)*rad;
+  const s = Math.sin(dLat/2)**2 + Math.cos(a.lat*rad)*Math.cos(b.lat*rad)*Math.sin(dLon/2)**2;
+  return 2*R*Math.asin(Math.sqrt(s));
+}
+/* perto de Burnier? — usado para o ajuste "Ouro Preto" → "Miguel Burnier" */
+function nearBurnier(lat,lon){
+  return distKm({lat:W_FALLBACK.lat, lon:W_FALLBACK.lon}, {lat,lon}) < 8;
+}
+/* mesmo ajuste do seu código, aplicado a qualquer fonte de nome */
+function fixCityName(name, lat, lon){
+  if(name && name.includes('Ouro Preto') && nearBurnier(lat,lon)) return 'Miguel Burnier';
+  return name;
+}
+
+/* emoji por condição WeatherAPI — ☀️ de dia, 🌙 de noite, nunca sol à noite */
+function waEmoji(code, isDay){
+  if(code===1000) return isDay ? '☀️' : '🌙';
+  if(code===1003) return isDay ? '⛅' : '🌙';
+  if([1006,1009,1030,1135,1147].includes(code)) return '☁️';
+  if([1063,1150,1153,1168,1171,1180,1183,1186,1189,1192,1195,1198,1201,1240,1243,1246].includes(code)) return '🌧️';
+  if([1087,1273,1276,1279,1282].includes(code)) return '⛈️';
+  if([1066,1069,1072,1114,1117,1204,1207,1210,1213,1216,1219,1222,1225,1237,1249,1252,1255,1258,1261,1264].includes(code)) return '🌨️';
+  return isDay ? '⛅' : '🌙';
+}
+
+/* emoji por weather_code Open-Meteo */
+function weatherInfo(code, isDay=1){
+  if(code===0)  return {e: isDay?'☀️':'🌙', t:'Céu limpo'};
+  if(code<=3)   return {e: isDay?'⛅':'🌙', t:'Parcialmente nublado'};
+  if(code<=57)  return {e:'☁️', t:'Nublado'};
+  if(code<=67)  return {e:'🌧️', t:'Chuva'};
+  if(code<=77)  return {e:'🌨️', t:'Neve'};
+  if(code<=82)  return {e:'🌧️', t:'Chuva'};
+  if(code<=86)  return {e:'🌨️', t:'Neve'};
+  if(code>=95)  return {e:'⛈️', t:'Tempestade'};
+  return {e:'⛅', t:'Parcialmente nublado'};
+}
+
+function dicaFor(t){
+  if(t>=32) return 'Com '+Math.round(t)+'°C o cloro evapora 40% mais rápido, adicione +50g';
+  if(t>=28) return 'Com '+Math.round(t)+'°C o cloro evapora ~25% mais rápido, adicione +30g';
+  return 'Com '+Math.round(t)+'°C a evaporação está sob controle — mantenha a dosagem padrão';
+}
+
+function fetchJSON(url, ms){
+  const ctl = new AbortController();
+  const t = setTimeout(()=>ctl.abort(), ms);
+  return fetch(url, {signal:ctl.signal})
+    .then(r=>{ if(!r.ok) throw new Error('http'); return r.json(); })
+    .finally(()=>clearTimeout(t));
+}
+
+/* --- GPS ALTA PRECISÃO, uma leitura. Só o ERRO cai no fallback --- */
+function getCoordsOnce(){
+  return new Promise(res=>{
+    if(!('geolocation' in navigator)) return res(null);
+    navigator.geolocation.getCurrentPosition(
+      p=> res({ lat:p.coords.latitude, lon:p.coords.longitude }),
+      ()=> res(null),                                        // negou / demorou / indisponível
+      { enableHighAccuracy:true, timeout:8000, maximumAge:0 }
+    );
+  });
+}
+
+/* --- cidade por coordenadas quando a fonte não fornece nome (Open-Meteo) --- */
+function pickCity(addr, root){
+  return addr.city || addr.town || addr.village || addr.municipality ||
+         addr.hamlet || addr.suburb || addr.county ||
+         (root.display_name ? root.display_name.split(',')[0] : null);
+}
+async function reverseCity(lat, lon){
+  const key = lat.toFixed(2)+','+lon.toFixed(2);
+  let geo = {};
+  try{ geo = JSON.parse(localStorage.getItem('poolapp.geo')||'{}'); }catch(e){}
+  const hit = geo[key];
+  if(hit && Date.now()-hit.at < 7*86400e3) return fixCityName(hit.city, lat, lon);
+  try{
+    const r = await fetchJSON('https://nominatim.openstreetmap.org/reverse?lat='+lat+'&lon='+lon+'&format=json&accept-language=pt-BR', 9000);
+    const c = pickCity(r.address||{}, r);
+    if(c){ geo[key]={city:c, at:Date.now()}; try{localStorage.setItem('poolapp.geo', JSON.stringify(geo));}catch(e){} return fixCityName(c, lat, lon); }
+  }catch(e){}
+  try{
+    const g = await fetchJSON('https://api.bigdatacloud.net/data/reverse-geocode-client?latitude='+lat+'&longitude='+lon+'&localityLanguage=pt', 8000);
+    const c = g.city || g.locality || g.principalSubdivision;
+    if(c){ geo[key]={city:c, at:Date.now()}; try{localStorage.setItem('poolapp.geo', JSON.stringify(geo));}catch(e){} return fixCityName(c, lat, lon); }
+  }catch(e){}
+  return null;
+}
+
+/* --- 1ª opção: WeatherAPI — clima, condição em PT, is_day, alertas --- */
+async function fetchWeatherAPI(lat, lon, fixed){
+  try{
+    const r = await fetchJSON(
+      'https://api.weatherapi.com/v1/current.json?key='+encodeURIComponent(WEATHER_API_KEY.trim())+
+      '&q='+lat+','+lon+'&lang=pt&aqi=no', 9000);
+    const c = r.current;
+    const cidade = fixCityName(r.location.name, lat, lon);
+    wCache = {
+      source:'WeatherAPI', lat, lon, fixed:!!fixed,
+      city: cidade || 'Sua região',
+      temp: Math.round(c.temp_c), dec: 0,
+      cond: c.condition.text,
+      emoji: waEmoji(c.condition.code, c.is_day),
+      hum: c.humidity, wind: Math.round(c.wind_kph),
+      alert: (r.alerts && r.alerts.alert && r.alerts.alert[0]) ? r.alerts.alert[0].headline : null,
+      at: Date.now()
+    };
+    saveWeather(); renderWeather();
+    return true;
+  }catch(e){ return false; }
+}
+
+/* --- fallback: Open-Meteo (grátis, sem chave) --- */
+async function fetchOpenMeteo(lat, lon, fixed){
+  try{
+    const r = await fetchJSON('https://api.open-meteo.com/v1/forecast?latitude='+lat+'&longitude='+lon+
+      '&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m,is_day&timezone=America/Sao_Paulo', 9000);
+    const c = r.current;
+    const info = weatherInfo(c.weather_code, c.is_day);
+    const city = await reverseCity(lat, lon);
+    wCache = {
+      source:'Open-Meteo', lat, lon, fixed:!!fixed,
+      city: city || (wCache&&wCache.city) || 'Sua região',
+      temp: c.temperature_2m, dec: Number.isInteger(c.temperature_2m)?0:1,
+      cond: info.t,
+      emoji: info.e,
+      hum: c.relative_humidity_2m, wind: c.wind_speed_10m,
+      alert: null,
+      at: Date.now()
+    };
+    saveWeather(); renderWeather();
+  }catch(e){
+    if(wCache) renderWeather();   // sem rede: mantém último dado em cache
+  }
+}
+
+function saveWeather(){
+  try{ localStorage.setItem('poolapp.weather', JSON.stringify(wCache)); }catch(e){}
+}
+
+/* --- cadeia: WeatherAPI → (falhou?) → Open-Meteo --- */
+async function weatherChain(lat, lon, fixed){
+  const prevCity = wCache && wCache.city;
+  if(hasKey()){
+    if(await fetchWeatherAPI(lat, lon, fixed)){
+      notifyCity(prevCity);
+      return;
+    }
+  }
+  await fetchOpenMeteo(lat, lon, fixed);
+  notifyCity(prevCity);
+}
+
+function notifyCity(prevCity){
+  if(prevCity && wCache && wCache.city && prevCity!==wCache.city && !wCache.fixed){
+    toast('Local detectado: '+wCache.city);      // ex.: chegou em Betim
+  }
+}
+
+/* --- ciclo completo: GPS real → cidade/clima; erro → Burnier fixo --- */
+async function updateWeather(){
+  const pos = await getCoordsOnce();
+  if(pos){
+    lastFix = pos;
+    await weatherChain(pos.lat, pos.lon, false);
+  }else{
+    lastFix = null;
+    // SÓ AQUI usa o fallback: GPS negado/indisponível → Miguel Burnier -20.43606,-43.7722
+    await weatherChain(W_FALLBACK.lat, W_FALLBACK.lon, true);
+  }
+}
+
+/* refresh leve a cada 10 min: mesma posição conhecida, clima novo */
+function refreshWeather(){
+  if(lastFix) weatherChain(lastFix.lat, lastFix.lon, false);
+  else updateWeather();                            // tenta GPS de novo (permissão pode ter mudado)
+}
+
+/* --- watchPosition: andou 5 km → cidade + clima atualizam sozinhos --- */
+function startWatch(){
+  if(!('geolocation' in navigator) || watchId!==null) return;
+  watchId = navigator.geolocation.watchPosition(p=>{
+    const np = { lat:p.coords.latitude, lon:p.coords.longitude };
+    if(!lastFix || distKm(lastFix, np) > 5){
+      lastFix = np;
+      weatherChain(np.lat, np.lon, false);
+    }
+  }, ()=>{}, { enableHighAccuracy:true, timeout:15000, maximumAge:0 });
+}
+
+function renderWeather(){
+  if(!wCache) return;
+  const t = wCache.temp;
+  $('wEmoji').textContent = wCache.emoji;
+  $('wTemp').textContent  = Math.round(t)+'°C';
+  $('wCity').textContent  = '· '+(wCache.city||'Sua região');
+
+  $('wpEmoji').textContent = wCache.emoji;
+  $('wpCond').textContent  = wCache.cond || '—';
+  $('wpCity').textContent  = '📍 '+(wCache.city||'Sua região')+(wCache.fixed?' · GPS indisponível':'');
+  $('wpTemp').textContent  = fmt(t, wCache.dec!=null?wCache.dec:0)+'°C';
+  $('wpHum').textContent   = (wCache.hum!=null ? Math.round(wCache.hum) : '—')+'%';
+  $('wpWind').textContent  = (wCache.wind!=null ? fmt(wCache.wind, wCache.wind%1?1:0) : '—')+' km/h';
+
+  const al = $('wpAlert');
+  if(wCache.alert){ al.hidden=false; $('wpAlertText').textContent = wCache.alert; }
+  else al.hidden = true;
+
+  $('wpDica').textContent  = dicaFor(t);
+  $('wpTime').textContent  = wCache.source+' · atualizado '+timeAgo(wCache.at);
+
+  $('wChip').hidden = false;
+}
+
+/* chip ↔ tooltip */
+const wChip=$('wChip'), wPop=$('wPop');
+wChip.addEventListener('click', e=>{
+  e.stopPropagation();
+  const open = wPop.classList.toggle('show');
+  wChip.setAttribute('aria-expanded', open);
+});
+document.addEventListener('click', e=>{
+  if(wPop.classList.contains('show') && !wPop.contains(e.target) && !wChip.contains(e.target)){
+    wPop.classList.remove('show');
+    wChip.setAttribute('aria-expanded','false');
+  }
+});
+
+/* ============================================================
+   Válvula seletora — manopla, alavanca e dicas
+============================================================ */
+const vStage=$('valveStage'), vPlate=$('vPlate'), vLever=$('vLever');
+let vSheetTimer = null;
+
+VALVE_POS.forEach(v=>{
+  const tick = document.createElement('span');
+  tick.className = 'v-tick';
+  tick.style.setProperty('--a', v.angle+'deg');
+  vPlate.insertBefore(tick, vLever);
+});
+
+VALVE_POS.forEach((v,i)=>{
+  const st = document.createElement('button');
+  st.className = 'station'+(i<2||i===5?' up':'');
+  st.classList.add('st-'+i);
+  st.setAttribute('aria-label', 'Posição '+(i+1)+': '+v.full);
+  st.innerHTML = `<span class="v-num">${i+1}</span><span class="v-name">${v.label}</span>`;
+  st.addEventListener('click', ()=> selectValve(i, {fromUser:true}));
+  vStage.appendChild(st);
+});
+const stations = [...vStage.querySelectorAll('.station')];
+
+function nearestIndex(angle){ return ((Math.round(angle/60)%6)+6)%6; }
+
+function animateLeverTo(angle){
+  const delta = ((angle - leverAngle)%360+540)%360-180;
+  leverAngle += delta;
+  vLever.style.transform = `rotate(${leverAngle}deg)`;
+}
+
+function applyValveVisual(){
+  const v = VALVE_POS[valveIndex];
+  stations.forEach((st,i)=> st.classList.toggle('active', i===valveIndex));
+  const badge = $('valveBadge');
+  badge.className = 'badge '+(valveIndex===0 ? 'mint':'amber');
+  $('valveBadgeT').textContent = v.full;
+}
+
+function selectValve(idx, opts={}){
+  idx = ((idx%6)+6)%6;
+  valveIndex = idx;
+  try{ localStorage.setItem('poolapp.valve', String(idx)); }catch(e){}
+  animateLeverTo(VALVE_POS[idx].angle);
+  applyValveVisual();
+  if(opts.fromUser){
+    clearTimeout(vSheetTimer);
+    vSheetTimer = setTimeout(openValveSheet, 300);
+  }
+}
+
+let vDrag=null, vMoved=false, vStartX=0, vStartY=0;
+
+vPlate.addEventListener('pointerdown', e=>{
+  vDrag = e.pointerId; vMoved = false;
+  vStartX = e.clientX; vStartY = e.clientY;
+  vPlate.setPointerCapture(e.pointerId);
+  vLever.classList.add('no-anim');
+});
+vPlate.addEventListener('pointermove', e=>{
+  if(e.pointerId!==vDrag) return;
+  if(!vMoved && Math.hypot(e.clientX-vStartX, e.clientY-vStartY)>6) vMoved = true;
+  if(!vMoved) return;
+  const r = vPlate.getBoundingClientRect();
+  const a = Math.atan2(e.clientX-(r.left+r.width/2), -(e.clientY-(r.top+r.height/2)))*180/Math.PI;
+  leverAngle = a;
+  vLever.style.transform = `rotate(${a}deg)`;
+});
+['pointerup','pointercancel'].forEach(ev=> vPlate.addEventListener(ev, e=>{
+  if(e.pointerId!==vDrag) return;
+  vDrag = null;
+  vLever.classList.remove('no-anim');
+  if(!vMoved){ openValveSheet(); return; }
+  selectValve(nearestIndex(leverAngle), {fromUser:true});
+}));
+
+/* ---------- sheet da válvula ---------- */
+const valveSheet=$('valveSheet');
+
+function openValveSheet(){
+  const v = VALVE_POS[valveIndex], info = VALVE_INFO[v.id];
+  $('vsTitle').textContent = v.full;
+  $('vsPos').textContent = 'Posição '+(valveIndex+1)+' de 6';
+  $('vsResume').textContent = info.resume;
+  $('vsSteps').innerHTML = info.steps.map((s,i)=>`<li><span class="vs-n">${i+1}</span><span>${s}</span></li>`).join('');
+  $('vsWarnText').textContent = info.warn;
+  scrim.classList.add('show');
+  valveSheet.classList.add('open');
+  document.body.classList.add('locked');
+}
+function closeValveSheet(){
+  if(!valveSheet.classList.contains('open')) return;
+  valveSheet.classList.remove('open');
+  if(!$('sheet').classList.contains('open')){
+    scrim.classList.remove('show');
+    document.body.classList.remove('locked');
+  }
+}
+ $('vsClose').addEventListener('click', closeValveSheet);
+ $('vsOk').addEventListener('click', closeValveSheet);
+
+const vGrab=$('vGrabZone');
+let vgy=null, vgdy=0;
+vGrab.addEventListener('pointerdown', e=>{
+  vgy = e.clientY; vgdy = 0;
+  vGrab.setPointerCapture(e.pointerId);
+  valveSheet.style.transition='none';
+});
+vGrab.addEventListener('pointermove', e=>{
+  if(vgy===null) return;
+  vgdy = Math.max(0, e.clientY-vgy);
+  valveSheet.style.transform = `translate(-50%, ${vgdy}px)`;
+});
+['pointerup','pointercancel'].forEach(ev=> vGrab.addEventListener(ev, ()=>{
+  if(vgy===null) return;
+  valveSheet.style.transition=''; valveSheet.style.transform='';
+  if(vgdy>110) closeValveSheet();
+  vgy=null; vgdy=0;
+}));
+
+/* ============================================================
+   Grid de parâmetros
+============================================================ */
+const grid = $('grid');
+
+function buildCards(){
+  grid.innerHTML = Object.keys(PARAMS).map(key=>{
+    const p = PARAMS[key];
+    const note = key==='turbidez' ? '<p class="pc-note">Aspirar no DRENO/WASTE, não FILTRAR</p>' : '';
+    return `<article class="pcard card${p.full?' full':''}" data-key="${key}" onclick="openSheet('${key}')" tabindex="0" role="button" aria-label="Abrir ${p.label}">
+      <div class="pc-top">
+        <span class="pc-ico">${ICONS[key]}</span>
+        <span class="pc-lbl">${p.label}</span>
+        <span class="badge mint" data-badge><i></i><b style="font-weight:700" data-badge-t></b></span>
+      </div>
+      <div class="pc-val"><span class="mono" data-val></span><em>${p.unit||'pH'}</em></div>
+      ${note}
+      <div class="mini">
+        <div class="m-bar">
+          <span class="m-zone"></span><span class="m-fill"></span><span class="m-knob"></span>
+        </div>
+        <div class="m-scale"><span>${fmt(p.min,p.dec)}</span><span>${fmt(p.idealMin,p.dec)}–${fmt(p.idealMax,p.dec)}</span><span>${fmt(p.max,p.dec)}</span></div>
+      </div>
+      <p class="pc-time" data-time></p>
+    </article>`;
+  }).join('');
+
+  Object.keys(PARAMS).forEach(key=>{
+    const p = PARAMS[key], el = cardEl(key);
+    const zone = el.querySelector('.m-zone');
+    zone.style.left  = ((p.idealMin-p.min)/(p.max-p.min)*100)+'%';
+    zone.style.width = ((p.idealMax-p.idealMin)/(p.max-p.min)*100)+'%';
+    el.addEventListener('keydown', e=>{
+      if(e.key==='Enter'||e.key===' '){ e.preventDefault(); openSheet(key); }
+    });
+  });
+}
+const cardEl = key => grid.querySelector(`[data-key="${key}"]`);
+
+function updateCard(key){
+  const p = PARAMS[key], el = cardEl(key); if(!el) return;
+  const v = state.values[key], st = statusOf(key,v), pos = pct(key,v);
+  el.querySelector('[data-val]').textContent = fmt(v,p.dec);
+  const badge = el.querySelector('[data-badge]');
+  badge.className = 'badge '+st.c;
+  el.querySelector('[data-badge-t]').textContent = st.t;
+  const fill = el.querySelector('.m-fill'), knob = el.querySelector('.m-knob');
+  fill.style.width = pos+'%';
+  knob.style.left  = pos+'%';
+  fill.classList.toggle('warn', st.c==='amber');
+  knob.classList.toggle('warn', st.c==='amber');
+  const m = measures[key];
+  el.querySelector('[data-time]').textContent = m ? 'atualizado '+timeAgo(m.at) : 'sem medição salva';
+}
+
+/* ============================================================
+   Bottom sheet de parâmetros
+============================================================ */
+const sheet=$('sheet'), scrim=$('scrim'), tBar=$('tBar');
+let currentKey = null;
+
+function openSheet(key, value){
+  currentKey = key;
+  const p = PARAMS[key], v = (value !== undefined) ? value : state.values[key];
+
+  $('shIco').innerHTML = ICONS[key];
+  $('shTitle').textContent = p.label;
+  $('shRange').textContent = 'faixa '+fmt(p.min,p.dec)+' – '+fmt(p.max,p.dec)+(p.unit?' '+p.unit:'');
+  $('shUnit').textContent  = p.unit || 'pH';
+  $('shInputUnit').textContent = p.unit || 'pH';
+  $('shInput').min = p.min; $('shInput').max = p.max; $('shInput').step = p.step;
+
+  $('tZone').style.left  = ((p.idealMin-p.min)/(p.max-p.min)*100)+'%';
+  $('tZone').style.width = ((p.idealMax-p.idealMin)/(p.max-p.min)*100)+'%';
+  $('tMin').textContent  = fmt(p.min,p.dec);
+  $('tMax').textContent  = fmt(p.max,p.dec);
+  $('tIdeal').textContent= 'ideal '+fmt(p.idealMin,p.dec)+'–'+fmt(p.idealMax,p.dec)+(p.target?' · alvo '+fmt(p.target,p.dec):'');
+  const tt = $('tTarget');
+  if(p.target){ tt.hidden=false; tt.style.left = ((p.target-p.min)/(p.max-p.min)*100)+'%'; }
+  else tt.hidden = true;
+
+  const m = measures[key];
+  $('shLast').textContent = m ? 'Última medição: '+timeAgo(m.at)+' · '+new Date(m.at).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}) : 'Sem medições salvas ainda';
+
+  setSheetValue(v,'open');
+  scrim.classList.add('show');
+  sheet.classList.add('open');
+  document.body.classList.add('locked');
+}
+
+function closeSheet(){
+  if(currentKey){
+    const saved = measures[currentKey];
+    state.values[currentKey] = saved ? saved.v : DEFAULTS[currentKey];
+    updateCard(currentKey);
+  }
+  sheet.style.transform=''; sheet.style.transition='';
+  sheet.classList.remove('open');
+  currentKey = null;
+  if(!valveSheet.classList.contains('open')){
+    scrim.classList.remove('show');
+    document.body.classList.remove('locked');
+  }
+}
+
+function clampSnap(v){
+  const p = PARAMS[currentKey];
+  v = Math.min(p.max, Math.max(p.min, v));
+  v = Math.round((v-p.min)/p.step)*p.step + p.min;
+  return +v.toFixed(2);
+}
+
+function setSheetValue(v, src){
+  const p = PARAMS[currentKey];
+  v = clampSnap(v);
+  state.values[currentKey] = v;
+
+  $('shVal').textContent = fmt(v,p.dec);
+  if(src!=='input') $('shInput').value = v;
+
+  const st = statusOf(currentKey,v), pos = pct(currentKey,v);
+  const badge = $('shBadge');
+  badge.className = 'badge '+st.c;
+  badge.querySelector('b').textContent = st.t;
+  const fill=$('tFill'), knob=$('tKnob');
+  fill.style.width = pos+'%';  knob.style.left = pos+'%';
+  fill.classList.toggle('warn', st.c==='amber');
+  knob.classList.toggle('warn', st.c==='amber');
+
+  $('doseBox').innerHTML = doseHTML(currentKey, v);
+  updateCard(currentKey);
+}
+
+function doseHTML(key,v){
+  const p = PARAMS[key], m3 = state.volume/1000;
+
+  if(key==='turbidez'){
+    return v<=p.idealMax
+      ? `<p class="dose-title">Status da água</p>
+         <div class="dose instr mint"><p class="dose-text">Água transparente — mantenha a rotina de filtração.</p></div>`
+      : `<p class="dose-title">Instrução de limpeza</p>
+         <div class="dose instr amber"><p class="dose-text">Aspirar no DRENO/WASTE, não FILTRAR</p>
+         <p class="dose-sub">No dreno o resíduo sai da piscina; no filtrar ele apenas circula.</p></div>`;
+  }
+
+  const delta = p.dose.target - v;
+  const grams = delta * p.dose.per * (m3/30);
+
+  if(Math.abs(grams) < 1){
+    return `<p class="dose-title">Dose sugerida</p>
+      <div class="dose-main"><strong>${fmt(0,0)} g</strong><span>— nada a adicionar agora</span></div>
+      <p class="dose-sub">Valor no alvo de ${fmt(p.dose.target,p.dec)} ${p.unit}.</p>`;
+  }
+
+  if(grams < 0 && p.dose.downMsg){
+    return `<div class="dose amber"><p class="dose-title">Ajuste para baixo</p>
+      <p class="dose-sub" style="margin-top:6px;font-size:13px">${p.dose.downMsg}</p></div>`;
+  }
+  const prod = grams > 0 ? p.dose.up : p.dose.downName;
+  return `<div class="dose">
+      <p class="dose-title">Dose sugerida</p>
+      <div class="dose-main"><strong>${fmtGrams(Math.abs(grams))}</strong><span>de ${prod}</span></div>
+      <p class="dose-sub">Base 30 m³ ajustada ao seu volume: ${fmt(m3, m3%1?1:0)} m³ · alvo ${fmt(p.dose.target,p.dec)} ${p.unit}</p>
+    </div>`;
+}
+
+let dragId = null;
+tBar.addEventListener('pointerdown', e=>{
+  dragId = e.pointerId;
+  tBar.setPointerCapture(dragId);
+  fromX(e);
+});
+tBar.addEventListener('pointermove', e=>{ if(e.pointerId===dragId) fromX(e); });
+['pointerup','pointercancel'].forEach(ev=> tBar.addEventListener(ev, e=>{ if(e.pointerId===dragId) dragId=null; }));
+
+function fromX(e){
+  if(!currentKey) return;
+  const p = PARAMS[currentKey];
+  const r = tBar.getBoundingClientRect();
+  const t = Math.min(1, Math.max(0, (e.clientX - r.left)/r.width));
+  setSheetValue(p.min + t*(p.max-p.min), 'track');
+}
+
+ $('shInput').addEventListener('input', e=>{
+  if(!currentKey) return;
+  const raw = parseFloat(e.target.value);
+  if(Number.isNaN(raw)) return;
+  setSheetValue(raw,'input');
+});
+ $('shInput').addEventListener('blur', ()=>{ if(currentKey) $('shInput').value = state.values[currentKey]; });
+
+ $('shSave').addEventListener('click', ()=>{
+  if(!currentKey) return;
+  const p = PARAMS[currentKey], v = state.values[currentKey];
+  measures[currentKey] = { v, at:Date.now() };
+  persistMeasures(); persist();
+  updateCard(currentKey);
+  $('shLast').textContent = 'Última medição: agora · '+new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+  toast(p.label+' salvo · '+fmt(v,p.dec)+(p.unit?' '+p.unit:''));
+});
+
+ $('shClose').addEventListener('click', closeSheet);
+scrim.addEventListener('click', ()=>{ closeSheet(); closeValveSheet(); });
+document.addEventListener('keydown', e=>{
+  if(e.key!=='Escape') return;
+  if(sheet.classList.contains('open')) closeSheet();
+  if(valveSheet.classList.contains('open')) closeValveSheet();
+  wPop.classList.remove('show');
+  wChip.setAttribute('aria-expanded','false');
+});
+
+const grabZone = $('grabZone');
+let gy=null, gdy=0;
+grabZone.addEventListener('pointerdown', e=>{
+  gy = e.clientY; gdy = 0;
+  grabZone.setPointerCapture(e.pointerId);
+  sheet.style.transition='none';
+});
+grabZone.addEventListener('pointermove', e=>{
+  if(gy===null) return;
+  gdy = Math.max(0, e.clientY-gy);
+  sheet.style.transform = `translate(-50%, ${gdy}px)`;
+});
+['pointerup','pointercancel'].forEach(ev=> grabZone.addEventListener(ev, ()=>{
+  if(gy===null) return;
+  sheet.style.transition=''; sheet.style.transform='';
+  if(gdy>110) closeSheet();
+  gy=null; gdy=0;
+}));
+
+/* ============================================================
+   Header: tipo de piscina + volume
+============================================================ */
+ $('typePills').addEventListener('click', e=>{
+  const btn = e.target.closest('.pill'); if(!btn) return;
+  state.type = btn.dataset.type;
+  document.querySelectorAll('.pill').forEach(p=>{
+    const on = p===btn;
+    p.classList.toggle('active', on);
+    p.setAttribute('aria-selected', on);
+  });
+  renderTip(); persist();
+});
+
+function renderTip(){
+  $('tipTitle').textContent = 'Dica · '+state.type.charAt(0).toUpperCase()+state.type.slice(1);
+  $('tipText').textContent = TIPS[state.type];
+}
+
+const volInput = $('volInput');
+function renderVol(){
+  const v = state.volume, m3 = v/1000;
+  $('volLive').innerHTML = '<b>'+nf0.format(v)+' L</b><span>= '+fmt(m3, m3%1?1:0)+' m³</span>';
+}
+volInput.addEventListener('input', ()=>{
+  const v = parseInt(volInput.value,10);
+  if(!Number.isNaN(v) && v>0){ state.volume = v; renderVol(); if(currentKey) $('doseBox').innerHTML = doseHTML(currentKey, state.values[currentKey]); }
+});
+volInput.addEventListener('change', ()=>{
+  let v = parseInt(volInput.value,10);
+  if(Number.isNaN(v)) v = 30000;
+  v = Math.min(200000, Math.max(1000, v));
+  state.volume = v; volInput.value = v;
+  renderVol(); persist();
+  if(currentKey) $('doseBox').innerHTML = doseHTML(currentKey, state.values[currentKey]);
+});
+
+/* ============================================================
+   PWA: manifest + ícones gerados + service worker
+============================================================ */
+function makeIcon(size){
+  const c = document.createElement('canvas'); c.width = c.height = size;
+  const x = c.getContext('2d'), s = size/24;
+  x.scale(s,s);
+  const rr = (ctx,rad)=>{ ctx.beginPath();
+    ctx.moveTo(rad,0); ctx.lineTo(24-rad,0); ctx.quadraticCurveTo(24,0,24,rad);
+    ctx.lineTo(24,24-rad); ctx.quadraticCurveTo(24,24,24-rad,24);
+    ctx.lineTo(rad,24); ctx.quadraticCurveTo(0,24,0,24-rad);
+    ctx.lineTo(0,rad); ctx.quadraticCurveTo(0,0,rad,0); ctx.closePath(); };
+  rr(x, 5.6); x.fillStyle = '#007A8C'; x.fill();
+  const drop = new Path2D('M12 3.5C15.5 7.6 18 10.4 18 13.4A6 6 0 1 1 6 13.4C6 10.4 8.5 7.6 12 3.5Z');
+  x.fillStyle = '#fff'; x.fill(drop);
+  x.save(); x.clip(drop);
+  x.fillStyle = '#007A8C';
+  x.fill(new Path2D('M0 15.4Q3 13.9 6 15.4T12 15.4T18 15.4T24 15.4V23H0Z'));
+  x.restore();
+  return c.toDataURL('image/png');
+}
+try{
+  const manifest = {
+    name:'PoolApp Universal', short_name:'PoolApp',
+    description:'Manutenção de piscina: pH, cloro, turbidez, alcalinidade e dureza.',
+    start_url:'.', display:'standalone',
+    background_color:'#F2F7F8', theme_color:'#007A8C',
+    icons:[
+      { src: makeIcon(192), sizes:'192x192', type:'image/png' },
+      { src: makeIcon(512), sizes:'512x512', type:'image/png' }
+    ]
+  };
+  const link = document.createElement('link');
+  link.rel = 'manifest';
+  link.href = 'data:application/manifest+json;charset=utf-8,'+encodeURIComponent(JSON.stringify(manifest));
+  document.head.appendChild(link);
+  const touch = document.createElement('link');
+  touch.rel = 'apple-touch-icon';
+  touch.href = makeIcon(180);
+  document.head.appendChild(touch);
+}catch(e){}
+
+if('serviceWorker' in navigator){
+  const sw = `self.addEventListener('install',e=>self.skipWaiting());
+    self.addEventListener('activate',e=>self.clients.claim());
+    self.addEventListener('fetch',e=>{e.respondWith(caches.open('poolapp-v1').then(c=>c.match(e.request).then(r=>r||fetch(e.request).then(res=>{try{c.put(e.request,res.clone())}catch(_){}return res}))))});`;
+  try{
+    navigator.serviceWorker.register(URL.createObjectURL(new Blob([sw],{type:'text/javascript'}))).catch(()=>{});
+  }catch(e){}
+}
+
+let deferredPrompt = null;
+window.addEventListener('beforeinstallprompt', e=>{
+  e.preventDefault(); deferredPrompt = e;
+  $('installBtn').hidden = false;
+});
+ $('installBtn').addEventListener('click', async ()=>{
+  if(!deferredPrompt) return;
+  deferredPrompt.prompt();
+  await deferredPrompt.userChoice;
+  deferredPrompt = null;
+  $('installBtn').hidden = true;
+});
+
+/* ============================================================
+   Inicialização
+============================================================ */
+(function init(){
+  buildCards();
+  Object.keys(PARAMS).forEach(updateCard);
+
+  document.querySelectorAll('.pill').forEach(p=>{
+    const on = p.dataset.type===state.type;
+    p.classList.toggle('active', on);
+    p.setAttribute('aria-selected', on);
+  });
+  renderTip();
+
+  volInput.value = state.volume;
+  renderVol();
+
+  $('todayLbl').textContent = new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'short'});
+
+  vLever.classList.add('no-anim');
+  leverAngle = VALVE_POS[valveIndex].angle;
+  vLever.style.transform = `rotate(${leverAngle}deg)`;
+  void vLever.offsetHeight;
+  requestAnimationFrame(()=> vLever.classList.remove('no-anim'));
+  applyValveVisual();
+
+  // clima: cache imediato → GPS real → WeatherAPI/Open-Meteo → watchPosition (5 km) → refresh 10 min
+  renderWeather();
+  updateWeather();
+  startWatch();
+  setInterval(refreshWeather, 10*60*1000);
+  window.addEventListener('online', updateWeather);
+})();
+</script>
+</body>
+</html>
