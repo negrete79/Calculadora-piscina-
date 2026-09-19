@@ -16,1628 +16,613 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-  :root{
-    --teal:#007A8C; --teal-deep:#035A67; --ink:#0D3038; --sub:#5B7680;
-    --bg:#F2F7F8; --card:rgba(255,255,255,.9); --line:rgba(13,48,56,.08);
-    --mint:#2FBF8F; --amber:#E28743; --red:#D64545;
-    --radius:24px;
-    --shadow:0 1px 2px rgba(9,48,56,.04), 0 16px 36px -14px rgba(0,90,104,.18);
-    --mono:'IBM Plex Mono',ui-monospace,'SFMono-Regular',monospace;
-  }
-  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-  [hidden]{display:none!important}
-  html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;text-size-adjust:100%}
-  body{font-family:'Hanken Grotesk',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--ink);
-    min-height:100vh;min-height:100dvh;overflow-x:hidden;-webkit-font-smoothing:antialiased}
-  body.locked{overflow:hidden}
-  .mono{font-family:var(--mono)}
-  .app{max-width:430px;margin:0 auto;padding:16px 16px calc(40px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:14px;width:100%}
-  button{font-family:inherit;border:none;background:none;cursor:pointer;color:inherit;touch-action:manipulation}
-  button:active{transform:scale(.97)}
-  button:disabled{opacity:.45;pointer-events:none}
-  :focus-visible{outline:2px solid var(--teal);outline-offset:2px;border-radius:8px}
-
-  .card{background:var(--card);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
-    border:1px solid rgba(255,255,255,.7);border-radius:var(--radius);box-shadow:var(--shadow);min-width:0}
-  .lbl{font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--sub)}
-
-  .badge{display:inline-flex;align-items:center;gap:6px;white-space:nowrap;flex:none;
-    font-size:11.5px;font-weight:700;letter-spacing:.02em;line-height:1;padding:6px 10px;border-radius:999px}
-  .badge i{width:6px;height:6px;border-radius:50%;flex:none}
-  .badge.mint{background:rgba(47,191,143,.14);color:#14724E}.badge.mint i{background:var(--mint)}
-  .badge.amber{background:rgba(226,135,67,.15);color:#96521A}.badge.amber i{background:var(--amber)}
-  .badge.red{background:rgba(214,69,69,.12);color:#A02222}.badge.red i{background:var(--red)}
-
-  /* ---------- barra offline ---------- */
-  .offbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:center;gap:8px;
-    background:var(--ink);color:#fff;font-size:12.5px;font-weight:700;
-    padding:10px 16px calc(10px + env(safe-area-inset-top));border-radius:0 0 16px 16px;
-    box-shadow:0 8px 20px -10px rgba(9,48,56,.5)}
-  .offbar i{width:8px;height:8px;border-radius:50%;background:var(--amber);flex:none;animation:pulse 1.6s ease infinite}
-  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
-
-  /* ---------- header ---------- */
-  .brand{display:flex;align-items:center;gap:12px;padding:8px 2px 2px;flex-wrap:wrap}
-  .logo{width:42px;height:42px;flex:none;border-radius:14px;background:var(--teal);display:grid;place-items:center;color:#fff;box-shadow:0 6px 14px -6px rgba(0,122,140,.55)}
-  .logo svg{width:22px;height:22px}
-  .brand-t{flex:1;min-width:0}
-  .brand h1{font-size:clamp(17px,4.5vw,19px);font-weight:800;letter-spacing:-.01em;overflow-wrap:break-word}
-  .brand h1 span{color:var(--teal);font-weight:500}
-  .brand p{font-size:12.5px;color:var(--sub);font-weight:500;margin-top:1px}
-  .btn-install{display:inline-flex;align-items:center;gap:6px;flex:none;font-size:12.5px;font-weight:700;color:var(--teal);
-    border:1.5px solid rgba(0,122,140,.35);border-radius:999px;padding:8px 13px}
-  .btn-install svg{width:14px;height:14px}
-
-  /* ---------- config ---------- */
-  .config{padding:18px 18px 16px;display:flex;flex-direction:column;gap:10px;min-width:0}
-  .pills{display:flex;flex-wrap:wrap;gap:6px;background:rgba(13,48,56,.05);padding:4px;border-radius:999px}
-  .pill{flex:1 1 auto;min-width:0;padding:9px 4px;border-radius:999px;font-size:12.5px;font-weight:700;color:var(--sub);white-space:nowrap;transition:all .22s ease}
-  .pill.active{background:var(--teal);color:#fff;box-shadow:0 4px 10px -4px rgba(0,122,140,.6)}
-  .div{border:none;border-top:1px solid var(--line);margin:4px 0 2px}
-  .cfg-row{position:relative;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;min-width:0}
-  .w-chip{display:inline-flex;align-items:center;gap:6px;flex:none;background:rgba(0,122,140,.08);border-radius:999px;padding:7px 12px;
-    font-size:12.5px;font-weight:700;color:var(--teal-deep);transition:background .2s}
-  .w-chip:active{transform:scale(.96);background:rgba(0,122,140,.14)}
-  .w-chip b{font-family:var(--mono);font-weight:600;letter-spacing:-.01em}
-  .w-city{color:var(--sub);font-weight:600;white-space:nowrap}
-  @media (max-width:389px){.w-city{display:none}}
-  .w-pop{position:absolute;top:calc(100% + 8px);right:0;z-index:20;width:min(270px,calc(100vw - 64px));
-    background:#fff;border-radius:16px;padding:14px 14px 10px;
-    box-shadow:0 1px 2px rgba(9,48,56,.06), 0 18px 40px -14px rgba(0,90,104,.3);border:1px solid rgba(13,48,56,.06);
-    opacity:0;visibility:hidden;transform:translateY(-6px);transition:opacity .25s ease, transform .25s ease, visibility 0s .25s}
-  .w-pop.show{opacity:1;visibility:visible;transform:none;transition:opacity .25s ease, transform .25s ease}
-  .wp-head{display:flex;align-items:center;gap:10px;padding-bottom:10px}
-  .wp-e{font-size:22px;flex:none;line-height:1}
-  .wp-t{flex:1;min-width:0}
-  .wp-t b{display:block;font-size:13.5px;font-weight:800;overflow-wrap:break-word}
-  .wp-t span{font-size:11.5px;color:var(--sub);font-weight:600;overflow-wrap:break-word}
-  .wp-tv{font-size:18px;font-weight:600;color:var(--teal-deep);flex:none}
-  .wp-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 2px;border-top:1px solid var(--line);
-    font-size:12.5px;color:var(--sub);font-weight:600}
-  .wp-row b{font-family:var(--mono);font-weight:600;color:var(--ink)}
-  .wp-alert{display:flex;gap:8px;align-items:flex-start;margin-top:10px;background:rgba(226,90,67,.09);
-    border:1px solid rgba(226,90,67,.3);border-radius:12px;padding:10px 12px}
-  .wp-alert svg{width:15px;height:15px;color:#B03A22;flex:none;margin-top:1px}
-  .wp-alert p{font-size:12px;line-height:1.45;font-weight:700;color:#B03A22;overflow-wrap:break-word}
-  .wp-dica{margin-top:10px;background:rgba(226,135,67,.09);border:1px solid rgba(226,135,67,.26);border-radius:12px;padding:10px 12px}
-  .wp-dica .lbl{color:#96521A;margin-bottom:3px}
-  .wp-dica p:last-child{font-size:12.5px;line-height:1.5;font-weight:600;color:#96521A;overflow-wrap:break-word}
-  .wp-time{text-align:center;font-size:10px;color:var(--sub);font-family:var(--mono);margin-top:8px;overflow-wrap:break-word}
-
-  /* ---------- volume: STEPPER − input + (64px) ---------- */
-  .vol-row{display:flex;gap:10px;min-width:0}
-  .volume-wrap{
-    flex:1 1 150px;min-width:0;max-height:80px;height:64px;
-    display:flex;align-items:center;gap:8px;
-    background:#fff;border:1.5px solid rgba(0,122,140,.28);border-radius:14px;
-    padding:0 8px;transition:border-color .2s;
-  }
-  .volume-wrap:focus-within{border-color:var(--teal)}
-  .vol-btn{
-    flex:none;width:48px;height:48px;border-radius:12px;
-    background:rgba(0,122,140,.08);color:var(--teal-deep);
-    font-size:24px;font-weight:800;line-height:1;
-    display:grid;place-items:center;user-select:none;-webkit-user-select:none;
-  }
-  .vol-btn:active{transform:scale(.93);background:rgba(0,122,140,.16)}
-  #volInput{
-    flex:1;min-width:0;width:100%;height:48px;
-    font-family:var(--mono);font-size:22px;line-height:1;font-weight:600;color:var(--ink);
-    text-align:center;border:none;outline:none;background:none;
-    appearance:none;-webkit-appearance:none;
-  }
-  #volInput::-webkit-outer-spin-button,#volInput::-webkit-inner-spin-button{-webkit-appearance:none!important;margin:0}
-  #volInput[type=number]{-moz-appearance:textfield;appearance:textfield}
-  .vol-live{flex:0 1 auto;min-width:0;background:rgba(0,122,140,.07);border-radius:14px;padding:7px 14px;
-    display:flex;flex-direction:column;align-items:flex-end;justify-content:center;gap:2px;text-align:right;
-    font-family:var(--mono);font-size:13px;line-height:1.4;color:var(--teal-deep);white-space:nowrap}
-  .vol-live b{font-weight:600;color:var(--ink)}
-  .hint{font-size:12px;color:var(--sub);line-height:1.45}
-  @media (max-width:400px){
-    .vol-row{flex-direction:column}
-    .vol-live{flex-direction:row;align-items:baseline;justify-content:flex-start;gap:8px;text-align:left}
-  }
-
-  /* ---------- litragem do projeto ---------- */
-  .lit{padding:16px 18px}
-  .lit summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:10px}
-  .lit summary::-webkit-details-marker{display:none}
-  .lit .l-open{font-size:12px;font-weight:700;color:var(--teal);flex:none}
-  .lit-body{display:flex;flex-direction:column;gap:8px;margin-top:12px}
-  .l-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:8px 10px;background:rgba(0,122,140,.05);border-radius:12px}
-  .l-row .l-name{font-size:12px;font-weight:700;color:var(--ink);flex:1 1 100%;min-width:0}
-  .l-dim{font-family:var(--mono);font-size:12px;color:var(--sub);font-weight:600;white-space:nowrap}
-  .l-prof{display:flex;align-items:center;gap:4px;flex:none}
-  .l-prof input{width:58px;height:32px;border:1.5px solid rgba(0,122,140,.28);border-radius:9px;text-align:center;
-    font-family:var(--mono);font-size:13px;font-weight:600;color:var(--ink);background:#fff;outline:none}
-  .l-prof input:focus{border-color:var(--teal)}
-  .l-prof em{font-style:normal;font-size:11px;color:var(--sub);font-weight:700}
-  .l-out{font-family:var(--mono);font-size:12.5px;font-weight:600;color:var(--teal-deep);margin-left:auto;white-space:nowrap}
-  .l-total{display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap;
-    border-top:1px solid var(--line);padding-top:10px;margin-top:2px}
-  .l-total b{font-family:var(--mono);font-size:20px;font-weight:600;letter-spacing:-.02em}
-  .l-total span{font-size:12px;color:var(--sub);font-weight:600}
-  .l-apply{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:700;color:#fff;
-    background:var(--teal);border-radius:999px;padding:9px 16px;flex:none}
-  .l-apply svg{width:14px;height:14px}
-
-  /* ---------- válvula ---------- */
-  .valve-card{padding:18px 16px 14px;display:flex;flex-direction:column;gap:4px}
-  .vc-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:0 4px}
-  .valve-stage{position:relative;width:100%;max-width:300px;aspect-ratio:1;margin:2px auto 0;
-    user-select:none;-webkit-user-select:none;pointer-events:none}
-  .v-plate{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:47%;max-width:150px;aspect-ratio:1;border-radius:50%;
-    background:#fff;box-shadow:var(--shadow), inset 0 0 0 1px rgba(13,48,56,.05);
-    touch-action:none;cursor:grab;z-index:2;pointer-events:auto}
-  .v-plate:active{cursor:grabbing}
-  .v-plate::before{content:'';position:absolute;inset:7%;border-radius:50%;box-shadow:inset 0 0 0 1.5px rgba(0,122,140,.14);pointer-events:none}
-  .v-tick{position:absolute;left:50%;top:50%;width:100%;height:100%;transform:translate(-50%,-50%) rotate(var(--a));pointer-events:none}
-  .v-tick::before{content:'';position:absolute;left:50%;top:5%;transform:translateX(-50%);width:2.5px;height:7%;border-radius:2px;background:rgba(13,48,56,.2)}
-  .v-lever{position:absolute;inset:0;border-radius:50%;transition:transform .7s cubic-bezier(.3,1.35,.45,1);transform:rotate(0deg);pointer-events:none}
-  .v-lever.no-anim{transition:none}
-  .v-stick{position:absolute;left:50%;top:10%;width:12%;height:40%;transform:translateX(-50%);border-radius:99px;background:var(--teal);box-shadow:0 2px 6px rgba(0,122,140,.35)}
-  .v-cap{position:absolute;left:50%;top:2.5%;width:31%;aspect-ratio:1;transform:translateX(-50%);border-radius:50%;background:var(--teal-deep);
-    border:2px solid rgba(255,255,255,.65);box-shadow:inset 0 2px 4px rgba(255,255,255,.35), 0 3px 8px rgba(3,60,70,.35)}
-  .v-screw{position:absolute;left:50%;top:50%;width:20%;aspect-ratio:1;z-index:3;transform:translate(-50%,-50%);border-radius:50%;background:#fff;
-    box-shadow:inset 0 0 0 2px rgba(13,48,56,.12), 0 1px 3px rgba(9,48,56,.2);pointer-events:none}
-  .v-screw::before,.v-screw::after{content:'';position:absolute;left:50%;top:50%;background:rgba(13,48,56,.22);border-radius:2px;transform:translate(-50%,-50%)}
-  .v-screw::before{width:52%;height:2px}
-  .v-screw::after{width:2px;height:52%}
-  .station{position:absolute;display:flex;flex-direction:column;align-items:center;gap:4px;padding:5px;border-radius:12px;
-    transform:translate(-50%,-50%);pointer-events:auto;cursor:pointer}
-  .station.up{flex-direction:column-reverse}
-  .st-0{left:50%;top:17%}.st-1{left:79%;top:33.5%}.st-2{left:79%;top:66.5%}
-  .st-3{left:50%;top:83%}.st-4{left:21%;top:66.5%}.st-5{left:21%;top:33.5%}
-  .v-num{width:30px;height:30px;border-radius:50%;background:#fff;border:2px solid rgba(13,48,56,.14);color:var(--sub);
-    font-family:var(--mono);font-size:12px;font-weight:600;display:grid;place-items:center;transition:all .25s ease;box-shadow:0 1px 3px rgba(9,48,56,.08)}
-  .station.active .v-num{background:var(--teal);border-color:var(--teal);color:#fff;box-shadow:0 4px 10px -4px rgba(0,122,140,.55);transform:scale(1.08)}
-  .v-name{font-size:9.5px;font-weight:700;letter-spacing:.05em;color:var(--sub);white-space:nowrap;transition:color .25s}
-  .station.active .v-name{color:var(--teal-deep)}
-  .v-foot{display:flex;gap:10px;align-items:flex-start;padding:12px 6px 4px;border-top:1px solid var(--line);margin-top:10px}
-  .v-foot svg{width:16px;height:16px;color:#96521A;flex:none;margin-top:2px}
-  .v-foot p{font-size:12px;line-height:1.5;color:var(--sub);font-weight:500;overflow-wrap:break-word}
-  .v-foot b{color:#96521A}
-
-  /* ---------- grid parâmetros ---------- */
-  .sec-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:6px 4px 0}
-  .sec-head h3{font-size:17px;font-weight:800;letter-spacing:-.01em}
-  .sec-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-  .sec-head span{font-size:12px;color:var(--sub)}
-  .chip{display:inline-flex;align-items:center;gap:6px;flex:none;font-size:12.5px;font-weight:700;color:var(--teal);
-    background:rgba(0,122,140,.08);border-radius:999px;padding:8px 14px}
-  .chip svg{width:15px;height:15px}
-  .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-  @media (max-width:359px){.grid{grid-template-columns:1fr}.pill{font-size:12px;padding:9px 2px}}
-  .pcard{padding:16px 16px 14px;display:flex;flex-direction:column;gap:10px;cursor:pointer;transition:transform .18s ease;min-width:0}
-  .pcard:hover{transform:translateY(-2px)}
-  .pcard:active{transform:scale(.98)}
-  .pcard.full{grid-column:1/-1}
-  .pc-top{display:flex;align-items:flex-start;gap:8px;flex-wrap:wrap;row-gap:6px}
-  .pc-ico{width:32px;height:32px;flex:none;border-radius:11px;background:rgba(0,122,140,.09);color:var(--teal);display:grid;place-items:center}
-  .pc-ico svg{width:17px;height:17px}
-  .pc-lbl{font-size:12.5px;font-weight:700;flex:1;min-width:0;line-height:1.25;overflow-wrap:break-word}
-  .pc-top .badge{margin-left:auto}
-  .pc-val{display:flex;align-items:baseline;gap:5px;flex-wrap:wrap}
-  .pc-val .mono{font-size:clamp(23px,6.5vw,26px);font-weight:600;letter-spacing:-.02em;line-height:1}
-  .pc-val em{font-style:normal;font-size:12px;font-weight:600;color:var(--sub)}
-  .mini{display:flex;flex-direction:column;gap:5px;margin-top:auto;min-width:0}
-  .m-bar{position:relative;height:8px;border-radius:99px;background:rgba(13,48,56,.07)}
-  .m-zone{position:absolute;top:0;bottom:0;border-radius:99px;background:rgba(47,191,143,.22)}
-  .m-fill{position:absolute;top:0;bottom:0;left:0;border-radius:99px;background:var(--teal);transition:background .25s}
-  .m-fill.warn{background:var(--amber)}
-  .m-knob{position:absolute;top:50%;width:14px;height:14px;border-radius:50%;background:#fff;border:2.5px solid var(--teal);
-    transform:translate(-50%,-50%);box-shadow:0 1px 4px rgba(9,48,56,.25);transition:border-color .25s}
-  .m-knob.warn{border-color:var(--amber)}
-  .m-scale{display:flex;justify-content:space-between;gap:4px;font-size:9.5px;color:var(--sub);font-family:var(--mono)}
-  .pc-note{font-size:12px;font-weight:600;color:#96521A;line-height:1.45}
-  .pc-time{font-size:10.5px;color:var(--sub);font-family:var(--mono);overflow-wrap:break-word}
-
-  /* ---------- tratamento orientado ---------- */
-  .treat{padding:18px 16px 16px;display:flex;flex-direction:column;gap:12px}
-  .tstep{display:flex;gap:12px;align-items:flex-start;min-width:0}
-  .ts-n{flex:none;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;
-    font-family:var(--mono);font-size:12px;font-weight:600;margin-top:2px;
-    background:rgba(13,48,56,.06);color:var(--sub);border:2px solid transparent;transition:all .25s}
-  .tstep.ok   .ts-n{background:rgba(47,191,143,.14);color:#14724E;border-color:var(--mint)}
-  .tstep.todo .ts-n{background:rgba(226,135,67,.15);color:#96521A;border-color:var(--amber)}
-  .tstep.stop .ts-n{background:rgba(214,69,69,.12);color:#A02222;border-color:var(--red)}
-  .ts-body{flex:1;min-width:0;display:flex;flex-direction:column;gap:8px}
-  .ts-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-  .ts-head b{font-size:14px;font-weight:800;flex:1;min-width:0;overflow-wrap:break-word}
-  .t-block{background:rgba(214,69,69,.07);border:1px solid rgba(214,69,69,.3);border-radius:16px;padding:13px 14px}
-  .t-block p{font-size:13px;line-height:1.55;font-weight:700;color:#A02222;overflow-wrap:break-word}
-  .t-wait{background:rgba(226,135,67,.09);border:1px solid rgba(226,135,67,.28);border-radius:16px;padding:13px 14px}
-  .t-wait p{font-size:13px;line-height:1.55;font-weight:600;color:#96521A;overflow-wrap:break-word}
-  .t-ok{background:rgba(47,191,143,.09);border:1px solid rgba(47,191,143,.28);border-radius:16px;padding:13px 14px}
-  .t-ok p{font-size:13px;line-height:1.55;font-weight:600;color:#14724E;overflow-wrap:break-word}
-  .t-dose{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-top:8px}
-  .t-dose strong{font-family:var(--mono);font-size:24px;font-weight:600;letter-spacing:-.02em;color:var(--ink)}
-  .t-dose span{font-size:13px;font-weight:600;color:var(--sub)}
-  .t-steps{list-style:none;display:flex;flex-direction:column;gap:6px;margin-top:8px}
-  .t-steps li{display:flex;gap:8px;font-size:12.5px;line-height:1.5;color:var(--sub);font-weight:500;overflow-wrap:break-word}
-  .t-steps li::before{content:'→';color:var(--teal);font-weight:700;flex:none}
-  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-width:0;height:46px;padding:0 16px;
-    border-radius:14px;font-size:13.5px;font-weight:700;white-space:nowrap;transition:background .2s,color .2s}
-  .btn svg{width:16px;height:16px;flex:none}
-  .btn.primary{width:100%;background:var(--teal);color:#fff;box-shadow:0 8px 20px -8px rgba(0,122,140,.6)}
-  .btn.amberB{width:100%;background:rgba(226,135,67,.12);color:#96521A;border:1.5px solid rgba(226,135,67,.35)}
-  .btn.ghostD{width:100%;background:transparent;color:var(--sub);border:1.5px solid var(--line)}
-
-  /* ---------- dica ---------- */
-  .tip{padding:15px 16px;display:flex;gap:12px;align-items:flex-start}
-  .tip-ico{width:34px;height:34px;flex:none;border-radius:12px;background:rgba(0,122,140,.09);color:var(--teal);display:grid;place-items:center}
-  .tip-ico svg{width:17px;height:17px}
-  .tip p{font-size:13.5px;line-height:1.5;margin-top:3px;font-weight:500;overflow-wrap:break-word}
-  .offline-note{text-align:center;font-size:11.5px;color:var(--sub);padding-top:2px;line-height:1.7}
-  .offline-note b{color:var(--teal-deep);font-weight:700}
-
-  /* ---------- sheets ---------- */
-  .scrim{position:fixed;inset:0;background:rgba(9,40,46,.45);z-index:60;opacity:0;visibility:hidden;
-    transition:opacity .35s ease, visibility 0s .35s}
-  .scrim.show{opacity:1;visibility:visible;transition:opacity .35s ease}
-  .sheet{position:fixed;left:50%;bottom:0;z-index:70;width:100%;max-width:430px;
-    transform:translate(-50%,105%);visibility:hidden;pointer-events:none;
-    background:#fff;border-radius:24px 24px 0 0;padding:8px 20px calc(22px + env(safe-area-inset-bottom));
-    box-shadow:0 -12px 40px rgba(9,48,56,.18);
-    transition:transform .44s cubic-bezier(.32,.72,.24,1), visibility 0s .44s;
-    max-height:92vh;max-height:92dvh;overflow-y:auto;overscroll-behavior:contain}
-  .sheet.open{transform:translate(-50%,0);visibility:visible;pointer-events:auto;transition:transform .44s cubic-bezier(.32,.72,.24,1)}
-  .grab-zone{padding:10px 0 6px;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none}
-  .grab{display:block;width:44px;height:5px;border-radius:99px;background:rgba(13,48,56,.16);margin:0 auto}
-  .sh-head{display:flex;align-items:center;gap:12px;margin-bottom:14px}
-  .sh-ico{width:40px;height:40px;flex:none;border-radius:13px;background:rgba(0,122,140,.09);color:var(--teal);display:grid;place-items:center}
-  .sh-ico svg{width:20px;height:20px}
-  .sh-ico.red{background:rgba(214,69,69,.1);color:#A02222}
-  .sh-head h3{font-size:17px;font-weight:800;letter-spacing:-.01em;overflow-wrap:break-word}
-  .sh-head p{font-size:12px;color:var(--sub);font-family:var(--mono);margin-top:1px;overflow-wrap:break-word}
-  .sh-head>div{flex:1;min-width:0}
-  .sh-close{width:34px;height:34px;flex:none;border-radius:50%;background:rgba(13,48,56,.06);color:var(--sub);display:grid;place-items:center}
-  .sh-close svg{width:15px;height:15px}
-  .sh-valrow{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:6px}
-  .sh-val{font-size:clamp(38px,11vw,46px);font-weight:600;letter-spacing:-.03em;line-height:1}
-  .sh-unit{font-size:15px;font-weight:700;color:var(--sub)}
-  .sh-valrow .badge{margin-left:auto;align-self:center}
-
-  /* track visual + slider com ± e height 44px */
-  .track{padding:16px 0 4px;user-select:none;-webkit-user-select:none}
-  .t-bar{position:relative;height:10px;border-radius:99px;background:rgba(13,48,56,.08);touch-action:none;cursor:pointer}
-  .t-zone{position:absolute;top:0;bottom:0;border-radius:99px;background:rgba(47,191,143,.22)}
-  .t-fill{position:absolute;top:0;bottom:0;left:0;border-radius:99px;background:var(--teal)}
-  .t-fill.warn{background:var(--amber)}
-  .t-target{position:absolute;top:-5px;width:2.5px;height:20px;border-radius:2px;background:rgba(13,48,56,.4);transform:translateX(-50%)}
-  .t-knob{position:absolute;top:50%;width:28px;height:28px;border-radius:50%;background:#fff;border:3px solid var(--teal);
-    transform:translate(-50%,-50%);box-shadow:0 2px 8px rgba(9,48,56,.3);transition:border-color .25s}
-  .t-knob.warn{border-color:var(--amber)}
-  .t-labels{display:flex;justify-content:space-between;gap:6px;font-size:10.5px;color:var(--sub);padding-top:9px;font-family:var(--mono)}
-  .t-labels span:nth-child(2){color:var(--teal-deep);font-weight:600;text-align:center;flex:1;min-width:0;overflow-wrap:break-word}
-
-  .slider-ctrl{display:flex;align-items:center;gap:10px;margin:10px 0 12px}
-  .sl-btn{
-    flex:none;width:48px;height:48px;border-radius:14px;
-    background:rgba(0,122,140,.08);color:var(--teal-deep);
-    font-size:22px;font-weight:800;line-height:1;
-    display:grid;place-items:center;user-select:none;-webkit-user-select:none;
-  }
-  .sl-btn:active{transform:scale(.93);background:rgba(0,122,140,.16)}
-  #shSlider{
-    flex:1;min-width:0;height:44px;
-    appearance:none;-webkit-appearance:none;background:transparent;touch-action:pan-x;
-  }
-  #shSlider::-webkit-slider-runnable-track{height:10px;border-radius:99px;background:rgba(13,48,56,.12)}
-  #shSlider::-moz-range-track{height:10px;border-radius:99px;background:rgba(13,48,56,.12)}
-  #shSlider::-webkit-slider-thumb{-webkit-appearance:none;width:26px;height:26px;border-radius:50%;
-    background:#fff;border:3px solid var(--teal);box-shadow:0 2px 8px rgba(9,48,56,.3);margin-top:-8px}
-  #shSlider::-moz-range-thumb{width:26px;height:26px;border-radius:50%;background:#fff;border:3px solid var(--teal);box-shadow:0 2px 8px rgba(9,48,56,.3)}
-  #shSlider.warn::-webkit-slider-thumb{border-color:var(--amber)}
-  #shSlider.warn::-moz-range-thumb{border-color:var(--amber)}
-  #shSlider:focus-visible{outline:2px solid var(--teal);outline-offset:2px;border-radius:8px}
-
-  .sh-inputrow{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:0 0 14px}
-  .sh-inputrow>span:first-child{font-size:13px;font-weight:600;color:var(--sub)}
-  .sh-input{display:flex;align-items:center;gap:6px;background:#fff;border:1.5px solid rgba(0,122,140,.28);
-    border-radius:13px;padding:0 13px;height:46px;flex:1 1 150px;max-width:170px;min-width:0;transition:border-color .2s}
-  .sh-input:focus-within{border-color:var(--teal)}
-  .sh-input input{flex:1;min-width:0;width:100%;border:none;outline:none;background:none;text-align:right;
-    font-family:var(--mono);font-size:17px;font-weight:600;color:var(--ink)}
-  .sh-input input::-webkit-outer-spin-button,.sh-input input::-webkit-inner-spin-button{-webkit-appearance:none}
-  .sh-input input[type=number]{-moz-appearance:textfield;appearance:textfield}
-  .sh-input em{font-style:normal;font-size:12px;font-weight:700;color:var(--sub)}
-  .dose{border-radius:16px;padding:14px 16px;background:rgba(0,122,140,.06);border:1px solid rgba(0,122,140,.12);margin-bottom:14px;min-width:0}
-  .dose.mint{background:rgba(47,191,143,.09);border-color:rgba(47,191,143,.28)}
-  .dose.amber{background:rgba(226,135,67,.09);border-color:rgba(226,135,67,.3)}
-  .dose-main{display:flex;align-items:baseline;gap:8px;margin-top:5px;flex-wrap:wrap}
-  .dose-main strong{font-family:var(--mono);font-size:clamp(22px,6.5vw,26px);font-weight:600;letter-spacing:-.02em}
-  .dose-main span{font-size:13.5px;font-weight:600;color:var(--sub);min-width:0}
-  .dose-sub{font-size:11.5px;color:var(--sub);line-height:1.5;margin-top:6px;font-family:var(--mono);overflow-wrap:break-word}
-  .dose-title{font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--sub)}
-  .dose.instr .dose-text{font-size:15px;font-weight:800;line-height:1.45;margin-top:5px;overflow-wrap:break-word}
-  .dose.instr.amber .dose-text{color:#96521A}
-  .dose.instr.mint .dose-text{color:#14724E}
-  .sh-last{text-align:center;font-size:12px;color:var(--sub);margin-top:12px;font-family:var(--mono);overflow-wrap:break-word}
-
-  /* diagnóstico */
-  .diag-lead{font-size:14px;line-height:1.55;font-weight:600;color:var(--sub);margin-bottom:14px;overflow-wrap:break-word}
-  .diag-opts{display:flex;flex-direction:column;gap:10px;margin-bottom:16px}
-  .diag-opt{display:flex;align-items:center;gap:12px;width:100%;text-align:left;min-width:0;
-    border:1.5px solid var(--line);border-radius:16px;padding:14px;transition:border-color .2s, background .2s}
-  .diag-opt:active{background:rgba(0,122,140,.05)}
-  .diag-opt .d-e{font-size:22px;flex:none;line-height:1}
-  .diag-opt .d-t{flex:1;min-width:0}
-  .diag-opt .d-t b{display:block;font-size:14px;font-weight:800;overflow-wrap:break-word}
-  .diag-opt .d-t span{font-size:12px;color:var(--sub);font-weight:600;overflow-wrap:break-word}
-  .diag-result{display:flex;flex-direction:column;gap:10px}
-  .d-resume{font-size:14px;line-height:1.55;font-weight:500;margin-bottom:14px;overflow-wrap:break-word}
-  .d-steps{list-style:none;display:flex;flex-direction:column;gap:9px;margin-bottom:14px}
-  .d-steps li{display:flex;gap:10px;font-size:13px;line-height:1.5;min-width:0}
-  .d-steps svg{width:15px;height:15px;vertical-align:-2px;color:var(--teal-deep)}
-  .vs-n{flex:none;width:22px;height:22px;border-radius:50%;background:rgba(0,122,140,.1);color:var(--teal-deep);
-    font-family:var(--mono);font-size:11px;font-weight:600;display:grid;place-items:center;margin-top:1px}
-  .v-warn{display:flex;gap:10px;background:rgba(226,135,67,.09);border:1px solid rgba(226,135,67,.28);
-    border-radius:14px;padding:12px 14px;margin-bottom:16px}
-  .v-warn svg{width:17px;height:17px;color:#96521A;flex:none;margin-top:1px}
-  .v-warn p{font-size:12.5px;line-height:1.5;color:#96521A;font-weight:600;overflow-wrap:break-word}
-
-  /* guia de instalação */
-  .ins-icon{display:block;width:64px;height:64px;border-radius:16px;margin:0 auto 12px;box-shadow:var(--shadow)}
-
-  /* ---------- toast ---------- */
-  .toasts{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom));transform:translateX(-50%);
-    z-index:90;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none;width:min(430px,calc(100vw - 32px))}
-  .toast{display:flex;align-items:center;gap:9px;max-width:100%;background:var(--ink);color:#fff;
-    font-size:13px;font-weight:600;padding:11px 16px;border-radius:14px;box-shadow:0 10px 28px -8px rgba(9,48,56,.5);
-    opacity:0;transform:translateY(14px);transition:all .35s cubic-bezier(.32,.72,.24,1)}
-  .toast svg{width:15px;height:15px;color:#4FE0AE;flex:none}
-  .toast.warn svg{color:#FFB77C}
-  .toast.show{opacity:1;transform:translateY(0)}
-
-  @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+:root{--teal:#007A8C;--teal-deep:#035A67;--ink:#0D3038;--sub:#5B7680;--bg:#F2F7F8;--card:rgba(255,255,255,.9);--line:rgba(13,48,56,.08);--mint:#2FBF8F;--amber:#E28743;--red:#D64545;--radius:24px;--shadow:0 1px 2px rgba(9,48,56,.04),0 16px 36px -14px rgba(0,90,104,.18);--mono:'IBM Plex Mono',ui-monospace,monospace}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+[hidden]{display:none!important}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{font-family:'Hanken Grotesk',system-ui,sans-serif;background:var(--bg);color:var(--ink);min-height:100dvh;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+body.locked{overflow:hidden}
+.mono{font-family:var(--mono)}
+.app{max-width:430px;margin:0 auto;padding:16px 16px calc(40px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:14px;width:100%}
+button{font-family:inherit;border:none;background:none;cursor:pointer;color:inherit;touch-action:manipulation}
+button:active{transform:scale(.97)}
+:disabled{opacity:.45;pointer-events:none}
+:focus-visible{outline:2px solid var(--teal);outline-offset:2px;border-radius:8px}
+.card{background:var(--card);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.7);border-radius:var(--radius);box-shadow:var(--shadow);min-width:0}
+.lbl{font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--sub)}
+.badge{display:inline-flex;align-items:center;gap:6px;white-space:nowrap;flex:none;font-size:11.5px;font-weight:700;line-height:1;padding:6px 10px;border-radius:999px}
+.badge i{width:6px;height:6px;border-radius:50%;flex:none}
+.badge.mint{background:rgba(47,191,143,.14);color:#14724E}.badge.mint i{background:var(--mint)}
+.badge.amber{background:rgba(226,135,67,.15);color:#96521A}.badge.amber i{background:var(--amber)}
+.badge.red{background:rgba(214,69,69,.12);color:#A02222}.badge.red i{background:var(--red)}
+.offbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:center;gap:8px;background:var(--ink);color:#fff;font-size:12.5px;font-weight:700;padding:10px 16px;border-radius:0 0 16px 16px}
+.offbar i{width:8px;height:8px;border-radius:50%;background:var(--amber);flex:none;animation:pl 1.6s ease infinite}
+@keyframes pl{0%,100%{opacity:1}50%{opacity:.3}}
+.brand{display:flex;align-items:center;gap:12px;padding:8px 2px 2px;flex-wrap:wrap}
+.logo{width:42px;height:42px;flex:none;border-radius:14px;background:var(--teal);display:grid;place-items:center;color:#fff}
+.logo svg{width:22px;height:22px}
+.brand-t{flex:1;min-width:0}
+.brand h1{font-size:clamp(17px,4.5vw,19px);font-weight:800}
+.brand h1 span{color:var(--teal);font-weight:500}
+.brand p{font-size:12.5px;color:var(--sub);font-weight:500;margin-top:1px}
+.btn-install{display:inline-flex;align-items:center;gap:6px;flex:none;font-size:12.5px;font-weight:700;color:var(--teal);border:1.5px solid rgba(0,122,140,.35);border-radius:999px;padding:8px 13px}
+.btn-install svg{width:14px;height:14px}
+.config{padding:18px 18px 16px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.pills{display:flex;flex-wrap:wrap;gap:6px;background:rgba(13,48,56,.05);padding:4px;border-radius:999px}
+.pill{flex:1 1 auto;min-width:0;padding:9px 4px;border-radius:999px;font-size:12.5px;font-weight:700;color:var(--sub);white-space:nowrap;transition:all .22s}
+.pill.active{background:var(--teal);color:#fff}
+.div{border:none;border-top:1px solid var(--line);margin:4px 0 2px}
+.cfg-row{position:relative;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;min-width:0}
+.w-chip{display:inline-flex;align-items:center;gap:6px;flex:none;background:rgba(0,122,140,.08);border-radius:999px;padding:7px 12px;font-size:12.5px;font-weight:700;color:var(--teal-deep)}
+.w-chip b{font-family:var(--mono);font-weight:600}
+.w-city{color:var(--sub);font-weight:600;white-space:nowrap}
+@media(max-width:389px){.w-city{display:none}}
+.w-pop{position:absolute;top:calc(100% + 8px);right:0;z-index:20;width:min(270px,calc(100vw - 64px));background:#fff;border-radius:16px;padding:14px 14px 10px;box-shadow:0 18px 40px -14px rgba(0,90,104,.3);border:1px solid rgba(13,48,56,.06);opacity:0;visibility:hidden;transform:translateY(-6px);transition:.25s}
+.w-pop.show{opacity:1;visibility:visible;transform:none}
+.wp-head{display:flex;align-items:center;gap:10px;padding-bottom:10px}
+.wp-e{font-size:22px}
+.wp-t{flex:1;min-width:0}
+.wp-t b{display:block;font-size:13.5px;font-weight:800;overflow-wrap:break-word}
+.wp-t span{font-size:11.5px;color:var(--sub);font-weight:600}
+.wp-tv{font-size:18px;font-weight:600;color:var(--teal-deep)}
+.wp-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 2px;border-top:1px solid var(--line);font-size:12.5px;color:var(--sub);font-weight:600}
+.wp-row b{font-family:var(--mono);color:var(--ink)}
+.wp-alert{display:flex;gap:8px;margin-top:10px;background:rgba(226,90,67,.09);border:1px solid rgba(226,90,67,.3);border-radius:12px;padding:10px 12px}
+.wp-alert svg{width:15px;height:15px;color:#B03A22;flex:none}
+.wp-alert p{font-size:12px;line-height:1.45;font-weight:700;color:#B03A22;overflow-wrap:break-word}
+.wp-dica{margin-top:10px;background:rgba(226,135,67,.09);border:1px solid rgba(226,135,67,.26);border-radius:12px;padding:10px 12px}
+.wp-dica .lbl{color:#96521A;margin-bottom:3px}
+.wp-dica p:last-child{font-size:12.5px;line-height:1.5;font-weight:600;color:#96521A}
+.wp-time{text-align:center;font-size:10px;color:var(--sub);font-family:var(--mono);margin-top:8px}
+.vol-row{display:flex;gap:10px;min-width:0}
+.volume-wrap{flex:1 1 150px;min-width:0;height:64px;display:flex;align-items:center;gap:8px;background:#fff;border:1.5px solid rgba(0,122,140,.28);border-radius:14px;padding:0 8px}
+.vol-btn{flex:none;width:48px;height:48px;border-radius:12px;background:rgba(0,122,140,.08);color:var(--teal-deep);font-size:24px;font-weight:800;display:grid;place-items:center;user-select:none}
+#volInput{flex:1;min-width:0;width:100%;height:48px;font-family:var(--mono);font-size:22px;font-weight:600;text-align:center;border:none;outline:none;background:none;-moz-appearance:textfield}
+#volInput::-webkit-outer-spin-button,#volInput::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.vol-live{flex:0 1 auto;min-width:0;background:rgba(0,122,140,.07);border-radius:14px;padding:7px 14px;display:flex;flex-direction:column;align-items:flex-end;justify-content:center;gap:2px;font-family:var(--mono);font-size:13px;color:var(--teal-deep);white-space:nowrap}
+.vol-live b{color:var(--ink)}
+.hint{font-size:12px;color:var(--sub);line-height:1.45}
+@media(max-width:400px){.vol-row{flex-direction:column}.vol-live{flex-direction:row;align-items:baseline;gap:8px}}
+.lit{padding:16px 18px}
+.lit summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.lit summary::-webkit-details-marker{display:none}
+.l-open{font-size:12px;font-weight:700;color:var(--teal)}
+.lit-body{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+.l-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:8px 10px;background:rgba(0,122,140,.05);border-radius:12px}
+.l-name{font-size:12px;font-weight:700;flex:1 1 100%}
+.l-dim{font-family:var(--mono);font-size:12px;color:var(--sub);font-weight:600}
+.l-prof{display:flex;align-items:center;gap:4px}
+.l-prof input{width:58px;height:32px;border:1.5px solid rgba(0,122,140,.28);border-radius:9px;text-align:center;font-family:var(--mono);font-size:13px;font-weight:600;outline:none}
+.l-prof em{font-style:normal;font-size:11px;color:var(--sub);font-weight:700}
+.l-out{font-family:var(--mono);font-size:12.5px;font-weight:600;color:var(--teal-deep);margin-left:auto;white-space:nowrap}
+.l-total{display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap;border-top:1px solid var(--line);padding-top:10px}
+.l-total b{font-family:var(--mono);font-size:20px}
+.l-total span{font-size:12px;color:var(--sub);font-weight:600}
+.l-apply{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:700;color:#fff;background:var(--teal);border-radius:999px;padding:9px 16px}
+.valve-card{padding:18px 16px 14px;display:flex;flex-direction:column;gap:4px}
+.vc-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:0 4px}
+.valve-stage{position:relative;width:100%;max-width:300px;aspect-ratio:1;margin:2px auto 0;user-select:none;pointer-events:none}
+.v-plate{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:47%;max-width:150px;aspect-ratio:1;border-radius:50%;background:#fff;box-shadow:var(--shadow);touch-action:none;cursor:grab;z-index:2;pointer-events:auto}
+.v-plate::before{content:'';position:absolute;inset:7%;border-radius:50%;box-shadow:inset 0 0 0 1.5px rgba(0,122,140,.14);pointer-events:none}
+.v-tick{position:absolute;left:50%;top:50%;width:100%;height:100%;transform:translate(-50%,-50%) rotate(var(--a));pointer-events:none}
+.v-tick::before{content:'';position:absolute;left:50%;top:5%;transform:translateX(-50%);width:2.5px;height:7%;border-radius:2px;background:rgba(13,48,56,.2)}
+.v-lever{position:absolute;inset:0;border-radius:50%;transition:transform .7s cubic-bezier(.3,1.35,.45,1);transform:rotate(0deg);pointer-events:none}
+.v-lever.no-anim{transition:none}
+.v-stick{position:absolute;left:50%;top:10%;width:12%;height:40%;transform:translateX(-50%);border-radius:99px;background:var(--teal)}
+.v-cap{position:absolute;left:50%;top:2.5%;width:31%;aspect-ratio:1;transform:translateX(-50%);border-radius:50%;background:var(--teal-deep);border:2px solid rgba(255,255,255,.65)}
+.v-screw{position:absolute;left:50%;top:50%;width:20%;aspect-ratio:1;z-index:3;transform:translate(-50%,-50%);border-radius:50%;background:#fff;box-shadow:inset 0 0 0 2px rgba(13,48,56,.12);pointer-events:none}
+.v-screw::before,.v-screw::after{content:'';position:absolute;left:50%;top:50%;background:rgba(13,48,56,.22);transform:translate(-50%,-50%)}
+.v-screw::before{width:52%;height:2px}
+.v-screw::after{width:2px;height:52%}
+.station{position:absolute;display:flex;flex-direction:column;align-items:center;gap:4px;padding:5px;transform:translate(-50%,-50%);pointer-events:auto;cursor:pointer}
+.station.up{flex-direction:column-reverse}
+.st-0{left:50%;top:17%}.st-1{left:79%;top:33.5%}.st-2{left:79%;top:66.5%}.st-3{left:50%;top:83%}.st-4{left:21%;top:66.5%}.st-5{left:21%;top:33.5%}
+.v-num{width:30px;height:30px;border-radius:50%;background:#fff;border:2px solid rgba(13,48,56,.14);color:var(--sub);font-family:var(--mono);font-size:12px;font-weight:600;display:grid;place-items:center;transition:all .25s}
+.station.active .v-num{background:var(--teal);border-color:var(--teal);color:#fff;transform:scale(1.08)}
+.v-name{font-size:9.5px;font-weight:700;letter-spacing:.05em;color:var(--sub);white-space:nowrap}
+.station.active .v-name{color:var(--teal-deep)}
+.v-foot{display:flex;gap:10px;padding:12px 6px 4px;border-top:1px solid var(--line);margin-top:10px}
+.v-foot svg{width:16px;height:16px;color:#96521A;flex:none;margin-top:2px}
+.v-foot p{font-size:12px;line-height:1.5;color:var(--sub);font-weight:500}
+.v-foot b{color:#96521A}
+.sec-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:6px 4px 0}
+.sec-head h3{font-size:17px;font-weight:800}
+.sec-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.sec-head span{font-size:12px;color:var(--sub)}
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:700;color:var(--teal);background:rgba(0,122,140,.08);border-radius:999px;padding:8px 14px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:359px){.grid{grid-template-columns:1fr}}
+.pcard{padding:16px 16px 14px;display:flex;flex-direction:column;gap:10px;cursor:pointer}
+.pcard:active{transform:scale(.98)}
+.pcard.full{grid-column:1/-1}
+.pc-top{display:flex;align-items:flex-start;gap:8px;flex-wrap:wrap;row-gap:6px}
+.pc-ico{width:32px;height:32px;flex:none;border-radius:11px;background:rgba(0,122,140,.09);color:var(--teal);display:grid;place-items:center}
+.pc-ico svg{width:17px;height:17px}
+.pc-lbl{font-size:12.5px;font-weight:700;flex:1;min-width:0;line-height:1.25}
+.pc-top .badge{margin-left:auto}
+.pc-val{display:flex;align-items:baseline;gap:5px;flex-wrap:wrap}
+.pc-val .mono{font-size:clamp(23px,6.5vw,26px);font-weight:600;line-height:1}
+.pc-val em{font-style:normal;font-size:12px;font-weight:600;color:var(--sub)}
+.mini{display:flex;flex-direction:column;gap:5px;margin-top:auto}
+.m-bar{position:relative;height:8px;border-radius:99px;background:rgba(13,48,56,.07)}
+.m-zone{position:absolute;top:0;bottom:0;border-radius:99px;background:rgba(47,191,143,.22)}
+.m-fill{position:absolute;top:0;bottom:0;left:0;border-radius:99px;background:var(--teal)}
+.m-fill.warn{background:var(--amber)}
+.m-knob{position:absolute;top:50%;width:14px;height:14px;border-radius:50%;background:#fff;border:2.5px solid var(--teal);transform:translate(-50%,-50%)}
+.m-knob.warn{border-color:var(--amber)}
+.m-scale{display:flex;justify-content:space-between;gap:4px;font-size:9.5px;color:var(--sub);font-family:var(--mono)}
+.pc-note{font-size:12px;font-weight:600;color:#96521A;line-height:1.45}
+.pc-time{font-size:10.5px;color:var(--sub);font-family:var(--mono)}
+.treat{padding:18px 16px 16px;display:flex;flex-direction:column;gap:12px}
+.tstep{display:flex;gap:12px;align-items:flex-start;min-width:0}
+.ts-n{flex:none;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font-family:var(--mono);font-size:12px;font-weight:600;margin-top:2px;background:rgba(13,48,56,.06);color:var(--sub);border:2px solid transparent}
+.tstep.ok .ts-n{background:rgba(47,191,143,.14);color:#14724E;border-color:var(--mint)}
+.tstep.todo .ts-n{background:rgba(226,135,67,.15);color:#96521A;border-color:var(--amber)}
+.tstep.stop .ts-n{background:rgba(214,69,69,.12);color:#A02222;border-color:var(--red)}
+.ts-body{flex:1;min-width:0;display:flex;flex-direction:column;gap:8px}
+.ts-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.ts-head b{font-size:14px;font-weight:800;flex:1;min-width:0}
+.t-block{background:rgba(214,69,69,.07);border:1px solid rgba(214,69,69,.3);border-radius:16px;padding:13px 14px}
+.t-block p{font-size:13px;line-height:1.55;font-weight:700;color:#A02222}
+.t-wait{background:rgba(226,135,67,.09);border:1px solid rgba(226,135,67,.28);border-radius:16px;padding:13px 14px}
+.t-wait p{font-size:13px;line-height:1.55;font-weight:600;color:#96521A}
+.t-ok{background:rgba(47,191,143,.09);border:1px solid rgba(47,191,143,.28);border-radius:16px;padding:13px 14px}
+.t-ok p{font-size:13px;line-height:1.55;font-weight:600;color:#14724E}
+.t-dose{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-top:8px}
+.t-dose strong{font-family:var(--mono);font-size:24px;font-weight:600}
+.t-dose span{font-size:13px;font-weight:600;color:var(--sub)}
+.t-steps{list-style:none;display:flex;flex-direction:column;gap:6px;margin-top:8px}
+.t-steps li{display:flex;gap:8px;font-size:12.5px;line-height:1.5;color:var(--sub);font-weight:500}
+.t-steps li::before{content:'→';color:var(--teal);font-weight:700;flex:none}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:46px;padding:0 16px;border-radius:14px;font-size:13.5px;font-weight:700;white-space:nowrap}
+.btn svg{width:16px;height:16px;flex:none}
+.btn.primary{width:100%;background:var(--teal);color:#fff}
+.btn.amberB{width:100%;background:rgba(226,135,67,.12);color:#96521A;border:1.5px solid rgba(226,135,67,.35)}
+.btn.ghostD{width:100%;background:transparent;color:var(--sub);border:1.5px solid var(--line)}
+.tip{padding:15px 16px;display:flex;gap:12px;align-items:flex-start}
+.tip-ico{width:34px;height:34px;flex:none;border-radius:12px;background:rgba(0,122,140,.09);color:var(--teal);display:grid;place-items:center}
+.tip-ico svg{width:17px;height:17px}
+.tip p{font-size:13.5px;line-height:1.5;margin-top:3px;font-weight:500}
+.offline-note{text-align:center;font-size:11.5px;color:var(--sub);line-height:1.7}
+.offline-note b{color:var(--teal-deep)}
+.pwa-status{text-align:center;font-size:12px;font-weight:700;margin-top:2px}
+.scrim{position:fixed;inset:0;background:rgba(9,40,46,.45);z-index:60;opacity:0;visibility:hidden;transition:.35s}
+.scrim.show{opacity:1;visibility:visible}
+.sheet{position:fixed;left:50%;bottom:0;z-index:70;width:100%;max-width:430px;transform:translate(-50%,105%);visibility:hidden;pointer-events:none;background:#fff;border-radius:24px 24px 0 0;padding:8px 20px calc(22px + env(safe-area-inset-bottom));box-shadow:0 -12px 40px rgba(9,48,56,.18);transition:transform .44s cubic-bezier(.32,.72,.24,1),visibility 0s .44s;max-height:92dvh;overflow-y:auto;overscroll-behavior:contain}
+.sheet.open{transform:translate(-50%,0);visibility:visible;pointer-events:auto;transition:transform .44s cubic-bezier(.32,.72,.24,1)}
+.grab-zone{padding:10px 0 6px;cursor:grab;touch-action:none;user-select:none}
+.grab{display:block;width:44px;height:5px;border-radius:99px;background:rgba(13,48,56,.16);margin:0 auto}
+.sh-head{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.sh-ico{width:40px;height:40px;flex:none;border-radius:13px;background:rgba(0,122,140,.09);color:var(--teal);display:grid;place-items:center}
+.sh-ico.red{background:rgba(214,69,69,.1);color:#A02222}
+.sh-ico svg{width:20px;height:20px}
+.sh-head h3{font-size:17px;font-weight:800}
+.sh-head p{font-size:12px;color:var(--sub);font-family:var(--mono);margin-top:1px}
+.sh-head>div{flex:1;min-width:0}
+.sh-close{width:34px;height:34px;flex:none;border-radius:50%;background:rgba(13,48,56,.06);color:var(--sub);display:grid;place-items:center}
+.sh-close svg{width:15px;height:15px}
+.sh-valrow{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:6px}
+.sh-val{font-size:clamp(38px,11vw,46px);font-weight:600;line-height:1}
+.sh-unit{font-size:15px;font-weight:700;color:var(--sub)}
+.sh-valrow .badge{margin-left:auto;align-self:center}
+.track{padding:16px 0 4px;user-select:none}
+.t-bar{position:relative;height:10px;border-radius:99px;background:rgba(13,48,56,.08);touch-action:none;cursor:pointer}
+.t-zone{position:absolute;top:0;bottom:0;border-radius:99px;background:rgba(47,191,143,.22)}
+.t-fill{position:absolute;top:0;bottom:0;left:0;border-radius:99px;background:var(--teal)}
+.t-fill.warn{background:var(--amber)}
+.t-target{position:absolute;top:-5px;width:2.5px;height:20px;border-radius:2px;background:rgba(13,48,56,.4);transform:translateX(-50%)}
+.t-knob{position:absolute;top:50%;width:28px;height:28px;border-radius:50%;background:#fff;border:3px solid var(--teal);transform:translate(-50%,-50%)}
+.t-knob.warn{border-color:var(--amber)}
+.t-labels{display:flex;justify-content:space-between;gap:6px;font-size:10.5px;color:var(--sub);padding-top:9px;font-family:var(--mono)}
+.t-labels span:nth-child(2){color:var(--teal-deep);font-weight:600;text-align:center;flex:1;min-width:0}
+.slider-ctrl{display:flex;align-items:center;gap:10px;margin:10px 0 12px}
+.sl-btn{flex:none;width:48px;height:48px;border-radius:14px;background:rgba(0,122,140,.08);color:var(--teal-deep);font-size:22px;font-weight:800;display:grid;place-items:center;user-select:none}
+#shSlider{flex:1;min-width:0;height:44px;-webkit-appearance:none;appearance:none;background:transparent;touch-action:pan-x}
+#shSlider::-webkit-slider-runnable-track{height:10px;border-radius:99px;background:rgba(13,48,56,.12)}
+#shSlider::-moz-range-track{height:10px;border-radius:99px;background:rgba(13,48,56,.12)}
+#shSlider::-webkit-slider-thumb{-webkit-appearance:none;width:26px;height:26px;border-radius:50%;background:#fff;border:3px solid var(--teal);margin-top:-8px}
+#shSlider::-moz-range-thumb{width:26px;height:26px;border-radius:50%;background:#fff;border:3px solid var(--teal)}
+#shSlider.warn::-webkit-slider-thumb{border-color:var(--amber)}
+#shSlider.warn::-moz-range-thumb{border-color:var(--amber)}
+.sh-inputrow{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:0 0 14px}
+.sh-inputrow>span:first-child{font-size:13px;font-weight:600;color:var(--sub)}
+.sh-input{display:flex;align-items:center;gap:6px;background:#fff;border:1.5px solid rgba(0,122,140,.28);border-radius:13px;padding:0 13px;height:46px;flex:1 1 150px;max-width:170px;min-width:0}
+.sh-input input{flex:1;min-width:0;width:100%;border:none;outline:none;text-align:right;font-family:var(--mono);font-size:17px;font-weight:600;-moz-appearance:textfield}
+.sh-input input::-webkit-outer-spin-button,.sh-input input::-webkit-inner-spin-button{-webkit-appearance:none}
+.sh-input em{font-style:normal;font-size:12px;font-weight:700;color:var(--sub)}
+.dose{border-radius:16px;padding:14px 16px;background:rgba(0,122,140,.06);border:1px solid rgba(0,122,140,.12);margin-bottom:14px}
+.dose-main{display:flex;align-items:baseline;gap:8px;margin-top:5px;flex-wrap:wrap}
+.dose-main strong{font-family:var(--mono);font-size:clamp(22px,6.5vw,26px);font-weight:600}
+.dose-main span{font-size:13.5px;font-weight:600;color:var(--sub)}
+.dose-sub{font-size:11.5px;color:var(--sub);line-height:1.5;margin-top:6px;font-family:var(--mono)}
+.dose-title{font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--sub)}
+.dose.instr .dose-text{font-size:15px;font-weight:800;line-height:1.45;margin-top:5px}
+.dose.instr.amber .dose-text{color:#96521A}
+.dose.instr.mint .dose-text{color:#14724E}
+.sh-last{text-align:center;font-size:12px;color:var(--sub);margin-top:12px;font-family:var(--mono)}
+.diag-lead{font-size:14px;line-height:1.55;font-weight:600;color:var(--sub);margin-bottom:14px}
+.diag-opts{display:flex;flex-direction:column;gap:10px;margin-bottom:16px}
+.diag-opt{display:flex;align-items:center;gap:12px;width:100%;text-align:left;border:1.5px solid var(--line);border-radius:16px;padding:14px}
+.diag-opt .d-e{font-size:22px}
+.diag-opt .d-t{flex:1;min-width:0}
+.diag-opt .d-t b{display:block;font-size:14px;font-weight:800}
+.diag-opt .d-t span{font-size:12px;color:var(--sub);font-weight:600}
+.diag-result{display:flex;flex-direction:column;gap:10px}
+.d-resume{font-size:14px;line-height:1.55;font-weight:500;margin-bottom:14px}
+.d-steps{list-style:none;display:flex;flex-direction:column;gap:9px;margin-bottom:14px}
+.d-steps li{display:flex;gap:10px;font-size:13px;line-height:1.5;min-width:0}
+.d-steps svg{width:15px;height:15px;vertical-align:-2px;color:var(--teal-deep)}
+.vs-n{flex:none;width:22px;height:22px;border-radius:50%;background:rgba(0,122,140,.1);color:var(--teal-deep);font-family:var(--mono);font-size:11px;font-weight:600;display:grid;place-items:center;margin-top:1px}
+.v-warn{display:flex;gap:10px;background:rgba(226,135,67,.09);border:1px solid rgba(226,135,67,.28);border-radius:14px;padding:12px 14px;margin-bottom:16px}
+.v-warn svg{width:17px;height:17px;color:#96521A;flex:none;margin-top:1px}
+.v-warn p{font-size:12.5px;line-height:1.5;color:#96521A;font-weight:600}
+.ins-icon{display:block;width:64px;height:64px;border-radius:16px;margin:0 auto 12px;box-shadow:var(--shadow)}
+.toasts{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:90;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none;width:min(430px,calc(100vw - 32px))}
+.toast{display:flex;align-items:center;gap:9px;max-width:100%;background:var(--ink);color:#fff;font-size:13px;font-weight:600;padding:11px 16px;border-radius:14px;opacity:0;transform:translateY(14px);transition:.35s}
+.toast svg{width:15px;height:15px;color:#4FE0AE;flex:none}
+.toast.warn svg{color:#FFB77C}
+.toast.show{opacity:1;transform:translateY(0)}
+@media(prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
 </style>
 </head>
 <body>
-
 <div class="offbar" id="offbar" hidden><i></i>Modo Offline — cálculos usando o último teste salvo</div>
-
 <div class="app">
-
-  <!-- ===== Header ===== -->
-  <header class="brand">
-    <div class="logo" aria-hidden="true">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M12 3.5C15.5 7.6 18 10.4 18 13.4A6 6 0 1 1 6 13.4C6 10.4 8.5 7.6 12 3.5Z"/>
-        <path d="M8.2 14.6c1.2-.8 2.4-.8 3.6 0s2.4.8 3.6 0" stroke-width="1.5"/>
-      </svg>
-    </div>
-    <div class="brand-t">
-      <h1>PoolApp <span>Universal</span></h1>
-      <p>Piscina · Casa</p>
-    </div>
-    <button class="btn-install" id="installBtn" hidden>
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v10m-4.5-4L12 14.5 16.5 10M5 19.5h14"/></svg>
-      Instalar
-    </button>
-  </header>
-
-  <!-- ===== Configuração ===== -->
-  <section class="card config" aria-label="Configuração da piscina">
-    <div class="cfg-row">
-      <p class="lbl">Tipo de piscina</p>
-      <button class="w-chip" id="wChip" type="button" hidden aria-expanded="false" aria-controls="wPop" aria-label="Detalhes do clima">
-        <span id="wEmoji" aria-hidden="true">☀️</span>
-        <b id="wTemp">—°C</b>
-        <span class="w-city" id="wCity"></span>
-      </button>
-      <div class="w-pop" id="wPop" role="dialog" aria-label="Detalhes do clima">
-        <div class="wp-head">
-          <span class="wp-e" id="wpEmoji" aria-hidden="true">☀️</span>
-          <div class="wp-t"><b id="wpCond">—</b><span id="wpCity"></span></div>
-          <b class="wp-tv mono" id="wpTemp"></b>
-        </div>
-        <div class="wp-row"><span>Umidade</span><b class="mono" id="wpHum">—</b></div>
-        <div class="wp-row"><span>Vento</span><b class="mono" id="wpWind">—</b></div>
-        <div class="wp-alert" id="wpAlert" hidden>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4.5 20.8 19.5H3.2Z"/><path d="M12 10.2v3.6"/><circle cx="12" cy="16.6" r=".9" fill="currentColor" stroke="none"/></svg>
-          <p id="wpAlertText"></p>
-        </div>
-        <div class="wp-dica"><p class="lbl">Dica</p><p id="wpDica">—</p></div>
-        <p class="wp-time" id="wpTime"></p>
-      </div>
-    </div>
-    <div class="pills" id="typePills" role="tablist">
-      <button class="pill active" data-type="vinil" role="tab" aria-selected="true">Vinil</button>
-      <button class="pill" data-type="fibra" role="tab" aria-selected="false">Fibra</button>
-      <button class="pill" data-type="alvenaria" role="tab" aria-selected="false">Alvenaria</button>
-      <button class="pill" data-type="infinity" role="tab" aria-selected="false">Infinity</button>
-    </div>
-    <hr class="div">
-    <p class="lbl">Volume da piscina</p>
-    <div class="vol-row">
-      <div class="volume-wrap">
-        <button class="vol-btn" id="volMinus" type="button" aria-label="Diminuir 100 litros">−</button>
-        <input id="volInput" type="number" inputmode="numeric" min="1000" max="300000" step="100" value="48588" aria-label="Volume em litros">
-        <button class="vol-btn" id="volPlus" type="button" aria-label="Aumentar 100 litros">+</button>
-      </div>
-      <div class="vol-live" id="volLive" aria-live="polite"><b>48.588 L</b><span>= 48,6 m³</span></div>
-    </div>
-    <p class="hint">Use − e + para ajustar de 100 em 100 litros, ou digite direto. Calcule também pelas dimensões do projeto abaixo.</p>
-  </section>
-
-  <!-- ===== Litragem do projeto ===== -->
-  <details class="card lit" id="litCard">
-    <summary>
-      <p class="lbl">Litragem do projeto</p>
-      <span class="l-open" id="litTotalMini">48.588 L</span>
-    </summary>
-    <div class="lit-body">
-      <div class="l-row">
-        <span class="l-name">Principal retangular</span>
-        <span class="l-dim">7,80 × 3,80 m</span>
-        <span class="l-prof"><input id="litD0" type="number" step="0.05" min="0.3" max="3" value="1.40" inputmode="decimal" aria-label="Profundidade média principal"><em>m</em></span>
-        <span class="l-out" id="litO0">41.496 L</span>
-      </div>
-      <div class="l-row">
-        <span class="l-name">Hidro · banco de 40 cm incluso</span>
-        <span class="l-dim">2,60 × 2,60 m</span>
-        <span class="l-prof"><input id="litD1" type="number" step="0.05" min="0.3" max="2" value="0.90" inputmode="decimal" aria-label="Lâmina média do hidro"><em>m</em></span>
-        <span class="l-out" id="litO1">6.084 L</span>
-      </div>
-      <div class="l-row">
-        <span class="l-name">Quadrado central</span>
-        <span class="l-dim">1,20 × 1,20 m</span>
-        <span class="l-prof"><input id="litD2" type="number" step="0.05" min="0.2" max="2" value="0.70" inputmode="decimal" aria-label="Profundidade do quadrado central"><em>m</em></span>
-        <span class="l-out" id="litO2">1.008 L</span>
-      </div>
-      <div class="l-total">
-        <div><b id="litTotal">48.588 L</b><br><span>≈ 48,6 m³ — base de todas as doses</span></div>
-        <button class="l-apply" id="litApply">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>
-          Aplicar volume
-        </button>
-      </div>
-    </div>
-  </details>
-
-  <!-- ===== Válvula ===== -->
-  <section class="card valve-card" aria-label="Válvula seletora do filtro">
-    <div class="vc-head">
-      <p class="lbl">Válvula do filtro</p>
-      <span class="badge mint" id="valveBadge"><i></i><b id="valveBadgeT">Filtrar</b></span>
-    </div>
-    <div class="valve-stage" id="valveStage">
-      <div class="v-plate" id="vPlate" role="group" aria-label="Manopla da válvula — arraste ou toque para girar">
-        <div class="v-lever" id="vLever"><span class="v-stick"></span><span class="v-cap"></span></div>
-        <span class="v-screw"></span>
-      </div>
-    </div>
-    <div class="v-foot">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4.5 20.8 19.5H3.2Z"/><path d="M12 10.2v3.6"/><circle cx="12" cy="16.6" r=".9" fill="currentColor" stroke="none"/></svg>
-      <p><b>Regra de ouro:</b> desligue a bomba antes de girar. Toque no número da posição, toque na manopla ou arraste-a.</p>
-    </div>
-  </section>
-
-  <!-- ===== Parâmetros ===== -->
-  <div class="sec-head">
-    <h3>Parâmetros</h3>
-    <div class="sec-right">
-      <span class="mono" id="todayLbl"></span>
-      <button class="chip" onclick="openSheet('cloro')" aria-label="Medir cloro">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6M10 3v4.5L6.6 13a5 5 0 1 0 10.8 0L14 7.5V3"/><circle cx="12" cy="15" r=".9" fill="currentColor" stroke="none"/><circle cx="10.3" cy="16.8" r=".8" fill="currentColor" stroke="none"/><circle cx="13.7" cy="16.8" r=".8" fill="currentColor" stroke="none"/></svg>
-        Cloro
-      </button>
-    </div>
-  </div>
-  <section class="grid" id="grid"></section>
-
-  <!-- ===== Tratamento orientado ===== -->
-  <section class="card treat" aria-label="Tratamento orientado">
-    <div class="vc-head">
-      <p class="lbl">Tratamento orientado</p>
-      <span class="badge mint" id="treatBadge"><i></i><b id="treatBadgeT">—</b></span>
-    </div>
-    <div id="treatSteps"></div>
-  </section>
-
-  <!-- ===== Dica ===== -->
-  <footer class="tip card">
-    <span class="tip-ico" aria-hidden="true">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.2"/><path d="M12 11.2v4.6"/><circle cx="12" cy="8" r="1" fill="currentColor" stroke="none"/></svg>
-    </span>
-    <div>
-      <p class="lbl" id="tipTitle">Dica · Vinil</p>
-      <p id="tipText">Use bicarbonato, nunca cal. pH 7,0-7,4 evita rugas no vinil</p>
-    </div>
-  </footer>
-
-  <p class="offline-note">
-    Funciona offline · dados salvos neste dispositivo<br>
-    Criado por <b>Elias costa NEGRET'S</b>
-  </p>
+<header class="brand">
+<div class="logo" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5C15.5 7.6 18 10.4 18 13.4A6 6 0 1 1 6 13.4C6 10.4 8.5 7.6 12 3.5Z"/><path d="M8.2 14.6c1.2-.8 2.4-.8 3.6 0s2.4.8 3.6 0" stroke-width="1.5"/></svg></div>
+<div class="brand-t"><h1>PoolApp <span>Universal</span></h1><p>Piscina · Casa</p></div>
+<button class="btn-install" id="installBtn" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v10m-4.5-4L12 14.5 16.5 10M5 19.5h14"/></svg>Instalar</button>
+</header>
+<section class="card config" aria-label="Configuração da piscina">
+<div class="cfg-row">
+<p class="lbl">Tipo de piscina</p>
+<button class="w-chip" id="wChip" type="button" hidden aria-expanded="false"><span id="wEmoji">☀️</span><b id="wTemp">—°C</b><span class="w-city" id="wCity"></span></button>
+<div class="w-pop" id="wPop" role="dialog" aria-label="Detalhes do clima">
+<div class="wp-head"><span class="wp-e" id="wpEmoji">☀️</span><div class="wp-t"><b id="wpCond">—</b><span id="wpCity"></span></div><b class="wp-tv mono" id="wpTemp"></b></div>
+<div class="wp-row"><span>Umidade</span><b class="mono" id="wpHum">—</b></div>
+<div class="wp-row"><span>Vento</span><b class="mono" id="wpWind">—</b></div>
+<div class="wp-alert" id="wpAlert" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 4.5 20.8 19.5H3.2Z"/><path d="M12 10.2v3.6"/><circle cx="12" cy="16.6" r=".9" fill="currentColor" stroke="none"/></svg><p id="wpAlertText"></p></div>
+<div class="wp-dica"><p class="lbl">Dica</p><p id="wpDica">—</p></div>
+<p class="wp-time" id="wpTime"></p>
 </div>
-
-<!-- ===== Sheet parâmetros ===== -->
+</div>
+<div class="pills" id="typePills" role="tablist">
+<button class="pill active" data-type="vinil" role="tab" aria-selected="true">Vinil</button>
+<button class="pill" data-type="fibra" role="tab" aria-selected="false">Fibra</button>
+<button class="pill" data-type="alvenaria" role="tab" aria-selected="false">Alvenaria</button>
+<button class="pill" data-type="infinity" role="tab" aria-selected="false">Infinity</button>
+</div>
+<hr class="div">
+<p class="lbl">Volume da piscina</p>
+<div class="vol-row">
+<div class="volume-wrap">
+<button class="vol-btn" id="volMinus" type="button" aria-label="Diminuir 100 litros">−</button>
+<input id="volInput" type="number" inputmode="numeric" min="1000" max="300000" step="100" value="48588" aria-label="Volume em litros">
+<button class="vol-btn" id="volPlus" type="button" aria-label="Aumentar 100 litros">+</button>
+</div>
+<div class="vol-live" id="volLive" aria-live="polite"><b>48.588 L</b><span>= 48,6 m³</span></div>
+</div>
+<p class="hint">Use − e + para ajustar de 100 em 100 litros, ou digite direto. Calcule também pelas dimensões do projeto abaixo.</p>
+</section>
+<details class="card lit" id="litCard">
+<summary><p class="lbl">Litragem do projeto</p><span class="l-open" id="litTotalMini">48.588 L</span></summary>
+<div class="lit-body">
+<div class="l-row"><span class="l-name">Principal retangular</span><span class="l-dim">7,80 × 3,80 m</span><span class="l-prof"><input id="litD0" type="number" step="0.05" min="0.3" max="3" value="1.40" inputmode="decimal"><em>m</em></span><span class="l-out" id="litO0">41.496 L</span></div>
+<div class="l-row"><span class="l-name">Hidro · banco de 40 cm incluso</span><span class="l-dim">2,60 × 2,60 m</span><span class="l-prof"><input id="litD1" type="number" step="0.05" min="0.3" max="2" value="0.90" inputmode="decimal"><em>m</em></span><span class="l-out" id="litO1">6.084 L</span></div>
+<div class="l-row"><span class="l-name">Quadrado central</span><span class="l-dim">1,20 × 1,20 m</span><span class="l-prof"><input id="litD2" type="number" step="0.05" min="0.2" max="2" value="0.70" inputmode="decimal"><em>m</em></span><span class="l-out" id="litO2">1.008 L</span></div>
+<div class="l-total"><div><b id="litTotal">48.588 L</b><br><span>≈ 48,6 m³ — base de todas as doses</span></div><button class="l-apply" id="litApply"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Aplicar volume</button></div>
+</div>
+</details>
+<section class="card valve-card" aria-label="Válvula seletora do filtro">
+<div class="vc-head"><p class="lbl">Válvula do filtro</p><span class="badge mint" id="valveBadge"><i></i><b id="valveBadgeT">Filtrar</b></span></div>
+<div class="valve-stage" id="valveStage">
+<div class="v-plate" id="vPlate" role="group" aria-label="Manopla — arraste ou toque"><div class="v-lever" id="vLever"><span class="v-stick"></span><span class="v-cap"></span></div><span class="v-screw"></span></div>
+</div>
+<div class="v-foot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 4.5 20.8 19.5H3.2Z"/><path d="M12 10.2v3.6"/><circle cx="12" cy="16.6" r=".9" fill="currentColor" stroke="none"/></svg><p><b>Regra de ouro:</b> desligue a bomba antes de girar. Toque no número da posição, toque na manopla ou arraste-a.</p></div>
+</section>
+<div class="sec-head"><h3>Parâmetros</h3><div class="sec-right"><span class="mono" id="todayLbl"></span><button class="chip" onclick="openSheet('cloro')" aria-label="Medir cloro"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6M10 3v4.5L6.6 13a5 5 0 1 0 10.8 0L14 7.5V3"/><circle cx="12" cy="15" r=".9" fill="currentColor" stroke="none"/><circle cx="10.3" cy="16.8" r=".8" fill="currentColor" stroke="none"/><circle cx="13.7" cy="16.8" r=".8" fill="currentColor" stroke="none"/></svg>Cloro</button></div></div>
+<section class="grid" id="grid"></section>
+<section class="card treat" aria-label="Tratamento orientado">
+<div class="vc-head"><p class="lbl">Tratamento orientado</p><span class="badge mint" id="treatBadge"><i></i><b id="treatBadgeT">—</b></span></div>
+<div id="treatSteps"></div>
+</section>
+<footer class="tip card">
+<span class="tip-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="8.2"/><path d="M12 11.2v4.6"/><circle cx="12" cy="8" r="1" fill="currentColor" stroke="none"/></svg></span>
+<div><p class="lbl" id="tipTitle">Dica · Vinil</p><p id="tipText">Use bicarbonato, nunca cal. pH 7,0-7,4 evita rugas no vinil</p></div>
+</footer>
+<p class="offline-note">Funciona offline · dados salvos neste dispositivo<br>Criado por <b>Elias costa NEGRET'S</b></p>
+<p class="pwa-status" id="pwaStatus"></p>
+</div>
 <div class="scrim" id="scrim"></div>
 <section class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="shTitle">
-  <div class="grab-zone" id="grabZone"><span class="grab"></span></div>
-  <header class="sh-head">
-    <span class="sh-ico" id="shIco" aria-hidden="true"></span>
-    <div><h3 id="shTitle">pH</h3><p id="shRange"></p></div>
-    <button class="sh-close" id="shClose" aria-label="Fechar">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
-    </button>
-  </header>
-  <div class="sh-valrow">
-    <span class="sh-val mono" id="shVal">0</span>
-    <span class="sh-unit" id="shUnit"></span>
-    <span class="badge" id="shBadge"><i></i><b style="font-weight:700"></b></span>
-  </div>
-  <div class="track" id="track">
-    <div class="t-bar" id="tBar">
-      <div class="t-zone" id="tZone"></div><div class="t-fill" id="tFill"></div>
-      <div class="t-target" id="tTarget" hidden></div><div class="t-knob" id="tKnob"></div>
-    </div>
-    <div class="t-labels mono"><span id="tMin"></span><span id="tIdeal"></span><span id="tMax"></span></div>
-  </div>
-  <div class="slider-ctrl">
-    <button class="sl-btn" id="slMinus" type="button" aria-label="Diminuir valor">−</button>
-    <input type="range" id="shSlider" aria-label="Valor medido">
-    <button class="sl-btn" id="slPlus" type="button" aria-label="Aumentar valor">+</button>
-  </div>
-  <label class="sh-inputrow">
-    <span>Valor medido</span>
-    <span class="sh-input"><input id="shInput" type="number" inputmode="decimal"><em id="shInputUnit"></em></span>
-  </label>
-  <div class="dose" id="doseBox"></div>
-  <button class="btn primary" id="shSave">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>
-    Salvar Medição
-  </button>
-  <p class="sh-last" id="shLast"></p>
+<div class="grab-zone" id="grabZone"><span class="grab"></span></div>
+<header class="sh-head"><span class="sh-ico" id="shIco"></span><div><h3 id="shTitle">pH</h3><p id="shRange"></p></div><button class="sh-close" id="shClose" aria-label="Fechar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button></header>
+<div class="sh-valrow"><span class="sh-val mono" id="shVal">0</span><span class="sh-unit" id="shUnit"></span><span class="badge" id="shBadge"><i></i><b style="font-weight:700"></b></span></div>
+<div class="track" id="track"><div class="t-bar" id="tBar"><div class="t-zone" id="tZone"></div><div class="t-fill" id="tFill"></div><div class="t-target" id="tTarget" hidden></div><div class="t-knob" id="tKnob"></div></div>
+<div class="t-labels mono"><span id="tMin"></span><span id="tIdeal"></span><span id="tMax"></span></div></div>
+<div class="slider-ctrl"><button class="sl-btn" id="slMinus" type="button" aria-label="Diminuir">−</button><input type="range" id="shSlider" aria-label="Valor medido"><button class="sl-btn" id="slPlus" type="button" aria-label="Aumentar">+</button></div>
+<label class="sh-inputrow"><span>Valor medido</span><span class="sh-input"><input id="shInput" type="number" inputmode="decimal"><em id="shInputUnit"></em></span></label>
+<div class="dose" id="doseBox"></div>
+<button class="btn primary" id="shSave"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Salvar Medição</button>
+<p class="sh-last" id="shLast"></p>
 </section>
-
-<!-- ===== Sheet válvula ===== -->
 <section class="sheet" id="valveSheet" role="dialog" aria-modal="true" aria-labelledby="vsTitle">
-  <div class="grab-zone" id="vGrabZone"><span class="grab"></span></div>
-  <header class="sh-head">
-    <span class="sh-ico" id="vsIco" aria-hidden="true">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13.5" r="7"/><path d="M12 13.5V5.8"/><circle cx="12" cy="4.6" r="1.7" fill="currentColor" stroke="none"/><path d="M6.2 11.2l1.4.7M17.8 11.2l-1.4.7" stroke-width="1.4"/></svg>
-    </span>
-    <div><h3 id="vsTitle">Filtrar</h3><p id="vsPos">Posição 1 de 6</p></div>
-    <button class="sh-close" id="vsClose" aria-label="Fechar">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
-    </button>
-  </header>
-  <p class="d-resume" id="vsResume"></p>
-  <ol class="d-steps" id="vsSteps"></ol>
-  <div class="v-warn">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4.5 20.8 19.5H3.2Z"/><path d="M12 10.2v3.6"/><circle cx="12" cy="16.6" r=".9" fill="currentColor" stroke="none"/></svg>
-    <p id="vsWarnText"></p>
-  </div>
-  <button class="btn primary" id="vsOk">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>
-    Entendi
-  </button>
+<div class="grab-zone" id="vGrabZone"><span class="grab"></span></div>
+<header class="sh-head"><span class="sh-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="13.5" r="7"/><path d="M12 13.5V5.8"/><circle cx="12" cy="4.6" r="1.7" fill="currentColor" stroke="none"/><path d="M6.2 11.2l1.4.7M17.8 11.2l-1.4.7" stroke-width="1.4"/></svg></span><div><h3 id="vsTitle">Filtrar</h3><p id="vsPos">Posição 1 de 6</p></div><button class="sh-close" id="vsClose" aria-label="Fechar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button></header>
+<p class="d-resume" id="vsResume"></p>
+<ol class="d-steps" id="vsSteps"></ol>
+<div class="v-warn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 4.5 20.8 19.5H3.2Z"/><path d="M12 10.2v3.6"/><circle cx="12" cy="16.6" r=".9" fill="currentColor" stroke="none"/></svg><p id="vsWarnText"></p></div>
+<button class="btn primary" id="vsOk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Entendi</button>
 </section>
-
-<!-- ===== Sheet diagnóstico ===== -->
 <section class="sheet" id="diagSheet" role="dialog" aria-modal="true" aria-labelledby="dgTitle">
-  <div class="grab-zone" id="dgGrabZone"><span class="grab"></span></div>
-  <header class="sh-head">
-    <span class="sh-ico red" aria-hidden="true">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4.5 20.8 19.5H3.2Z"/><path d="M12 10.2v3.6"/><circle cx="12" cy="16.6" r=".9" fill="currentColor" stroke="none"/></svg>
-    </span>
-    <div><h3 id="dgTitle">Diagnóstico</h3><p>Sulfato aplicado · água não clareou</p></div>
-    <button class="sh-close" id="dgClose" aria-label="Fechar">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
-    </button>
-  </header>
-  <p class="diag-lead"><b>NÃO repita o sulfato.</b> Toque em como a água está agora e siga o caminho indicado:</p>
-  <div class="diag-opts" id="diagOpts"></div>
-  <div class="diag-result" id="diagResult" hidden></div>
-  <button class="btn ghostD" id="dgBack" hidden>Voltar às opções</button>
+<div class="grab-zone"><span class="grab"></span></div>
+<header class="sh-head"><span class="sh-ico red"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 4.5 20.8 19.5H3.2Z"/><path d="M12 10.2v3.6"/><circle cx="12" cy="16.6" r=".9" fill="currentColor" stroke="none"/></svg></span><div><h3 id="dgTitle">Diagnóstico</h3><p>Sulfato aplicado · água não clareou</p></div><button class="sh-close" id="dgClose" aria-label="Fechar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button></header>
+<p class="diag-lead"><b>NÃO repita o sulfato.</b> Toque em como a água está agora e siga o caminho indicado:</p>
+<div class="diag-opts" id="diagOpts"></div>
+<div class="diag-result" id="diagResult" hidden></div>
+<button class="btn ghostD" id="dgBack" hidden>Voltar às opções</button>
 </section>
-
-<!-- ===== Sheet guia de instalação ===== -->
 <section class="sheet" id="installSheet" role="dialog" aria-modal="true" aria-labelledby="insTitle">
-  <div class="grab-zone"><span class="grab"></span></div>
-  <header class="sh-head">
-    <span class="sh-ico" aria-hidden="true">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v10m-4.5-4L12 14.5 16.5 10M5 19.5h14"/></svg>
-    </span>
-    <div><h3 id="insTitle">Instalar app</h3><p id="insSub">—</p></div>
-    <button class="sh-close" id="insClose" aria-label="Fechar">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
-    </button>
-  </header>
-  <img class="ins-icon" id="insAppIcon" alt="Ícone do PoolApp">
-  <p class="d-resume">Instale na tela inicial para abrir em tela cheia, sem barra do navegador, e continuar funcionando <b>sem internet</b>.</p>
-  <ol class="d-steps" id="insSteps"></ol>
-  <div id="insExtra"></div>
-  <div class="v-warn">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4.5 20.8 19.5H3.2Z"/><path d="M12 10.2v3.6"/><circle cx="12" cy="16.6" r=".9" fill="currentColor" stroke="none"/></svg>
-    <p>Depois de instalado, o botão “Instalar” some automaticamente.</p>
-  </div>
-  <button class="btn primary" id="insOk">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>
-    Entendi
-  </button>
+<div class="grab-zone"><span class="grab"></span></div>
+<header class="sh-head"><span class="sh-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 4v10m-4.5-4L12 14.5 16.5 10M5 19.5h14"/></svg></span><div><h3 id="insTitle">Instalar app</h3><p id="insSub">—</p></div><button class="sh-close" id="insClose" aria-label="Fechar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button></header>
+<img class="ins-icon" id="insAppIcon" alt="Ícone do PoolApp">
+<p class="d-resume">Instale na tela inicial para abrir em tela cheia, sem barra do navegador, e continuar funcionando <b>sem internet</b>.</p>
+<ol class="d-steps" id="insSteps"></ol>
+<div id="insExtra"></div>
+<div class="v-warn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 4.5 20.8 19.5H3.2Z"/><path d="M12 10.2v3.6"/><circle cx="12" cy="16.6" r=".9" fill="currentColor" stroke="none"/></svg><p>Depois de instalado, o botão "Instalar" some automaticamente.</p></div>
+<button class="btn primary" id="insOk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Entendi</button>
 </section>
-
 <div class="toasts" id="toasts" aria-live="polite"></div>
-
 <script>
-/* ============================================================
-   PoolApp Universal — por Elias costa NEGRET'S
-   Offline-first: cálculos sempre a partir do último teste salvo
-============================================================ */
-const ICONS = {
-  ph:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5C15.5 7.6 18 10.4 18 13.4A6 6 0 1 1 6 13.4C6 10.4 8.5 7.6 12 3.5Z"/><path d="M8.2 14.6c1.2-.8 2.4-.8 3.6 0s2.4.8 3.6 0" stroke-width="1.4"/></svg>',
-  cloro:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6M10 3v4.5L6.6 13a5 5 0 1 0 10.8 0L14 7.5V3"/><circle cx="12" cy="15" r=".9" fill="currentColor" stroke="none"/><circle cx="10.3" cy="16.8" r=".8" fill="currentColor" stroke="none"/><circle cx="13.7" cy="16.8" r=".8" fill="currentColor" stroke="none"/></svg>',
-  turbidez:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="8.2"/><circle cx="9" cy="10.5" r="1" fill="currentColor" stroke="none"/><circle cx="14.5" cy="9.8" r=".8" fill="currentColor" stroke="none"/><circle cx="12.5" cy="13.8" r="1.1" fill="currentColor" stroke="none"/><circle cx="9.6" cy="14.6" r=".7" fill="currentColor" stroke="none"/><circle cx="15" cy="13.5" r=".6" fill="currentColor" stroke="none"/></svg>',
-  alcalinidade:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9c2.2 0 2.2 1.8 4.5 1.8S9.8 9 12 9s2.2 1.8 4.5 1.8S18.8 9 21 9"/><path d="M3 15c2.2 0 2.2 1.8 4.5 1.8S9.8 15 12 15s2.2 1.8 4.5 1.8S18.8 15 21 15"/></svg>',
-  dureza:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.6 20.5 8 12 12.4 3.5 8Z"/><path d="M20.5 12.5 12 16.9 3.5 12.5"/><path d="M20.5 16.5 12 20.9 3.5 16.5"/></svg>',
-  check:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>',
-  alert:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4.5 20.8 19.5H3.2Z"/><path d="M12 10.2v3.6"/><circle cx="12" cy="16.6" r=".9" fill="currentColor" stroke="none"/></svg>'
-};
-
-const DEFAULTS = { ph:7.2, cloro:2.5, turbidez:35, alcalinidade:90, dureza:240 };
-
-const PARAMS = {
-  ph:{ label:'pH', unit:'', dec:1, min:6, max:8.5, step:0.1, idealMin:7, idealMax:7.4,
-    dose:{ target:7.2, per:100, up:'barrilha (bicarbonato de sódio)', downName:'redutor de pH' } },
-  cloro:{ label:'Cloro livre', unit:'ppm', dec:1, min:0, max:8, step:0.1, idealMin:1, idealMax:3,
-    dose:{ target:2, per:60, up:'cloro granulado', downMsg:'Cloro acima do alvo — não adicione produto; aguarde o decaimento natural.' } },
-  turbidez:{ label:'Turbidez', unit:'%', dec:0, min:0, max:100, step:1, idealMin:0, idealMax:20, full:true },
-  alcalinidade:{ label:'Alcalinidade Total', unit:'ppm', dec:0, min:0, max:240, step:5, idealMin:80, idealMax:120, target:100,
-    dose:{ target:100, per:45, up:'bicarbonato de sódio', downMsg:'Alcalinidade acima do alvo — reduza com ácido muriático em etapas curtas.' } },
-  dureza:{ label:'Dureza Cálcica', unit:'ppm', dec:0, min:0, max:500, step:10, idealMin:200, idealMax:400,
-    dose:{ target:250, per:30, up:'cloreto de cálcio', downMsg:'Dureza acima do alvo — dilua 20–30% da água com água nova.' } }
-};
-
-const TIPS = {
-  vinil:'Use bicarbonato, nunca cal. pH 7,0-7,4 evita rugas no vinil',
-  fibra:'Evite ácido em excesso, agride gel coat',
-  alvenaria:'Pode usar cal hidratada',
-  infinity:'Atenção perda na borda'
-};
-
-const VALVE_POS = [
-  { id:'filtrar',    label:'FILTRAR',     full:'Filtrar',        angle:0   },
-  { id:'lavar',      label:'RETRO-LAVAR', full:'Retro-lavar',    angle:60  },
-  { id:'enxaguar',   label:'ENXAGUAR',    full:'Enxaguar',       angle:120 },
-  { id:'recircular', label:'RECIRCULAR',  full:'Recircular',     angle:180 },
-  { id:'dreno',      label:'DRENO',       full:'Dreno / Waste',  angle:240 },
-  { id:'fechado',    label:'FECHADO',     full:'Fechado',        angle:300 }
-];
-const VALVE_INFO = {
-  filtrar:{ resume:'A posição do dia a dia: a água sai da piscina, atravessa a areia do filtro e volta limpa.',
-    steps:['Filtre de 6 a 8 h por dia no verão (4 a 6 h no inverno)','Limpe o pré-filtro da bomba a cada 15 dias','Retro-lave quando o manômetro subir ~8 psi'],
-    warn:'Desligue SEMPRE a bomba antes de girar a manopla — girar sob pressão rompe a junta.' },
-  lavar:{ resume:'Inverte o fluxo e leva a sujeira do filtro direto para o esgoto.',
-    steps:['Desligue a bomba e gire para RETRO-LAVAR','Ligue por 2 a 3 minutos','Pare quando o visor mostrar água transparente'],
-    warn:'Faça a cada 1–2 semanas ou quando o manômetro subir.' },
-  enxaguar:{ resume:'Assenta a areia depois da retro-lavagem.',
-    steps:['Vem sempre DEPOIS do retro-lavar','Ligue por 20–30 segundos','Volte para FILTRAR'],
-    warn:'Pular o enxágue manda areia solta para a piscina.' },
-  recircular:{ resume:'Circula SEM passar pelo filtro.',
-    steps:['Use para diluir produtos com a água em movimento','Confira antes de sair — nada é filtrado'],
-    warn:'Água sem filtrar por dias vira água verde.' },
-  dreno:{ resume:'Joga água direto no esgoto — o nível desce.',
-    steps:['Baixar nível após chuva','Aspiração: sujeira sai em vez de voltar','Bomba em baixa rotação'],
-    warn:'Não deixe o nível descer além da metade do skimmer.' },
-  fechado:{ resume:'Bloqueia todas as linhas — inverno/manutenção.',
-    steps:['Bomba DESLIGADA','Reabrir: girar para FILTRAR'],
-    warn:'NUNCA ligue a bomba em FECHADO — a pressão pode romper o filtro.' }
-};
-
-/* ---------- litragem do projeto ---------- */
-const LIT = [
-  { name:'Principal retangular', a:7.8, b:3.8 },
-  { name:'Hidro · banco 40 cm',  a:2.6, b:2.6 },
-  { name:'Quadrado central',     a:1.2, b:1.2 }
-];
-let litProf = [1.40, 0.90, 0.70];
-
-/* ---------- estado ---------- */
-let state = { type:'vinil', volume:48588, values:{...DEFAULTS} };
-let measures = {};
-let valveIndex = 0;
-let leverAngle = 0;
-let treat = { lastSulfato:null };
-
-try{
-  const s = JSON.parse(localStorage.getItem('poolapp.state')||'null');
-  if(s){ state.type=s.type||'vinil'; state.volume=s.volume||48588; Object.assign(state.values, s.values||{}); }
-  measures = JSON.parse(localStorage.getItem('poolapp.measures')||'{}');
-  valveIndex = Math.min(5, Math.max(0, parseInt(localStorage.getItem('poolapp.valve'),10)||0));
-  treat = JSON.parse(localStorage.getItem('poolapp.treat')||'null') || treat;
-  const lp = JSON.parse(localStorage.getItem('poolapp.lit')||'null');
-  if(lp && lp.length===3) litProf = lp;
-}catch(e){}
-
-const persist = ()=> localStorage.setItem('poolapp.state', JSON.stringify(state));
-const persistMeasures = ()=> localStorage.setItem('poolapp.measures', JSON.stringify(measures));
-const persistTreat = ()=> localStorage.setItem('poolapp.treat', JSON.stringify(treat));
-
-/* ---------- utilitários ---------- */
-const $ = id => document.getElementById(id);
-const nf0 = new Intl.NumberFormat('pt-BR');
-const fmt = (v,d)=> v.toLocaleString('pt-BR',{minimumFractionDigits:d, maximumFractionDigits:d});
-const fmtGrams = g => g>=20 ? nf0.format(Math.round(g))+' g' : fmt(Math.round(g*10)/10,1)+' g';
-const pct = (key,v)=>{ const p=PARAMS[key]; return Math.min(1,Math.max(0,(v-p.min)/(p.max-p.min)))*100; };
-const m3 = ()=> state.volume/1000;
-
-function statusOf(key,v){
-  const p = PARAMS[key];
-  if(key==='alcalinidade'){
-    if(v>=100 && v<=p.idealMax) return {t:'Ideal', c:'mint'};
-    if(v<100) return {t:'Baixa', c:'amber'};
-    return {t:'Alta', c:'amber'};
-  }
-  if(v>=p.idealMin && v<=p.idealMax) return {t:'Ideal', c:'mint'};
-  if(key==='turbidez') return {t:'Atenção', c:'amber'};
-  return {t: v<p.idealMin ? 'Baixo':'Alto', c:'amber'};
-}
-function timeAgo(at){
-  const d = Date.now()-at;
-  if(d<60e3) return 'agora';
-  if(d<3600e3) return 'há '+Math.floor(d/60e3)+' min';
-  if(d<86400e3) return 'há '+Math.floor(d/3600e3)+' h';
-  return new Date(at).toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'});
-}
-function toast(msg, warn=false){
-  const box = document.createElement('div');
-  box.className='toast'+(warn?' warn':'');
-  box.innerHTML=(warn?ICONS.alert:ICONS.check)+'<span></span>';
-  box.querySelector('span').textContent=msg;
-  $('toasts').appendChild(box);
-  requestAnimationFrame(()=>box.classList.add('show'));
-  setTimeout(()=>{box.classList.remove('show');setTimeout(()=>box.remove(),400);},3200);
-}
-
-/* ---------- modo offline ---------- */
-function renderOnline(){ $('offbar').hidden = navigator.onLine; }
-window.addEventListener('offline', renderOnline);
-window.addEventListener('online', ()=>{ renderOnline(); updateWeather(); });
-
-/* ============================================================
-   CLIMA — WeatherAPI (primária) → Open-Meteo (fallback)
-   Cole sua key grátis do weatherapi.com abaixo.
-============================================================ */
-const WEATHER_API_KEY = "";
-const W_FALLBACK = { lat:-20.43606, lon:-43.7722, city:'Miguel Burnier' };
-let wCache = null, lastFix = null, watchId = null;
-try{ wCache = JSON.parse(localStorage.getItem('poolapp.weather')||'null'); }catch(e){}
-
-const hasKey = ()=> WEATHER_API_KEY && WEATHER_API_KEY!=='SUA_KEY_AQUI' && WEATHER_API_KEY.trim().length>10;
-function distKm(a,b){
-  const R=6371, rad=Math.PI/180;
-  const dLat=(b.lat-a.lat)*rad, dLon=(b.lon-a.lon)*rad;
-  const s=Math.sin(dLat/2)**2+Math.cos(a.lat*rad)*Math.cos(b.lat*rad)*Math.sin(dLon/2)**2;
-  return 2*R*Math.asin(Math.sqrt(s));
-}
-const nearBurnier=(lat,lon)=> distKm({lat:W_FALLBACK.lat,lon:W_FALLBACK.lon},{lat,lon})<8;
-function fixCityName(n,lat,lon){ return (n && n.includes('Ouro Preto') && nearBurnier(lat,lon)) ? 'Miguel Burnier' : n; }
-function waEmoji(code,isDay){
-  if(code===1000) return isDay?'☀️':'🌙';
-  if(code===1003) return isDay?'⛅':'🌙';
-  if([1006,1009,1030,1135,1147].includes(code)) return '☁️';
-  if([1063,1150,1153,1168,1171,1180,1183,1186,1189,1192,1195,1198,1201,1240,1243,1246].includes(code)) return '🌧️';
-  if([1087,1273,1276,1279,1282].includes(code)) return '⛈️';
-  if([1066,1069,1072,1114,1117,1204,1207,1210,1213,1216,1219,1222,1225,1237,1249,1252,1255,1258,1261,1264].includes(code)) return '🌨️';
-  return isDay?'⛅':'🌙';
-}
-function weatherInfo(code,isDay=1){
-  if(code===0) return {e:isDay?'☀️':'🌙',t:'Céu limpo'};
-  if(code<=3)  return {e:isDay?'⛅':'🌙',t:'Parcialmente nublado'};
-  if(code<=57) return {e:'☁️',t:'Nublado'};
-  if(code<=67) return {e:'🌧️',t:'Chuva'};
-  if(code<=82) return {e:'🌧️',t:'Chuva'};
-  if(code>=95) return {e:'⛈️',t:'Tempestade'};
-  return {e:'⛅',t:'Parcialmente nublado'};
-}
-function dicaFor(t){
-  if(t>=32) return 'Com '+Math.round(t)+'°C o cloro evapora 40% mais rápido, adicione +50g';
-  if(t>=28) return 'Com '+Math.round(t)+'°C o cloro evapora ~25% mais rápido, adicione +30g';
-  return 'Com '+Math.round(t)+'°C a evaporação está sob controle — mantenha a dosagem padrão';
-}
-function fetchJSON(url, ms){
-  const ctl=new AbortController(); const t=setTimeout(()=>ctl.abort(),ms);
-  return fetch(url,{signal:ctl.signal}).then(r=>{if(!r.ok)throw new Error('http');return r.json();}).finally(()=>clearTimeout(t));
-}
-function getCoordsOnce(){
-  return new Promise(res=>{
-    if(!('geolocation' in navigator)) return res(null);
-    navigator.geolocation.getCurrentPosition(
-      p=>res({lat:p.coords.latitude, lon:p.coords.longitude}),
-      ()=>res(null),
-      {enableHighAccuracy:true, timeout:8000, maximumAge:0});
-  });
-}
-function pickCity(a,r){ return a.city||a.town||a.village||a.municipality||a.hamlet||a.suburb||a.county||(r.display_name?r.display_name.split(',')[0]:null); }
-async function reverseCity(lat,lon){
-  const key=lat.toFixed(2)+','+lon.toFixed(2); let geo={};
-  try{ geo=JSON.parse(localStorage.getItem('poolapp.geo')||'{}'); }catch(e){}
-  const hit=geo[key];
-  if(hit && Date.now()-hit.at<7*86400e3) return fixCityName(hit.city,lat,lon);
-  try{
-    const r=await fetchJSON('https://nominatim.openstreetmap.org/reverse?lat='+lat+'&lon='+lon+'&format=json&accept-language=pt-BR',9000);
-    const c=pickCity(r.address||{},r);
-    if(c){ geo[key]={city:c,at:Date.now()}; try{localStorage.setItem('poolapp.geo',JSON.stringify(geo));}catch(e){} return fixCityName(c,lat,lon); }
-  }catch(e){}
-  try{
-    const g=await fetchJSON('https://api.bigdatacloud.net/data/reverse-geocode-client?latitude='+lat+'&longitude='+lon+'&localityLanguage=pt',8000);
-    const c=g.city||g.locality||g.principalSubdivision;
-    if(c){ geo[key]={city:c,at:Date.now()}; try{localStorage.setItem('poolapp.geo',JSON.stringify(geo));}catch(e){} return fixCityName(c,lat,lon); }
-  }catch(e){}
-  return null;
-}
-async function fetchWeatherAPI(lat,lon,fixed){
-  try{
-    const r=await fetchJSON('https://api.weatherapi.com/v1/current.json?key='+encodeURIComponent(WEATHER_API_KEY.trim())+'&q='+lat+','+lon+'&lang=pt&aqi=no',9000);
-    const c=r.current;
-    wCache={source:'WeatherAPI',lat,lon,fixed:!!fixed,city:fixCityName(r.location.name,lat,lon)||'Sua região',
-      temp:Math.round(c.temp_c),dec:0,cond:c.condition.text,emoji:waEmoji(c.condition.code,c.is_day),
-      hum:c.humidity,wind:Math.round(c.wind_kph),
-      alert:(r.alerts&&r.alerts.alert&&r.alerts.alert[0])?r.alerts.alert[0].headline:null,at:Date.now()};
-    saveWeather(); renderWeather(); return true;
-  }catch(e){ return false; }
-}
-async function fetchOpenMeteo(lat,lon,fixed){
-  try{
-    const r=await fetchJSON('https://api.open-meteo.com/v1/forecast?latitude='+lat+'&longitude='+lon+
-      '&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m,is_day&timezone=America/Sao_Paulo',9000);
-    const c=r.current, info=weatherInfo(c.weather_code,c.is_day);
-    const city=await reverseCity(lat,lon);
-    wCache={source:'Open-Meteo',lat,lon,fixed:!!fixed,city:city||(wCache&&wCache.city)||'Sua região',
-      temp:c.temperature_2m,dec:Number.isInteger(c.temperature_2m)?0:1,cond:info.t,emoji:info.e,
-      hum:c.relative_humidity_2m,wind:c.wind_speed_10m,alert:null,at:Date.now()};
-    saveWeather(); renderWeather();
-  }catch(e){ if(wCache) renderWeather(); }
-}
-function saveWeather(){ try{ localStorage.setItem('poolapp.weather',JSON.stringify(wCache)); }catch(e){} }
-async function weatherChain(lat,lon,fixed){
-  const prevCity=wCache&&wCache.city;
-  if(hasKey() && await fetchWeatherAPI(lat,lon,fixed)) return notifyCity(prevCity);
-  await fetchOpenMeteo(lat,lon,fixed); notifyCity(prevCity);
-}
-function notifyCity(prevCity){
-  if(prevCity && wCache && wCache.city && prevCity!==wCache.city && !wCache.fixed) toast('Local detectado: '+wCache.city);
-}
-async function updateWeather(){
-  const pos=await getCoordsOnce();
-  if(pos){ lastFix=pos; await weatherChain(pos.lat,pos.lon,false); }
-  else{ lastFix=null; await weatherChain(W_FALLBACK.lat,W_FALLBACK.lon,true); }
-}
-function refreshWeather(){ if(lastFix) weatherChain(lastFix.lat,lastFix.lon,false); else updateWeather(); }
-function startWatch(){
-  if(!('geolocation' in navigator)||watchId!==null) return;
-  watchId=navigator.geolocation.watchPosition(p=>{
-    const np={lat:p.coords.latitude,lon:p.coords.longitude};
-    if(!lastFix||distKm(lastFix,np)>5){ lastFix=np; weatherChain(np.lat,np.lon,false); }
-  },()=>{},{enableHighAccuracy:true,timeout:15000,maximumAge:0});
-}
-function renderWeather(){
-  if(!wCache) return;
-  $('wEmoji').textContent=wCache.emoji;
-  $('wTemp').textContent=Math.round(wCache.temp)+'°C';
-  $('wCity').textContent='· '+(wCache.city||'Sua região');
-  $('wpEmoji').textContent=wCache.emoji;
-  $('wpCond').textContent=wCache.cond||'—';
-  $('wpCity').textContent='📍 '+(wCache.city||'Sua região')+(wCache.fixed?' · GPS indisponível':'');
-  $('wpTemp').textContent=fmt(wCache.temp,wCache.dec!=null?wCache.dec:0)+'°C';
-  $('wpHum').textContent=(wCache.hum!=null?Math.round(wCache.hum):'—')+'%';
-  $('wpWind').textContent=(wCache.wind!=null?fmt(wCache.wind,wCache.wind%1?1:0):'—')+' km/h';
-  const al=$('wpAlert');
-  if(wCache.alert){ al.hidden=false; $('wpAlertText').textContent=wCache.alert; } else al.hidden=true;
-  $('wpDica').textContent=dicaFor(wCache.temp);
-  $('wpTime').textContent=wCache.source+' · atualizado '+timeAgo(wCache.at);
-  $('wChip').hidden=false;
-}
-const wChip=$('wChip'), wPop=$('wPop');
-wChip.addEventListener('click',e=>{ e.stopPropagation(); const o=wPop.classList.toggle('show'); wChip.setAttribute('aria-expanded',o); });
-document.addEventListener('click',e=>{
-  if(wPop.classList.contains('show')&&!wPop.contains(e.target)&&!wChip.contains(e.target)){
-    wPop.classList.remove('show'); wChip.setAttribute('aria-expanded','false');
-  }
-});
-
-/* ============================================================
-   LITRAGEM — 7,80×3,80 + hidro 2,60×2,60 (banco 40cm) + 1,20×1,20
-============================================================ */
-function renderLit(){
-  let total=0;
-  LIT.forEach((L,i)=>{
-    const part=L.a*L.b*litProf[i]*1000; total+=part;
-    $('litO'+i).textContent=nf0.format(Math.round(part))+' L';
-  });
-  const r=Math.round(total);
-  $('litTotal').textContent=nf0.format(r)+' L';
-  $('litTotalMini').textContent=nf0.format(r)+' L';
-  return r;
-}
-[0,1,2].forEach(i=>{
-  $('litD'+i).value=litProf[i];
-  $('litD'+i).addEventListener('input',e=>{
-    const v=parseFloat(e.target.value);
-    if(!Number.isNaN(v)&&v>0){ litProf[i]=v; renderLit(); }
-  });
-  $('litD'+i).addEventListener('change',()=>{ try{localStorage.setItem('poolapp.lit',JSON.stringify(litProf));}catch(e){} });
-});
- $('litApply').addEventListener('click',()=>{
-  const total=renderLit();
-  setVolume(Math.max(1000,Math.round(total)));
-  toast('Volume atualizado: '+nf0.format(state.volume)+' L');
-});
-
-/* ============================================================
-   TRATAMENTO ORIENTADO — ordem obrigatória + travas anti-sulfato
-============================================================ */
-const SULFATO_PER_M3 = 20, SUPER_PER_1000L = 28, CLAR_PER_M3 = 1.95, METAL_PER_M3 = 10;
-const sulfatoDose = ()=> Math.round(SULFATO_PER_M3*m3());
-const superDose   = ()=> Math.round(SUPER_PER_1000L*state.volume/1000);
-const clarDose    = ()=> Math.round(CLAR_PER_M3*m3());
-const metalDose   = ()=> Math.round(METAL_PER_M3*m3());
-
-function treatState(){
-  const ph=state.values.ph, at=state.values.alcalinidade, c=state.values.cloro;
-  return {
-    ph, at, c,
-    phOk: ph>=7.0 && ph<=7.4,
-    atOk: at>=100 && at<=120,
-    cloroHi: c>3.5,
-    cloroLo: c<1,
-    cloroOk: c>=1 && c<=3.5,
-    within24h: treat.lastSulfato ? (Date.now()-treat.lastSulfato) < 24*3600e3 : false
-  };
-}
-function stepCard(cls, inner){ return `<div class="${cls}">${inner}</div>`; }
-
-function renderTreat(){
-  const st=treatState(), box=$('treatSteps'), steps=[];
-
-  /* ETAPA 1 — pH + AT */
-  const e1ok = st.phOk && st.atOk;
-  let e1='';
-  if(e1ok){
-    e1 = stepCard('t-ok', `<p>Água equilibrada: pH <b>${fmt(st.ph,1)}</b> · AT <b>${nf0.format(st.at)} ppm</b>.</p>`);
-  }else{
-    let det='';
-    if(!st.phOk){
-      const d=(7.2-st.ph)*100*(m3()/30);
-      det += st.ph<7.0
-        ? `pH <b>${fmt(st.ph,1)}</b> baixo — eleve com <b>${fmtGrams(d)}</b> de barrilha. `
-        : `pH <b>${fmt(st.ph,1)}</b> alto — reduza com redutor de pH. `;
-    }
-    if(!st.atOk){
-      const d=(100-st.at)*45*(m3()/30);
-      det += st.at<100
-        ? `Alcalinidade <b>${nf0.format(st.at)} ppm</b> baixa — suba para 100 com <b>${fmtGrams(d)}</b> de bicarbonato.`
-        : `Alcalinidade <b>${nf0.format(st.at)} ppm</b> alta — reduza com ácido muriático em etapas curtas.`;
-    }
-    e1 = stepCard('t-wait', `<p><b>1º corrija antes de qualquer cloro ou sulfato.</b> ${det}</p>`);
-  }
-  steps.push(`<div class="tstep ${e1ok?'ok':'todo'}"><span class="ts-n">1</span>
-    <div class="ts-body"><div class="ts-head"><b>Equilibrar pH e Alcalinidade</b>
-    <span class="badge ${e1ok?'mint':'amber'}"><i></i>${e1ok?'OK':'Corrigir'}</span></div>${e1}</div></div>`);
-
-  /* ETAPA 2 — Cloro 1–3 ppm */
-  let e2c='t-ok', e2p='', cls2='ok', badge2='OK';
-  if(st.cloroHi){
-    cls2='todo'; badge2='Aguardar'; e2c='t-wait';
-    e2p=`<p>Cloro <b>${fmt(st.c,1)} ppm</b> — acima da faixa. Retire a capa, deixe <b>filtrar no sol por 6h</b> até baixar para <b>3,0 ppm</b>. NÃO aplique mais cloro nem sulfato agora.</p>`;
-  }else if(st.cloroLo){
-    cls2='todo'; badge2='Superclorar'; e2c='t-wait';
-    e2p=`<p>Cloro <b>${fmt(st.c,1)} ppm</b> — abaixo de 1,0. Supercloração:</p>
-      <div class="t-dose"><strong>${nf0.format(superDose())} g</strong><span>de cloro granulado (28 g / 1.000 L)</span></div>
-      <ul class="t-steps"><li>Dissolva em balde com água da piscina</li><li>Bomba em RECIRCULAR por 30 min</li><li>Re-meça em 4h antes de seguir</li></ul>`;
-  }else{
-    e2p=`<p>Cloro <b>${fmt(st.c,1)} ppm</b> — na faixa 1–3 ppm, pode seguir para a decantação.</p>`;
-  }
-  steps.push(`<div class="tstep ${cls2}"><span class="ts-n">2</span>
-    <div class="ts-body"><div class="ts-head"><b>Nivelar o Cloro (1–3 ppm)</b>
-    <span class="badge ${cls2==='ok'?'mint':(badge2==='Aguardar'?'red':'amber')}"><i></i>${badge2}</span></div>
-    ${stepCard(e2c,e2p)}</div></div>`);
-
-  /* ETAPA 3 — Sulfato com TRAVAS */
-  let e3inner='', cls3='stop', badge3='Bloqueado', podeAplicar=false;
-
-  if(st.cloroHi){
-    e3inner = stepCard('t-block',
-      `<p>🛑 Cloro alto (${fmt(st.c,1)}ppm). Sulfato NÃO vai decantar. Retire a capa, deixe filtrar no sol por 6h até baixar para 3,0ppm. NÃO aplique sulfato agora.</p>`);
-  }else if(!e1ok){
-    e3inner = stepCard('t-block',
-      `<p>🛑 Ordem obrigatória: 1º pH/Alcalinidade, 2º cloro em 1–3 ppm. SÓ DEPOIS a decantação. Corrija a Etapa 1 antes de aplicar sulfato.</p>`);
-  }else if(st.cloroLo){
-    e3inner = stepCard('t-block',
-      `<p>🛑 Cloro ${fmt(st.c,1)} ppm está abaixo de 1,0. Faça a supercloração da Etapa 2 primeiro — sulfato em água sem cloro não clareia, alimenta algas.</p>`);
-  }else if(st.within24h){
-    cls3='todo'; badge3='Aguardar';
-    const h=Math.floor((Date.now()-treat.lastSulfato)/3600e3);
-    e3inner = stepCard('t-wait',
-      `<p>Sulfato aplicado <b>há ${h}h</b> — NÃO repita a dose dentro de 24h. A decantação leva 12–24h.</p>
-       <ul class="t-steps"><li>Bomba DESLIGADA durante a decantação</li><li>Depois: aspirar no DRENO/WASTE, não FILTRAR</li></ul>`)
-      + `<button class="btn amberB" id="btnDiag" style="margin-top:10px">
-           Já apliquei sulfato nas últimas 24h e continua verde/turva/amarelada
-         </button>`;
-  }else{
-    cls3='todo'; badge3='Pronto'; podeAplicar=true;
-    e3inner = stepCard('t-ok',
-      `<p>Água equilibrada e cloro em ${fmt(st.c,1)} ppm — pode decantar.</p>
-       <div class="t-dose"><strong>${nf0.format(sulfatoDose())} g</strong><span>de sulfato de alumínio (${SULFATO_PER_M3} g/m³)</span></div>
-       <ul class="t-steps">
-         <li>Dissolva em balde com água morna, sem grumos</li>
-         <li>Bomba em RECIRCULAR · espalhe por toda a piscina</li>
-         <li>Desligue a bomba e deixe decantar 12–24h SEM perturbar</li>
-         <li>Aspire o fundo no DRENO/WASTE, nunca em FILTRAR</li>
-       </ul>`)
-      + `<button class="btn primary" id="btnAplicar" style="margin-top:10px">
-           Confirmar que apliquei o sulfato
-         </button>`;
-  }
-  steps.push(`<div class="tstep ${cls3}"><span class="ts-n">3</span>
-    <div class="ts-body"><div class="ts-head"><b>Decantação · Sulfato de alumínio</b>
-    <span class="badge ${cls3==='stop'?'red':(cls3==='todo'?'amber':'mint')}"><i></i>${badge3}</span></div>
-    ${e3inner}</div></div>`);
-
-  box.innerHTML=steps.join('');
-
-  const bb=$('treatBadge');
-  if(e1ok && st.cloroOk && podeAplicar){ bb.className='badge mint'; $('treatBadgeT').textContent='Pronto p/ tratar'; }
-  else if(st.cloroHi){ bb.className='badge red'; $('treatBadgeT').textContent='Aguardar cloro'; }
-  else if(st.within24h){ bb.className='badge amber'; $('treatBadgeT').textContent='Em decantação'; }
-  else { bb.className='badge amber'; $('treatBadgeT').textContent='Em andamento'; }
-
-  const bA=$('btnAplicar');
-  if(bA) bA.addEventListener('click',()=>{
-    treat.lastSulfato=Date.now(); persistTreat();
-    toast('Aplicação registrada — nova liberação em 24h', true);
-    renderTreat();
-  });
-  const bD=$('btnDiag');
-  if(bD) bD.addEventListener('click', openDiag);
-}
-
-/* ---------- diagnóstico pós-sulfato ---------- */
-const DIAG = [
-  { e:'🟢', t:'Ainda VERDE', s:'algas ativas',
-    render(){
-      return `<div class="t-wait"><p><b>Supercloração — sulfato não mata alga.</b></p>
-        <div class="t-dose"><strong>${nf0.format(superDose())} g</strong><span>de cloro granulado (28 g / 1.000 L)</span></div>
-        <ul class="t-steps"><li>Dissolva em balde e espalhe com bomba em RECIRCULAR</li>
-        <li>Escove paredes e fundo</li><li>Filtre 12h, re-meça o cloro e só então reavalie a decantação</li>
-        <li><b>NÃO use sulfato agora</b></li></ul></div>`;
-    }},
-  { e:'⚪', t:'Branca / leitosa / turva', s:'flóculos em suspensão',
-    render(){
-      return `<div class="t-ok"><p><b>O sulfato decantou em pó fino — falta filtração + clarificante.</b></p>
-        <div class="t-dose"><strong>${nf0.format(clarDose())} ml</strong><span>de clarificante (${CLAR_PER_M3} ml/m³)</span></div>
-        <ul class="t-steps"><li><b>FILTRAR 24h seguidos</b></li>
-        <li>Aplique o clarificante com bomba em FILTRAR</li>
-        <li>Retro-lave a areia do filtro a cada 12h durante esse período</li>
-        <li><b>NÃO repita sulfato</b></li></ul></div>`;
-    }},
-  { e:'🟡', t:'Amarelada / marrom', s:'ferro ou cobre oxidado',
-    render(){
-      return `<div class="t-block"><p><b>METAIS na água — sulfato e cloro agravam a mancha.</b></p>
-        <div class="t-dose"><strong>${nf0.format(metalDose())} ml</strong><span>de sequestrante de metais (${METAL_PER_M3} ml/m³)</span></div>
-        <ul class="t-steps"><li>Bomba em FILTRAR 6h com o produto circulando</li>
-        <li>Reavalie em 24h — mancha amarela/marrom costuma clarear</li>
-        <li><b>NUNCA use sulfato nesta água</b> — oxida mais metal</li></ul></div>`;
-    }}
-];
-function openDiag(){
-  const opts=$('diagOpts');
-  opts.innerHTML = DIAG.map((d,i)=>
-    `<button class="diag-opt" data-i="${i}">
-       <span class="d-e" aria-hidden="true">${d.e}</span>
-       <span class="d-t"><b>${d.t}</b><span>${d.s}</span></span>
-     </button>`).join('');
-  opts.onclick = e=>{
-    const b=e.target.closest('.diag-opt'); if(!b) return;
-    $('diagResult').innerHTML = DIAG[+b.dataset.i].render();
-    $('diagResult').hidden=false;
-    $('dgBack').hidden=false;
-    opts.style.display='none';
-    $('diagSheet').scrollTo({top:$('diagResult').offsetTop-70, behavior:'smooth'});
-  };
-  opts.style.display=''; $('diagResult').hidden=true; $('dgBack').hidden=true;
-  scrim.classList.add('show');
-  $('diagSheet').classList.add('open');
-  document.body.classList.add('locked');
-}
-function closeDiag(){
-  if(!$('diagSheet').classList.contains('open')) return;
-  $('diagSheet').classList.remove('open');
-  if(!$('sheet').classList.contains('open')&&!$('valveSheet').classList.contains('open')&&!$('installSheet').classList.contains('open')){
-    scrim.classList.remove('show'); document.body.classList.remove('locked');
-  }
-}
- $('dgClose').addEventListener('click', closeDiag);
- $('dgBack').addEventListener('click', ()=>{
-  $('diagResult').hidden=true; $('dgBack').hidden=true; $('diagOpts').style.display='';
-});
-
-/* ============================================================
-   VÁLVULA — stage sem pointer-events; stations com data-i + onClick
-============================================================ */
-const vStage=$('valveStage'), vPlate=$('vPlate'), vLever=$('vLever');
-let vSheetTimer=null;
-
-VALVE_POS.forEach(v=>{
-  const t=document.createElement('span'); t.className='v-tick';
-  t.style.setProperty('--a',v.angle+'deg'); vPlate.insertBefore(t,vLever);
-});
-VALVE_POS.forEach((v,i)=>{
-  const st=document.createElement('button');
-  st.type='button';
-  st.className='station'+(i<2||i===5?' up':'')+' st-'+i;
-  st.dataset.i=i;
-  st.setAttribute('aria-label','Posição '+(i+1)+': '+v.full);
-  st.innerHTML=`<span class="v-num">${i+1}</span><span class="v-name">${v.label}</span>`;
-  st.addEventListener('click',()=>{ selectValve(+st.dataset.i,{fromUser:true}); });
-  vStage.appendChild(st);
-});
+/* PoolApp Universal — por Elias costa NEGRET'S — offline-first */
+const ICONS={ph:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5C15.5 7.6 18 10.4 18 13.4A6 6 0 1 1 6 13.4C6 10.4 8.5 7.6 12 3.5Z"/><path d="M8.2 14.6c1.2-.8 2.4-.8 3.6 0s2.4.8 3.6 0" stroke-width="1.4"/></svg>',cloro:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6M10 3v4.5L6.6 13a5 5 0 1 0 10.8 0L14 7.5V3"/><circle cx="12" cy="15" r=".9" fill="currentColor" stroke="none"/><circle cx="10.3" cy="16.8" r=".8" fill="currentColor" stroke="none"/><circle cx="13.7" cy="16.8" r=".8" fill="currentColor" stroke="none"/></svg>',turbidez:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="8.2"/><circle cx="9" cy="10.5" r="1" fill="currentColor" stroke="none"/><circle cx="14.5" cy="9.8" r=".8" fill="currentColor" stroke="none"/><circle cx="12.5" cy="13.8" r="1.1" fill="currentColor" stroke="none"/><circle cx="9.6" cy="14.6" r=".7" fill="currentColor" stroke="none"/><circle cx="15" cy="13.5" r=".6" fill="currentColor" stroke="none"/></svg>',alcalinidade:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M3 9c2.2 0 2.2 1.8 4.5 1.8S9.8 9 12 9s2.2 1.8 4.5 1.8S18.8 9 21 9"/><path d="M3 15c2.2 0 2.2 1.8 4.5 1.8S9.8 15 12 15s2.2 1.8 4.5 1.8S18.8 15 21 15"/></svg>',dureza:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.6 20.5 8 12 12.4 3.5 8Z"/><path d="M20.5 12.5 12 16.9 3.5 12.5"/><path d="M20.5 16.5 12 20.9 3.5 16.5"/></svg>',check:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>',alert:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 4.5 20.8 19.5H3.2Z"/><path d="M12 10.2v3.6"/><circle cx="12" cy="16.6" r=".9" fill="currentColor" stroke="none"/></svg>'};
+const DEFAULTS={ph:7.2,cloro:2.5,turbidez:35,alcalinidade:90,dureza:240};
+const PARAMS={
+ph:{label:'pH',unit:'',dec:1,min:6,max:8.5,step:0.1,idealMin:7,idealMax:7.4,dose:{target:7.2,per:100,up:'barrilha (bicarbonato de sódio)',downName:'redutor de pH'}},
+cloro:{label:'Cloro livre',unit:'ppm',dec:1,min:0,max:8,step:0.1,idealMin:1,idealMax:3,dose:{target:2,per:60,up:'cloro granulado',downMsg:'Cloro acima do alvo — não adicione produto; aguarde o decaimento natural.'}},
+turbidez:{label:'Turbidez',unit:'%',dec:0,min:0,max:100,step:1,idealMin:0,idealMax:20,full:true},
+alcalinidade:{label:'Alcalinidade Total',unit:'ppm',dec:0,min:0,max:240,step:5,idealMin:80,idealMax:120,target:100,dose:{target:100,per:45,up:'bicarbonato de sódio',downMsg:'Alcalinidade acima do alvo — reduza com ácido muriático em etapas curtas.'}},
+dureza:{label:'Dureza Cálcica',unit:'ppm',dec:0,min:0,max:500,step:10,idealMin:200,idealMax:400,dose:{target:250,per:30,up:'cloreto de cálcio',downMsg:'Dureza acima do alvo — dilua 20–30% da água com água nova.'}}};
+const TIPS={vinil:'Use bicarbonato, nunca cal. pH 7,0-7,4 evita rugas no vinil',fibra:'Evite ácido em excesso, agride gel coat',alvenaria:'Pode usar cal hidratada',infinity:'Atenção perda na borda'};
+const VALVE_POS=[{id:'filtrar',label:'FILTRAR',full:'Filtrar',angle:0},{id:'lavar',label:'RETRO-LAVAR',full:'Retro-lavar',angle:60},{id:'enxaguar',label:'ENXAGUAR',full:'Enxaguar',angle:120},{id:'recircular',label:'RECIRCULAR',full:'Recircular',angle:180},{id:'dreno',label:'DRENO',full:'Dreno / Waste',angle:240},{id:'fechado',label:'FECHADO',full:'Fechado',angle:300}];
+const VALVE_INFO={filtrar:{resume:'A posição do dia a dia: a água sai da piscina, atravessa a areia do filtro e volta limpa.',steps:['Filtre de 6 a 8 h por dia no verão (4 a 6 h no inverno)','Limpe o pré-filtro da bomba a cada 15 dias','Retro-lave quando o manômetro subir ~8 psi'],warn:'Desligue SEMPRE a bomba antes de girar a manopla — girar sob pressão rompe a junta.'},lavar:{resume:'Inverte o fluxo e leva a sujeira do filtro direto para o esgoto.',steps:['Desligue a bomba e gire para RETRO-LAVAR','Ligue por 2 a 3 minutos','Pare quando o visor mostrar água transparente'],warn:'Faça a cada 1–2 semanas ou quando o manômetro subir.'},enxaguar:{resume:'Assenta a areia depois da retro-lavagem.',steps:['Vem sempre DEPOIS do retro-lavar','Ligue por 20–30 segundos','Volte para FILTRAR'],warn:'Pular o enxágue manda areia solta para a piscina.'},recircular:{resume:'Circula SEM passar pelo filtro.',steps:['Use para diluir produtos com a água em movimento','Confira antes de sair — nada é filtrado'],warn:'Água sem filtrar por dias vira água verde.'},dreno:{resume:'Joga água direto no esgoto — o nível desce.',steps:['Baixar nível após chuva','Aspiração: sujeira sai em vez de voltar','Bomba em baixa rotação'],warn:'Não deixe o nível descer além da metade do skimmer.'},fechado:{resume:'Bloqueia todas as linhas — inverno/manutenção.',steps:['Bomba DESLIGADA','Reabrir: girar para FILTRAR'],warn:'NUNCA ligue a bomba em FECHADO — a pressão pode romper o filtro.'}};
+const LIT=[{name:'Principal retangular',a:7.8,b:3.8},{name:'Hidro · banco 40 cm',a:2.6,b:2.6},{name:'Quadrado central',a:1.2,b:1.2}];
+let litProf=[1.40,0.90,0.70];
+let state={type:'vinil',volume:48588,values:{...DEFAULTS}};
+let measures={},valveIndex=0,leverAngle=0,treat={lastSulfato:null};
+try{const s=JSON.parse(localStorage.getItem('poolapp.state')||'null');if(s){state.type=s.type||'vinil';state.volume=s.volume||48588;Object.assign(state.values,s.values||{});}measures=JSON.parse(localStorage.getItem('poolapp.measures')||'{}');valveIndex=Math.min(5,Math.max(0,parseInt(localStorage.getItem('poolapp.valve'),10)||0));treat=JSON.parse(localStorage.getItem('poolapp.treat')||'null')||treat;const lp=JSON.parse(localStorage.getItem('poolapp.lit')||'null');if(lp&&lp.length===3)litProf=lp;}catch(e){}
+const persist=()=>localStorage.setItem('poolapp.state',JSON.stringify(state));
+const persistMeasures=()=>localStorage.setItem('poolapp.measures',JSON.stringify(measures));
+const persistTreat=()=>localStorage.setItem('poolapp.treat',JSON.stringify(treat));
+const $=id=>document.getElementById(id);
+const nf0=new Intl.NumberFormat('pt-BR');
+const fmt=(v,d)=>v.toLocaleString('pt-BR',{minimumFractionDigits:d,maximumFractionDigits:d});
+const fmtGrams=g=>g>=20?nf0.format(Math.round(g))+' g':fmt(Math.round(g*10)/10,1)+' g';
+const pct=(k,v)=>{const p=PARAMS[k];return Math.min(1,Math.max(0,(v-p.min)/(p.max-p.min)))*100;};
+const m3=()=>state.volume/1000;
+function statusOf(k,v){const p=PARAMS[k];if(k==='alcalinidade'){if(v>=100&&v<=p.idealMax)return{t:'Ideal',c:'mint'};if(v<100)return{t:'Baixa',c:'amber'};return{t:'Alta',c:'amber'};}if(v>=p.idealMin&&v<=p.idealMax)return{t:'Ideal',c:'mint'};if(k==='turbidez')return{t:'Atenção',c:'amber'};return{t:v<p.idealMin?'Baixo':'Alto',c:'amber'};}
+function timeAgo(at){const d=Date.now()-at;if(d<60e3)return'agora';if(d<3600e3)return'há '+Math.floor(d/60e3)+' min';if(d<86400e3)return'há '+Math.floor(d/3600e3)+' h';return new Date(at).toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'});}
+function toast(msg,warn){const b=document.createElement('div');b.className='toast'+(warn?' warn':'');b.innerHTML=(warn?ICONS.alert:ICONS.check)+'<span></span>';b.querySelector('span').textContent=msg;$('toasts').appendChild(b);requestAnimationFrame(()=>b.classList.add('show'));setTimeout(()=>{b.classList.remove('show');setTimeout(()=>b.remove(),400);},3200);}
+function renderOnline(){$('offbar').hidden=navigator.onLine;}
+window.addEventListener('offline',renderOnline);
+window.addEventListener('online',()=>{renderOnline();updateWeather();});
+/* ===== CLIMA: WeatherAPI (cole sua key) → Open-Meteo ===== */
+const WEATHER_API_KEY="";
+const W_FALLBACK={lat:-20.43606,lon:-43.7722,city:'Miguel Burnier'};
+let wCache=null,lastFix=null,watchId=null;
+try{wCache=JSON.parse(localStorage.getItem('poolapp.weather')||'null');}catch(e){}
+const hasKey=()=>WEATHER_API_KEY&&WEATHER_API_KEY!=='SUA_KEY_AQUI'&&WEATHER_API_KEY.trim().length>10;
+function distKm(a,b){const R=6371,r=Math.PI/180,dL=(b.lat-a.lat)*r,dO=(b.lon-a.lon)*r,s=Math.sin(dL/2)**2+Math.cos(a.lat*r)*Math.cos(b.lat*r)*Math.sin(dO/2)**2;return 2*R*Math.asin(Math.sqrt(s));}
+const nearBurnier=(la,lo)=>distKm({lat:W_FALLBACK.lat,lon:W_FALLBACK.lon},{lat:la,lon:lo})<8;
+const fixCityName=(n,la,lo)=>(n&&n.includes('Ouro Preto')&&nearBurnier(la,lo))?'Miguel Burnier':n;
+function waEmoji(c,d){if(c===1000)return d?'☀️':'🌙';if(c===1003)return d?'⛅':'🌙';if([1006,1009,1030,1135,1147].includes(c))return'☁️';if([1063,1150,1153,1168,1171,1180,1183,1186,1189,1192,1195,1198,1201,1240,1243,1246].includes(c))return'🌧️';if([1087,1273,1276,1279,1282].includes(c))return'⛈️';if([1066,1069,1072,1114,1117,1204,1207,1210,1213,1216,1219,1222,1225,1237,1249,1252,1255,1258,1261,1264].includes(c))return'🌨️';return d?'⛅':'🌙';}
+function weatherInfo(c,d){if(c===0)return{e:d?'☀️':'🌙',t:'Céu limpo'};if(c<=3)return{e:d?'⛅':'🌙',t:'Parcialmente nublado'};if(c<=57)return{e:'☁️',t:'Nublado'};if(c<=82)return{e:'🌧️',t:'Chuva'};if(c>=95)return{e:'⛈️',t:'Tempestade'};return{e:'⛅',t:'Parcialmente nublado'};}
+function dicaFor(t){if(t>=32)return'Com '+Math.round(t)+'°C o cloro evapora 40% mais rápido, adicione +50g';if(t>=28)return'Com '+Math.round(t)+'°C o cloro evapora ~25% mais rápido, adicione +30g';return'Com '+Math.round(t)+'°C a evaporação está sob controle — mantenha a dosagem padrão';}
+function fetchJSON(url,ms){const c=new AbortController();const t=setTimeout(()=>c.abort(),ms);return fetch(url,{signal:c.signal}).then(r=>{if(!r.ok)throw 0;return r.json();}).finally(()=>clearTimeout(t));}
+function getCoordsOnce(){return new Promise(res=>{if(!('geolocation'in navigator))return res(null);navigator.geolocation.getCurrentPosition(p=>res({lat:p.coords.latitude,lon:p.coords.longitude}),()=>res(null),{enableHighAccuracy:true,timeout:8000,maximumAge:0});});}
+function pickCity(a,r){return a.city||a.town||a.village||a.municipality||a.hamlet||a.suburb||a.county||(r.display_name?r.display_name.split(',')[0]:null);}
+async function reverseCity(la,lo){const k=la.toFixed(2)+','+lo.toFixed(2);let g={};try{g=JSON.parse(localStorage.getItem('poolapp.geo')||'{}');}catch(e){}const h=g[k];if(h&&Date.now()-h.at<7*864e5)return fixCityName(h.city,la,lo);try{const r=await fetchJSON('https://nominatim.openstreetmap.org/reverse?lat='+la+'&lon='+lo+'&format=json&accept-language=pt-BR',9000);const c=pickCity(r.address||{},r);if(c){g[k]={city:c,at:Date.now()};try{localStorage.setItem('poolapp.geo',JSON.stringify(g));}catch(e){}return fixCityName(c,la,lo);}}catch(e){}try{const r=await fetchJSON('https://api.bigdatacloud.net/data/reverse-geocode-client?latitude='+la+'&longitude='+lo+'&localityLanguage=pt',8000);const c=r.city||r.locality||r.principalSubdivision;if(c){g[k]={city:c,at:Date.now()};try{localStorage.setItem('poolapp.geo',JSON.stringify(g));}catch(e){}return fixCityName(c,la,lo);}}catch(e){}return null;}
+async function fetchWeatherAPI(la,lo,fx){try{const r=await fetchJSON('https://api.weatherapi.com/v1/current.json?key='+encodeURIComponent(WEATHER_API_KEY.trim())+'&q='+la+','+lo+'&lang=pt&aqi=no',9000);const c=r.current;wCache={source:'WeatherAPI',lat:la,lon:lo,fixed:!!fx,city:fixCityName(r.location.name,la,lo)||'Sua região',temp:Math.round(c.temp_c),dec:0,cond:c.condition.text,emoji:waEmoji(c.condition.code,c.is_day),hum:c.humidity,wind:Math.round(c.wind_kph),alert:(r.alerts&&r.alerts.alert&&r.alerts.alert[0])?r.alerts.alert[0].headline:null,at:Date.now()};saveWeather();renderWeather();return true;}catch(e){return false;}}
+async function fetchOpenMeteo(la,lo,fx){try{const r=await fetchJSON('https://api.open-meteo.com/v1/forecast?latitude='+la+'&longitude='+lo+'&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m,is_day&timezone=America/Sao_Paulo',9000);const c=r.current,i=weatherInfo(c.weather_code,c.is_day);const city=await reverseCity(la,lo);wCache={source:'Open-Meteo',lat:la,lon:lo,fixed:!!fx,city:city||(wCache&&wCache.city)||'Sua região',temp:c.temperature_2m,dec:Number.isInteger(c.temperature_2m)?0:1,cond:i.t,emoji:i.e,hum:c.relative_humidity_2m,wind:c.wind_speed_10m,alert:null,at:Date.now()};saveWeather();renderWeather();}catch(e){if(wCache)renderWeather();}}
+function saveWeather(){try{localStorage.setItem('poolapp.weather',JSON.stringify(wCache));}catch(e){}}
+async function weatherChain(la,lo,fx){const pc=wCache&&wCache.city;if(hasKey()&&await fetchWeatherAPI(la,lo,fx))return notifyCity(pc);await fetchOpenMeteo(la,lo,fx);notifyCity(pc);}
+function notifyCity(pc){if(pc&&wCache&&wCache.city&&pc!==wCache.city&&!wCache.fixed)toast('Local detectado: '+wCache.city);}
+async function updateWeather(){const p=await getCoordsOnce();if(p){lastFix=p;await weatherChain(p.lat,p.lon,false);}else{lastFix=null;await weatherChain(W_FALLBACK.lat,W_FALLBACK.lon,true);}}
+function refreshWeather(){if(lastFix)weatherChain(lastFix.lat,lastFix.lon,false);else updateWeather();}
+function startWatch(){if(!('geolocation'in navigator)||watchId!==null)return;watchId=navigator.geolocation.watchPosition(p=>{const n={lat:p.coords.latitude,lon:p.coords.longitude};if(!lastFix||distKm(lastFix,n)>5){lastFix=n;weatherChain(n.lat,n.lon,false);}},()=>{},{enableHighAccuracy:true,timeout:15000,maximumAge:0});}
+function renderWeather(){if(!wCache)return;$('wEmoji').textContent=wCache.emoji;$('wTemp').textContent=Math.round(wCache.temp)+'°C';$('wCity').textContent='· '+(wCache.city||'Sua região');$('wpEmoji').textContent=wCache.emoji;$('wpCond').textContent=wCache.cond||'—';$('wpCity').textContent='📍 '+(wCache.city||'Sua região')+(wCache.fixed?' · GPS indisponível':'');$('wpTemp').textContent=fmt(wCache.temp,wCache.dec!=null?wCache.dec:0)+'°C';$('wpHum').textContent=(wCache.hum!=null?Math.round(wCache.hum):'—')+'%';$('wpWind').textContent=(wCache.wind!=null?fmt(wCache.wind,wCache.wind%1?1:0):'—')+' km/h';const al=$('wpAlert');if(wCache.alert){al.hidden=false;$('wpAlertText').textContent=wCache.alert;}else al.hidden=true;$('wpDica').textContent=dicaFor(wCache.temp);$('wpTime').textContent=wCache.source+' · atualizado '+timeAgo(wCache.at);$('wChip').hidden=false;}
+const wChip=$('wChip'),wPop=$('wPop');
+wChip.addEventListener('click',e=>{e.stopPropagation();const o=wPop.classList.toggle('show');wChip.setAttribute('aria-expanded',o);});
+document.addEventListener('click',e=>{if(wPop.classList.contains('show')&&!wPop.contains(e.target)&&!wChip.contains(e.target)){wPop.classList.remove('show');wChip.setAttribute('aria-expanded','false');}});
+/* ===== LITRAGEM ===== */
+function renderLit(){let t=0;LIT.forEach((L,i)=>{const p=L.a*L.b*litProf[i]*1000;t+=p;$('litO'+i).textContent=nf0.format(Math.round(p))+' L';});const r=Math.round(t);$('litTotal').textContent=nf0.format(r)+' L';$('litTotalMini').textContent=nf0.format(r)+' L';return r;}
+[0,1,2].forEach(i=>{$('litD'+i).value=litProf[i];$('litD'+i).addEventListener('input',e=>{const v=parseFloat(e.target.value);if(!Number.isNaN(v)&&v>0){litProf[i]=v;renderLit();}});$('litD'+i).addEventListener('change',()=>{try{localStorage.setItem('poolapp.lit',JSON.stringify(litProf));}catch(e){}});});
+ $('litApply').addEventListener('click',()=>{const t=renderLit();setVolume(Math.max(1000,Math.round(t)));toast('Volume atualizado: '+nf0.format(state.volume)+' L');});
+/* ===== TRATAMENTO com travas anti-sulfato ===== */
+const SULFATO_PER_M3=20,SUPER_PER_1000L=28,CLAR_PER_M3=1.95,METAL_PER_M3=10;
+const sulfatoDose=()=>Math.round(SULFATO_PER_M3*m3());
+const superDose=()=>Math.round(SUPER_PER_1000L*state.volume/1000);
+const clarDose=()=>Math.round(CLAR_PER_M3*m3());
+const metalDose=()=>Math.round(METAL_PER_M3*m3());
+function treatState(){const ph=state.values.ph,at=state.values.alcalinidade,c=state.values.cloro;return{ph,at,c,phOk:ph>=7&&ph<=7.4,atOk:at>=100&&at<=120,cloroHi:c>3.5,cloroLo:c<1,cloroOk:c>=1&&c<=3.5,within24h:treat.lastSulfato?(Date.now()-treat.lastSulfato)<864e5:false};}
+const stepCard=(cls,inner)=>'<div class="'+cls+'">'+inner+'</div>';
+function renderTreat(){const st=treatState(),steps=[];const e1ok=st.phOk&&st.atOk;let e1='';
+if(e1ok){e1=stepCard('t-ok','<p>Água equilibrada: pH <b>'+fmt(st.ph,1)+'</b> · AT <b>'+nf0.format(st.at)+' ppm</b>.</p>');}
+else{let d='';if(!st.phOk){const g=(7.2-st.ph)*100*(m3()/30);d+=st.ph<7?'pH <b>'+fmt(st.ph,1)+'</b> baixo — eleve com <b>'+fmtGrams(g)+'</b> de barrilha. ':'pH <b>'+fmt(st.ph,1)+'</b> alto — reduza com redutor de pH. ';}
+if(!st.atOk){const g=(100-st.at)*45*(m3()/30);d+=st.at<100?'Alcalinidade <b>'+nf0.format(st.at)+' ppm</b> baixa — suba para 100 com <b>'+fmtGrams(g)+'</b> de bicarbonato.':'Alcalinidade <b>'+nf0.format(st.at)+' ppm</b> alta — reduza com ácido muriático em etapas curtas.';}
+e1=stepCard('t-wait','<p><b>1º corrija antes de qualquer cloro ou sulfato.</b> '+d+'</p>');}
+steps.push('<div class="tstep '+(e1ok?'ok':'todo')+'"><span class="ts-n">1</span><div class="ts-body"><div class="ts-head"><b>Equilibrar pH e Alcalinidade</b><span class="badge '+(e1ok?'mint':'amber')+'"><i></i>'+(e1ok?'OK':'Corrigir')+'</span></div>'+e1+'</div></div>');
+let e2c='t-ok',e2p='',cls2='ok',bg2='OK';
+if(st.cloroHi){cls2='todo';bg2='Aguardar';e2c='t-wait';e2p='<p>Cloro <b>'+fmt(st.c,1)+' ppm</b> — acima da faixa. Retire a capa, deixe <b>filtrar no sol por 6h</b> até baixar para <b>3,0 ppm</b>. NÃO aplique mais cloro nem sulfato agora.</p>';}
+else if(st.cloroLo){cls2='todo';bg2='Superclorar';e2c='t-wait';e2p='<p>Cloro <b>'+fmt(st.c,1)+' ppm</b> — abaixo de 1,0. Supercloração:</p><div class="t-dose"><strong>'+nf0.format(superDose())+' g</strong><span>de cloro granulado (28 g / 1.000 L)</span></div><ul class="t-steps"><li>Dissolva em balde com água da piscina</li><li>Bomba em RECIRCULAR por 30 min</li><li>Re-meça em 4h antes de seguir</li></ul>';}
+else{e2p='<p>Cloro <b>'+fmt(st.c,1)+' ppm</b> — na faixa 1–3 ppm, pode seguir para a decantação.</p>';}
+steps.push('<div class="tstep '+cls2+'"><span class="ts-n">2</span><div class="ts-body"><div class="ts-head"><b>Nivelar o Cloro (1–3 ppm)</b><span class="badge '+(cls2==='ok'?'mint':(bg2==='Aguardar'?'red':'amber'))+'"><i></i>'+bg2+'</span></div>'+stepCard(e2c,e2p)+'</div></div>');
+let e3='',cls3='stop',bg3='Bloqueado',pode=false;
+if(st.cloroHi){e3=stepCard('t-block','<p>🛑 Cloro alto ('+fmt(st.c,1)+'ppm). Sulfato NÃO vai decantar. Retire a capa, deixe filtrar no sol por 6h até baixar para 3,0ppm. NÃO aplique sulfato agora.</p>');}
+else if(!e1ok){e3=stepCard('t-block','<p>🛑 Ordem obrigatória: 1º pH/Alcalinidade, 2º cloro em 1–3 ppm. SÓ DEPOIS a decantação. Corrija a Etapa 1 antes de aplicar sulfato.</p>');}
+else if(st.cloroLo){e3=stepCard('t-block','<p>🛑 Cloro '+fmt(st.c,1)+' ppm está abaixo de 1,0. Faça a supercloração da Etapa 2 primeiro — sulfato em água sem cloro não clareia, alimenta algas.</p>');}
+else if(st.within24h){cls3='todo';bg3='Aguardar';const h=Math.floor((Date.now()-treat.lastSulfato)/36e5);e3=stepCard('t-wait','<p>Sulfato aplicado <b>há '+h+'h</b> — NÃO repita a dose dentro de 24h. A decantação leva 12–24h.</p><ul class="t-steps"><li>Bomba DESLIGADA durante a decantação</li><li>Depois: aspirar no DRENO/WASTE, não FILTRAR</li></ul>')+'<button class="btn amberB" id="btnDiag" style="margin-top:10px">Já apliquei sulfato nas últimas 24h e continua verde/turva/amarelada</button>';}
+else{cls3='todo';bg3='Pronto';pode=true;e3=stepCard('t-ok','<p>Água equilibrada e cloro em '+fmt(st.c,1)+' ppm — pode decantar.</p><div class="t-dose"><strong>'+nf0.format(sulfatoDose())+' g</strong><span>de sulfato de alumínio ('+SULFATO_PER_M3+' g/m³)</span></div><ul class="t-steps"><li>Dissolva em balde com água morna, sem grumos</li><li>Bomba em RECIRCULAR · espalhe por toda a piscina</li><li>Desligue a bomba e deixe decantar 12–24h SEM perturbar</li><li>Aspire o fundo no DRENO/WASTE, nunca em FILTRAR</li></ul>')+'<button class="btn primary" id="btnAplicar" style="margin-top:10px">Confirmar que apliquei o sulfato</button>';}
+steps.push('<div class="tstep '+cls3+'"><span class="ts-n">3</span><div class="ts-body"><div class="ts-head"><b>Decantação · Sulfato de alumínio</b><span class="badge '+(cls3==='stop'?'red':(cls3==='todo'?'amber':'mint'))+'"><i></i>'+bg3+'</span></div>'+e3+'</div></div>');
+ $('treatSteps').innerHTML=steps.join('');
+const bb=$('treatBadge');
+if(e1ok&&st.cloroOk&&pode){bb.className='badge mint';$('treatBadgeT').textContent='Pronto p/ tratar';}
+else if(st.cloroHi){bb.className='badge red';$('treatBadgeT').textContent='Aguardar cloro';}
+else if(st.within24h){bb.className='badge amber';$('treatBadgeT').textContent='Em decantação';}
+else{bb.className='badge amber';$('treatBadgeT').textContent='Em andamento';}
+const bA=$('btnAplicar');if(bA)bA.addEventListener('click',()=>{treat.lastSulfato=Date.now();persistTreat();toast('Aplicação registrada — nova liberação em 24h',true);renderTreat();});
+const bD=$('btnDiag');if(bD)bD.addEventListener('click',openDiag);}
+const DIAG=[
+{e:'🟢',t:'Ainda VERDE',s:'algas ativas',render(){return '<div class="t-wait"><p><b>Supercloração — sulfato não mata alga.</b></p><div class="t-dose"><strong>'+nf0.format(superDose())+' g</strong><span>de cloro granulado (28 g / 1.000 L)</span></div><ul class="t-steps"><li>Dissolva em balde e espalhe com bomba em RECIRCULAR</li><li>Escove paredes e fundo</li><li>Filtre 12h, re-meça o cloro e só então reavalie a decantação</li><li><b>NÃO use sulfato agora</b></li></ul></div>';}},
+{e:'⚪',t:'Branca / leitosa / turva',s:'flóculos em suspensão',render(){return '<div class="t-ok"><p><b>O sulfato decantou em pó fino — falta filtração + clarificante.</b></p><div class="t-dose"><strong>'+nf0.format(clarDose())+' ml</strong><span>de clarificante ('+CLAR_PER_M3+' ml/m³)</span></div><ul class="t-steps"><li><b>FILTRAR 24h seguidos</b></li><li>Aplique o clarificante com bomba em FILTRAR</li><li>Retro-lave a areia do filtro a cada 12h durante esse período</li><li><b>NÃO repita sulfato</b></li></ul></div>';}},
+{e:'🟡',t:'Amarelada / marrom',s:'ferro ou cobre oxidado',render(){return '<div class="t-block"><p><b>METAIS na água — sulfato e cloro agravam a mancha.</b></p><div class="t-dose"><strong>'+nf0.format(metalDose())+' ml</strong><span>de sequestrante de metais ('+METAL_PER_M3+' ml/m³)</span></div><ul class="t-steps"><li>Bomba em FILTRAR 6h com o produto circulando</li><li>Reavalie em 24h — mancha amarela/marrom costuma clarear</li><li><b>NUNCA use sulfato nesta água</b> — oxida mais metal</li></ul></div>';}}];
+function openDiag(){const o=$('diagOpts');o.innerHTML=DIAG.map((d,i)=>'<button class="diag-opt" data-i="'+i+'"><span class="d-e">'+d.e+'</span><span class="d-t"><b>'+d.t+'</b><span>'+d.s+'</span></span></button>').join('');o.onclick=e=>{const b=e.target.closest('.diag-opt');if(!b)return;$('diagResult').innerHTML=DIAG[+b.dataset.i].render();$('diagResult').hidden=false;$('dgBack').hidden=false;o.style.display='none';$('diagSheet').scrollTo({top:$('diagResult').offsetTop-70,behavior:'smooth'});};o.style.display='';$('diagResult').hidden=true;$('dgBack').hidden=true;$('scrim').classList.add('show');$('diagSheet').classList.add('open');document.body.classList.add('locked');}
+function closeDiag(){const s=$('diagSheet');if(!s.classList.contains('open'))return;s.classList.remove('open');if(!$('sheet').classList.contains('open')&&!$('valveSheet').classList.contains('open')&&!$('installSheet').classList.contains('open')){$('scrim').classList.remove('show');document.body.classList.remove('locked');}}
+ $('dgClose').addEventListener('click',closeDiag);
+ $('dgBack').addEventListener('click',()=>{$('diagResult').hidden=true;$('dgBack').hidden=true;$('diagOpts').style.display='';});
+/* ===== VÁLVULA ===== */
+const vPlate=$('vPlate'),vLever=$('vLever'),vStage=$('valveStage');
+VALVE_POS.forEach(v=>{const t=document.createElement('span');t.className='v-tick';t.style.setProperty('--a',v.angle+'deg');vPlate.insertBefore(t,vLever);});
+VALVE_POS.forEach((v,i)=>{const s=document.createElement('button');s.type='button';s.className='station'+(i<2||i===5?' up':'')+' st-'+i;s.dataset.i=i;s.setAttribute('aria-label','Posição '+(i+1)+': '+v.full);s.innerHTML='<span class="v-num">'+(i+1)+'</span><span class="v-name">'+v.label+'</span>';s.addEventListener('click',()=>selectValve(+s.dataset.i,{fromUser:true}));vStage.appendChild(s);});
 const stations=[...vStage.querySelectorAll('.station')];
 const nearestIndex=a=>((Math.round(a/60)%6)+6)%6;
-
-function animateLeverTo(angle){
-  const delta=((angle-leverAngle)%360+540)%360-180;
-  leverAngle+=delta; vLever.style.transform=`rotate(${leverAngle}deg)`;
-}
-function applyValveVisual(){
-  stations.forEach((st,i)=>st.classList.toggle('active',i===valveIndex));
-  $('valveBadge').className='badge '+(valveIndex===0?'mint':'amber');
-  $('valveBadgeT').textContent=VALVE_POS[valveIndex].full;
-}
-function selectValve(idx,opts={}){
-  idx=((idx%6)+6)%6; valveIndex=idx;
-  try{localStorage.setItem('poolapp.valve',String(idx));}catch(e){}
-  animateLeverTo(VALVE_POS[idx].angle); applyValveVisual();
-  if(opts.fromUser){ clearTimeout(vSheetTimer); vSheetTimer=setTimeout(openValveSheet,300); }
-}
-
+function animateLeverTo(a){const d=((a-leverAngle)%360+540)%360-180;leverAngle+=d;vLever.style.transform='rotate('+leverAngle+'deg)';}
+function applyValveVisual(){stations.forEach((s,i)=>s.classList.toggle('active',i===valveIndex));$('valveBadge').className='badge '+(valveIndex===0?'mint':'amber');$('valveBadgeT').textContent=VALVE_POS[valveIndex].full;}
+let vTimer=null;
+function selectValve(i,opts={}){i=((i%6)+6)%6;valveIndex=i;try{localStorage.setItem('poolapp.valve',String(i));}catch(e){}animateLeverTo(VALVE_POS[i].angle);applyValveVisual();if(opts.fromUser){clearTimeout(vTimer);vTimer=setTimeout(openValveSheet,300);}}
 let vDrag=null,vMoved=false,vSX=0,vSY=0;
-vPlate.addEventListener('pointerdown',e=>{
-  vDrag=e.pointerId; vMoved=false; vSX=e.clientX; vSY=e.clientY;
-  vPlate.setPointerCapture(e.pointerId); vLever.classList.add('no-anim');
-});
-vPlate.addEventListener('pointermove',e=>{
-  if(e.pointerId!==vDrag) return;
-  if(!vMoved&&Math.hypot(e.clientX-vSX,e.clientY-vSY)>6) vMoved=true;
-  if(!vMoved) return;
-  const r=vPlate.getBoundingClientRect();
-  const a=Math.atan2(e.clientX-(r.left+r.width/2),-(e.clientY-(r.top+r.height/2)))*180/Math.PI;
-  leverAngle=a; vLever.style.transform=`rotate(${a}deg)`;
-});
-['pointerup','pointercancel'].forEach(ev=>vPlate.addEventListener(ev,e=>{
-  if(e.pointerId!==vDrag) return; vDrag=null; vLever.classList.remove('no-anim');
-  if(!vMoved){ openValveSheet(); return; }
-  selectValve(nearestIndex(leverAngle),{fromUser:true});
-}));
-
-const valveSheet=$('valveSheet');
-function openValveSheet(){
-  const v=VALVE_POS[valveIndex], info=VALVE_INFO[v.id];
-  $('vsTitle').textContent=v.full;
-  $('vsPos').textContent='Posição '+(valveIndex+1)+' de 6';
-  $('vsResume').textContent=info.resume;
-  $('vsSteps').innerHTML=info.steps.map((s,i)=>`<li><span class="vs-n">${i+1}</span><span>${s}</span></li>`).join('');
-  $('vsWarnText').textContent=info.warn;
-  scrim.classList.add('show'); valveSheet.classList.add('open'); document.body.classList.add('locked');
-}
-function closeValveSheet(){
-  if(!valveSheet.classList.contains('open')) return;
-  valveSheet.classList.remove('open');
-  if(!$('sheet').classList.contains('open')&&!$('diagSheet').classList.contains('open')&&!$('installSheet').classList.contains('open')){
-    scrim.classList.remove('show'); document.body.classList.remove('locked');
-  }
-}
+vPlate.addEventListener('pointerdown',e=>{vDrag=e.pointerId;vMoved=false;vSX=e.clientX;vSY=e.clientY;vPlate.setPointerCapture(e.pointerId);vLever.classList.add('no-anim');});
+vPlate.addEventListener('pointermove',e=>{if(e.pointerId!==vDrag)return;if(!vMoved&&Math.hypot(e.clientX-vSX,e.clientY-vSY)>6)vMoved=true;if(!vMoved)return;const r=vPlate.getBoundingClientRect();const a=Math.atan2(e.clientX-(r.left+r.width/2),-(e.clientY-(r.top+r.height/2)))*180/Math.PI;leverAngle=a;vLever.style.transform='rotate('+a+'deg)';});
+['pointerup','pointercancel'].forEach(ev=>vPlate.addEventListener(ev,e=>{if(e.pointerId!==vDrag)return;vDrag=null;vLever.classList.remove('no-anim');if(!vMoved){openValveSheet();return;}selectValve(nearestIndex(leverAngle),{fromUser:true});}));
+function openValveSheet(){const v=VALVE_POS[valveIndex],i=VALVE_INFO[v.id];$('vsTitle').textContent=v.full;$('vsPos').textContent='Posição '+(valveIndex+1)+' de 6';$('vsResume').textContent=i.resume;$('vsSteps').innerHTML=i.steps.map((s,j)=>'<li><span class="vs-n">'+(j+1)+'</span><span>'+s+'</span></li>').join('');$('vsWarnText').textContent=i.warn;$('scrim').classList.add('show');$('valveSheet').classList.add('open');document.body.classList.add('locked');}
+function closeValveSheet(){const s=$('valveSheet');if(!s.classList.contains('open'))return;s.classList.remove('open');if(!$('sheet').classList.contains('open')&&!$('diagSheet').classList.contains('open')&&!$('installSheet').classList.contains('open')){$('scrim').classList.remove('show');document.body.classList.remove('locked');}}
  $('vsClose').addEventListener('click',closeValveSheet);
  $('vsOk').addEventListener('click',closeValveSheet);
-const vGrab=$('vGrabZone'); let vgy=null,vgdy=0;
-vGrab.addEventListener('pointerdown',e=>{ vgy=e.clientY; vgdy=0; vGrab.setPointerCapture(e.pointerId); valveSheet.style.transition='none'; });
-vGrab.addEventListener('pointermove',e=>{ if(vgy===null)return; vgdy=Math.max(0,e.clientY-vgy); valveSheet.style.transform=`translate(-50%,${vgdy}px)`; });
-['pointerup','pointercancel'].forEach(ev=>vGrab.addEventListener(ev,()=>{
-  if(vgy===null) return;
-  valveSheet.style.transition=''; valveSheet.style.transform='';
-  if(vgdy>110) closeValveSheet();
-  vgy=null; vgdy=0;
-}));
-
-/* ============================================================
-   Grid de parâmetros
-============================================================ */
+const vGrab=$('vGrabZone');let vgy=null,vgdy=0;
+vGrab.addEventListener('pointerdown',e=>{vgy=e.clientY;vgdy=0;vGrab.setPointerCapture(e.pointerId);$('valveSheet').style.transition='none';});
+vGrab.addEventListener('pointermove',e=>{if(vgy===null)return;vgdy=Math.max(0,e.clientY-vgy);$('valveSheet').style.transform='translate(-50%,'+vgdy+'px)';});
+['pointerup','pointercancel'].forEach(ev=>vGrab.addEventListener(ev,()=>{if(vgy===null)return;$('valveSheet').style.transition='';$('valveSheet').style.transform='';if(vgdy>110)closeValveSheet();vgy=null;vgdy=0;}));
+/* ===== GRID ===== */
 const grid=$('grid');
-function buildCards(){
-  grid.innerHTML=Object.keys(PARAMS).map(key=>{
-    const p=PARAMS[key];
-    const note=key==='turbidez'?'<p class="pc-note">Aspirar no DRENO/WASTE, não FILTRAR</p>':'';
-    return `<article class="pcard card${p.full?' full':''}" data-key="${key}" onclick="openSheet('${key}')" tabindex="0" role="button" aria-label="Abrir ${p.label}">
-      <div class="pc-top"><span class="pc-ico">${ICONS[key]}</span><span class="pc-lbl">${p.label}</span>
-        <span class="badge mint" data-badge><i></i><b style="font-weight:700" data-badge-t></b></span></div>
-      <div class="pc-val"><span class="mono" data-val></span><em>${p.unit||'pH'}</em></div>
-      ${note}
-      <div class="mini"><div class="m-bar"><span class="m-zone"></span><span class="m-fill"></span><span class="m-knob"></span></div>
-        <div class="m-scale"><span>${fmt(p.min,p.dec)}</span><span>${fmt(p.idealMin,p.dec)}–${fmt(p.idealMax,p.dec)}</span><span>${fmt(p.max,p.dec)}</span></div></div>
-      <p class="pc-time" data-time></p></article>`;
-  }).join('');
-  Object.keys(PARAMS).forEach(key=>{
-    const p=PARAMS[key], el=cardEl(key), z=el.querySelector('.m-zone');
-    z.style.left=((p.idealMin-p.min)/(p.max-p.min)*100)+'%';
-    z.style.width=((p.idealMax-p.idealMin)/(p.max-p.min)*100)+'%';
-    el.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){e.preventDefault();openSheet(key);} });
-  });
-}
-const cardEl=key=>grid.querySelector(`[data-key="${key}"]`);
-function updateCard(key){
-  const p=PARAMS[key], el=cardEl(key); if(!el) return;
-  const v=state.values[key], st=statusOf(key,v), pos=pct(key,v);
-  el.querySelector('[data-val]').textContent=fmt(v,p.dec);
-  const b=el.querySelector('[data-badge]');
-  b.className='badge '+st.c;
-  el.querySelector('[data-badge-t]').textContent=st.t;
-  const f=el.querySelector('.m-fill'), k=el.querySelector('.m-knob');
-  f.style.width=pos+'%'; k.style.left=pos+'%';
-  f.classList.toggle('warn',st.c==='amber'); k.classList.toggle('warn',st.c==='amber');
-  const m=measures[key];
-  el.querySelector('[data-time]').textContent=m?'atualizado '+timeAgo(m.at):'sem medição salva';
-}
-function refreshAll(){
-  Object.keys(PARAMS).forEach(updateCard);
-  renderTreat();
-}
-
-/* ============================================================
-   Sheet de parâmetros — slider com − / range 44px / +
-============================================================ */
-const sheet=$('sheet'), scrim=$('scrim'), tBar=$('tBar'),
-      shSlider=$('shSlider'), slMinus=$('slMinus'), slPlus=$('slPlus');
+function buildCards(){grid.innerHTML=Object.keys(PARAMS).map(k=>{const p=PARAMS[k];const n=k==='turbidez'?'<p class="pc-note">Aspirar no DRENO/WASTE, não FILTRAR</p>':'';return '<article class="pcard card'+(p.full?' full':'')+'" data-key="'+k+'" onclick="openSheet(\''+k+'\')" tabindex="0" role="button" aria-label="Abrir '+p.label+'"><div class="pc-top"><span class="pc-ico">'+ICONS[k]+'</span><span class="pc-lbl">'+p.label+'</span><span class="badge mint" data-badge><i></i><b style="font-weight:700" data-badge-t></b></span></div><div class="pc-val"><span class="mono" data-val></span><em>'+(p.unit||'pH')+'</em></div>'+n+'<div class="mini"><div class="m-bar"><span class="m-zone"></span><span class="m-fill"></span><span class="m-knob"></span></div><div class="m-scale"><span>'+fmt(p.min,p.dec)+'</span><span>'+fmt(p.idealMin,p.dec)+'–'+fmt(p.idealMax,p.dec)+'</span><span>'+fmt(p.max,p.dec)+'</span></div></div><p class="pc-time" data-time></p></article>';}).join('');
+Object.keys(PARAMS).forEach(k=>{const p=PARAMS[k],el=cardEl(k),z=el.querySelector('.m-zone');z.style.left=((p.idealMin-p.min)/(p.max-p.min)*100)+'%';z.style.width=((p.idealMax-p.idealMin)/(p.max-p.min)*100)+'%';el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openSheet(k);}});});}
+const cardEl=k=>grid.querySelector('[data-key="'+k+'"]');
+function updateCard(k){const p=PARAMS[k],el=cardEl(k);if(!el)return;const v=state.values[k],st=statusOf(k,v),pos=pct(k,v);el.querySelector('[data-val]').textContent=fmt(v,p.dec);const b=el.querySelector('[data-badge]');b.className='badge '+st.c;el.querySelector('[data-badge-t]').textContent=st.t;const f=el.querySelector('.m-fill'),kn=el.querySelector('.m-knob');f.style.width=pos+'%';kn.style.left=pos+'%';f.classList.toggle('warn',st.c==='amber');kn.classList.toggle('warn',st.c==='amber');const m=measures[k];el.querySelector('[data-time]').textContent=m?'atualizado '+timeAgo(m.at):'sem medição salva';}
+function refreshAll(){Object.keys(PARAMS).forEach(updateCard);renderTreat();}
+/* ===== SHEET PARÂMETROS ===== */
+const sheet=$('sheet'),scrim=$('scrim'),tBar=$('tBar'),shSlider=$('shSlider');
 let currentKey=null;
-
-function openSheet(key,value){
-  currentKey=key;
-  const p=PARAMS[key], v=(value!==undefined)?value:state.values[key];
-  $('shIco').innerHTML=ICONS[key];
-  $('shTitle').textContent=p.label;
-  $('shRange').textContent='faixa '+fmt(p.min,p.dec)+' – '+fmt(p.max,p.dec)+(p.unit?' '+p.unit:'')+' · passo '+fmt(p.step,p.dec);
-  $('shUnit').textContent=p.unit||'pH';
-  $('shInputUnit').textContent=p.unit||'pH';
-  $('shInput').min=p.min; $('shInput').max=p.max; $('shInput').step=p.step;
-  shSlider.min=p.min; shSlider.max=p.max; shSlider.step=p.step; shSlider.value=v;
-  $('tZone').style.left=((p.idealMin-p.min)/(p.max-p.min)*100)+'%';
-  $('tZone').style.width=((p.idealMax-p.idealMin)/(p.max-p.min)*100)+'%';
-  $('tMin').textContent=fmt(p.min,p.dec);
-  $('tMax').textContent=fmt(p.max,p.dec);
-  $('tIdeal').textContent='ideal '+fmt(p.idealMin,p.dec)+'–'+fmt(p.idealMax,p.dec)+(p.target?' · alvo '+fmt(p.target,p.dec):'');
-  const tt=$('tTarget');
-  if(p.target){ tt.hidden=false; tt.style.left=((p.target-p.min)/(p.max-p.min)*100)+'%'; } else tt.hidden=true;
-  const m=measures[key];
-  $('shLast').textContent=m?'Última medição: '+timeAgo(m.at)+' · '+new Date(m.at).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}):'Sem medições salvas ainda';
-  setSheetValue(v,'open');
-  scrim.classList.add('show'); sheet.classList.add('open'); document.body.classList.add('locked');
-}
-function closeSheet(){
-  if(currentKey){
-    const saved=measures[currentKey];
-    state.values[currentKey]=saved?saved.v:DEFAULTS[currentKey];
-    updateCard(currentKey);
-  }
-  sheet.style.transform=''; sheet.style.transition='';
-  sheet.classList.remove('open'); currentKey=null;
-  if(!valveSheet.classList.contains('open')&&!$('diagSheet').classList.contains('open')&&!$('installSheet').classList.contains('open')){
-    scrim.classList.remove('show'); document.body.classList.remove('locked');
-  }
-}
-function clampSnap(v){
-  const p=PARAMS[currentKey];
-  v=Math.min(p.max,Math.max(p.min,v));
-  v=Math.round((v-p.min)/p.step)*p.step+p.min;
-  return +v.toFixed(2);
-}
-function setSheetValue(v,src){
-  const p=PARAMS[currentKey];
-  v=clampSnap(v); state.values[currentKey]=v;
-  $('shVal').textContent=fmt(v,p.dec);
-  if(src!=='input') $('shInput').value=v;
-  shSlider.value=v;
-  const st=statusOf(currentKey,v), pos=pct(currentKey,v);
-  const b=$('shBadge'); b.className='badge '+st.c; b.querySelector('b').textContent=st.t;
-  const f=$('tFill'),k=$('tKnob');
-  f.style.width=pos+'%'; k.style.left=pos+'%';
-  f.classList.toggle('warn',st.c==='amber'); k.classList.toggle('warn',st.c==='amber');
-  shSlider.classList.toggle('warn',st.c==='amber');
-  $('doseBox').innerHTML=doseHTML(currentKey,v);
-  updateCard(currentKey);
-}
-function doseHTML(key,v){
-  const p=PARAMS[key];
-  if(key==='turbidez'){
-    return v<=p.idealMax
-      ? `<p class="dose-title">Status da água</p><div class="dose instr mint"><p class="dose-text">Água transparente — mantenha a rotina de filtração.</p></div>`
-      : `<p class="dose-title">Instrução de limpeza</p><div class="dose instr amber"><p class="dose-text">Aspirar no DRENO/WASTE, não FILTRAR</p><p class="dose-sub">No dreno o resíduo sai da piscina; no filtrar ele apenas circula.</p></div>`;
-  }
-  const delta=p.dose.target-v, grams=delta*p.dose.per*(m3()/30);
-  if(Math.abs(grams)<1){
-    return `<p class="dose-title">Dose sugerida</p><div class="dose-main"><strong>0 g</strong><span>— nada a adicionar agora</span></div>
-      <p class="dose-sub">Valor no alvo de ${fmt(p.dose.target,p.dec)} ${p.unit}.</p>`;
-  }
-  if(grams<0&&p.dose.downMsg){
-    return `<div class="dose amber"><p class="dose-title">Ajuste para baixo</p><p class="dose-sub" style="margin-top:6px;font-size:13px">${p.dose.downMsg}</p></div>`;
-  }
-  const prod=grams>0?p.dose.up:p.dose.downName;
-  return `<div class="dose"><p class="dose-title">Dose sugerida</p>
-    <div class="dose-main"><strong>${fmtGrams(Math.abs(grams))}</strong><span>de ${prod}</span></div>
-    <p class="dose-sub">Base 30 m³ ajustada ao seu volume: ${fmt(m3(),m3()%1?1:0)} m³ · alvo ${fmt(p.dose.target,p.dec)} ${p.unit}</p></div>`;
-}
-
-shSlider.addEventListener('input',e=>{ if(currentKey) setSheetValue(parseFloat(e.target.value),'slider'); });
-slMinus.addEventListener('click',()=>{ if(currentKey) setSheetValue(state.values[currentKey]-PARAMS[currentKey].step,'btn'); });
-slPlus .addEventListener('click',()=>{ if(currentKey) setSheetValue(state.values[currentKey]+PARAMS[currentKey].step,'btn'); });
-
+function openSheet(k,v){currentKey=k;const p=PARAMS[k],val=(v!==undefined)?v:state.values[k];
+ $('shIco').innerHTML=ICONS[k];$('shTitle').textContent=p.label;
+ $('shRange').textContent='faixa '+fmt(p.min,p.dec)+' – '+fmt(p.max,p.dec)+(p.unit?' '+p.unit:'')+' · passo '+fmt(p.step,p.dec);
+ $('shUnit').textContent=p.unit||'pH';$('shInputUnit').textContent=p.unit||'pH';
+ $('shInput').min=p.min;$('shInput').max=p.max;$('shInput').step=p.step;
+shSlider.min=p.min;shSlider.max=p.max;shSlider.step=p.step;shSlider.value=val;
+ $('tZone').style.left=((p.idealMin-p.min)/(p.max-p.min)*100)+'%';$('tZone').style.width=((p.idealMax-p.idealMin)/(p.max-p.min)*100)+'%';
+ $('tMin').textContent=fmt(p.min,p.dec);$('tMax').textContent=fmt(p.max,p.dec);
+ $('tIdeal').textContent='ideal '+fmt(p.idealMin,p.dec)+'–'+fmt(p.idealMax,p.dec)+(p.target?' · alvo '+fmt(p.target,p.dec):'');
+const tt=$('tTarget');if(p.target){tt.hidden=false;tt.style.left=((p.target-p.min)/(p.max-p.min)*100)+'%';}else tt.hidden=true;
+const m=measures[k];$('shLast').textContent=m?'Última medição: '+timeAgo(m.at)+' · '+new Date(m.at).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}):'Sem medições salvas ainda';
+setSheetValue(val,'open');scrim.classList.add('show');sheet.classList.add('open');document.body.classList.add('locked');}
+function closeSheet(){if(currentKey){const s=measures[currentKey];state.values[currentKey]=s?s.v:DEFAULTS[currentKey];updateCard(currentKey);}
+sheet.style.transform='';sheet.style.transition='';sheet.classList.remove('open');currentKey=null;
+if(!$('valveSheet').classList.contains('open')&&!$('diagSheet').classList.contains('open')&&!$('installSheet').classList.contains('open')){scrim.classList.remove('show');document.body.classList.remove('locked');}}
+function clampSnap(v){const p=PARAMS[currentKey];v=Math.min(p.max,Math.max(p.min,v));v=Math.round((v-p.min)/p.step)*p.step+p.min;return +v.toFixed(2);}
+function setSheetValue(v,src){const p=PARAMS[currentKey];v=clampSnap(v);state.values[currentKey]=v;
+ $('shVal').textContent=fmt(v,p.dec);if(src!=='input')$('shInput').value=v;
+shSlider.value=v;
+const st=statusOf(currentKey,v),pos=pct(currentKey,v);
+const b=$('shBadge');b.className='badge '+st.c;b.querySelector('b').textContent=st.t;
+const f=$('tFill'),kn=$('tKnob');f.style.width=pos+'%';kn.style.left=pos+'%';
+f.classList.toggle('warn',st.c==='amber');kn.classList.toggle('warn',st.c==='amber');shSlider.classList.toggle('warn',st.c==='amber');
+ $('doseBox').innerHTML=doseHTML(currentKey,v);updateCard(currentKey);}
+function doseHTML(k,v){const p=PARAMS[k];
+if(k==='turbidez'){return v<=p.idealMax?'<p class="dose-title">Status da água</p><div class="dose instr mint"><p class="dose-text">Água transparente — mantenha a rotina de filtração.</p></div>':'<p class="dose-title">Instrução de limpeza</p><div class="dose instr amber"><p class="dose-text">Aspirar no DRENO/WASTE, não FILTRAR</p><p class="dose-sub">No dreno o resíduo sai da piscina; no filtrar ele apenas circula.</p></div>';}
+const g=(p.dose.target-v)*p.dose.per*(m3()/30);
+if(Math.abs(g)<1)return '<p class="dose-title">Dose sugerida</p><div class="dose-main"><strong>0 g</strong><span>— nada a adicionar agora</span></div><p class="dose-sub">Valor no alvo de '+fmt(p.dose.target,p.dec)+' '+p.unit+'.</p>';
+if(g<0&&p.dose.downMsg)return '<div class="dose amber"><p class="dose-title">Ajuste para baixo</p><p class="dose-sub" style="margin-top:6px;font-size:13px">'+p.dose.downMsg+'</p></div>';
+const prod=g>0?p.dose.up:p.dose.downName;
+return '<div class="dose"><p class="dose-title">Dose sugerida</p><div class="dose-main"><strong>'+fmtGrams(Math.abs(g))+'</strong><span>de '+prod+'</span></div><p class="dose-sub">Base 30 m³ ajustada ao seu volume: '+fmt(m3(),m3()%1?1:0)+' m³ · alvo '+fmt(p.dose.target,p.dec)+' '+p.unit+'</p></div>';}
+shSlider.addEventListener('input',e=>{if(currentKey)setSheetValue(parseFloat(e.target.value),'slider');});
+ $('slMinus').addEventListener('click',()=>{if(currentKey)setSheetValue(state.values[currentKey]-PARAMS[currentKey].step,'btn');});
+ $('slPlus').addEventListener('click',()=>{if(currentKey)setSheetValue(state.values[currentKey]+PARAMS[currentKey].step,'btn');});
 let dragId=null;
-tBar.addEventListener('pointerdown',e=>{ dragId=e.pointerId; tBar.setPointerCapture(dragId); fromX(e); });
-tBar.addEventListener('pointermove',e=>{ if(e.pointerId===dragId) fromX(e); });
-['pointerup','pointercancel'].forEach(ev=>tBar.addEventListener(ev,e=>{ if(e.pointerId===dragId) dragId=null; }));
-function fromX(e){
-  if(!currentKey) return;
-  const p=PARAMS[currentKey], r=tBar.getBoundingClientRect();
-  const t=Math.min(1,Math.max(0,(e.clientX-r.left)/r.width));
-  setSheetValue(p.min+t*(p.max-p.min),'track');
-}
- $('shInput').addEventListener('input',e=>{
-  if(!currentKey) return;
-  const raw=parseFloat(e.target.value);
-  if(!Number.isNaN(raw)) setSheetValue(raw,'input');
-});
- $('shInput').addEventListener('blur',()=>{ if(currentKey) $('shInput').value=state.values[currentKey]; });
- $('shSave').addEventListener('click',()=>{
-  if(!currentKey) return;
-  const p=PARAMS[currentKey], v=state.values[currentKey];
-  measures[currentKey]={v,at:Date.now()};
-  persistMeasures(); persist();
-  updateCard(currentKey); renderTreat();
-  $('shLast').textContent='Última medição: agora · '+new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
-  toast(p.label+' salvo · '+fmt(v,p.dec)+(p.unit?' '+p.unit:''));
-});
+tBar.addEventListener('pointerdown',e=>{dragId=e.pointerId;tBar.setPointerCapture(dragId);fromX(e);});
+tBar.addEventListener('pointermove',e=>{if(e.pointerId===dragId)fromX(e);});
+['pointerup','pointercancel'].forEach(ev=>tBar.addEventListener(ev,e=>{if(e.pointerId===dragId)dragId=null;}));
+function fromX(e){if(!currentKey)return;const p=PARAMS[currentKey],r=tBar.getBoundingClientRect();const t=Math.min(1,Math.max(0,(e.clientX-r.left)/r.width));setSheetValue(p.min+t*(p.max-p.min),'track');}
+ $('shInput').addEventListener('input',e=>{if(!currentKey)return;const r=parseFloat(e.target.value);if(!Number.isNaN(r))setSheetValue(r,'input');});
+ $('shInput').addEventListener('blur',()=>{if(currentKey)$('shInput').value=state.values[currentKey];});
+ $('shSave').addEventListener('click',()=>{if(!currentKey)return;const p=PARAMS[currentKey],v=state.values[currentKey];measures[currentKey]={v,at:Date.now()};persistMeasures();persist();updateCard(currentKey);renderTreat();$('shLast').textContent='Última medição: agora · '+new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});toast(p.label+' salvo · '+fmt(v,p.dec)+(p.unit?' '+p.unit:''));});
  $('shClose').addEventListener('click',closeSheet);
-scrim.addEventListener('click',()=>{ closeSheet(); closeValveSheet(); closeDiag(); closeInstallSheet(); });
-document.addEventListener('keydown',e=>{
-  if(e.key!=='Escape') return;
-  if(sheet.classList.contains('open')) closeSheet();
-  if(valveSheet.classList.contains('open')) closeValveSheet();
-  if($('diagSheet').classList.contains('open')) closeDiag();
-  if($('installSheet').classList.contains('open')) closeInstallSheet();
-  wPop.classList.remove('show'); wChip.setAttribute('aria-expanded','false');
-});
-const grabZone=$('grabZone'); let gy=null,gdy=0;
-grabZone.addEventListener('pointerdown',e=>{ gy=e.clientY; gdy=0; grabZone.setPointerCapture(e.pointerId); sheet.style.transition='none'; });
-grabZone.addEventListener('pointermove',e=>{ if(gy===null)return; gdy=Math.max(0,e.clientY-gy); sheet.style.transform=`translate(-50%,${gdy}px)`; });
-['pointerup','pointercancel'].forEach(ev=>grabZone.addEventListener(ev,()=>{
-  if(gy===null) return;
-  sheet.style.transition=''; sheet.style.transform='';
-  if(gdy>110) closeSheet();
-  gy=null; gdy=0;
-}));
-
-/* ============================================================
-   Volume — STEPPER: −100 L / digitar / +100 L
-============================================================ */
+scrim.addEventListener('click',()=>{closeSheet();closeValveSheet();closeDiag();closeInstallSheet();});
+document.addEventListener('keydown',e=>{if(e.key!=='Escape')return;if(sheet.classList.contains('open'))closeSheet();if($('valveSheet').classList.contains('open'))closeValveSheet();if($('diagSheet').classList.contains('open'))closeDiag();if($('installSheet').classList.contains('open'))closeInstallSheet();wPop.classList.remove('show');wChip.setAttribute('aria-expanded','false');});
+const grabZone=$('grabZone');let gy=null,gdy=0;
+grabZone.addEventListener('pointerdown',e=>{gy=e.clientY;gdy=0;grabZone.setPointerCapture(e.pointerId);sheet.style.transition='none';});
+grabZone.addEventListener('pointermove',e=>{if(gy===null)return;gdy=Math.max(0,e.clientY-gy);sheet.style.transform='translate(-50%,'+gdy+'px)';});
+['pointerup','pointercancel'].forEach(ev=>grabZone.addEventListener(ev,()=>{if(gy===null)return;sheet.style.transition='';sheet.style.transform='';if(gdy>110)closeSheet();gy=null;gdy=0;}));
+/* ===== VOLUME STEPPER ===== */
 const volInput=$('volInput');
-function setVolume(v,fromTyping){
-  v=Math.round(v);
-  v=Math.min(300000,Math.max(1000,v));
-  state.volume=v;
-  if(!fromTyping) volInput.value=v;
-  renderVol(); persist(); refreshAll();
-}
+function setVolume(v,typing){v=Math.round(v);v=Math.min(300000,Math.max(1000,v));state.volume=v;if(!typing)volInput.value=v;renderVol();persist();refreshAll();}
  $('volMinus').addEventListener('click',()=>setVolume(state.volume-100));
- $('volPlus') .addEventListener('click',()=>setVolume(state.volume+100));
-volInput.addEventListener('input',()=>{
-  const v=parseInt(volInput.value,10);
-  if(!Number.isNaN(v)&&v>=1000){ state.volume=v; renderVol(); refreshAll(); }
-});
-volInput.addEventListener('change',()=>{
-  let v=parseInt(volInput.value,10);
-  if(Number.isNaN(v)) v=48588;
-  setVolume(v);
-});
-function renderVol(){
-  const v=state.volume, mm=v/1000;
-  $('volLive').innerHTML='<b>'+nf0.format(v)+' L</b><span>= '+fmt(mm,mm%1?1:0)+' m³</span>';
-}
-
-/* ---------- tipo de piscina ---------- */
- $('typePills').addEventListener('click',e=>{
-  const btn=e.target.closest('.pill'); if(!btn) return;
-  state.type=btn.dataset.type;
-  document.querySelectorAll('.pill').forEach(p=>{
-    const on=p===btn; p.classList.toggle('active',on); p.setAttribute('aria-selected',on);
-  });
-  renderTip(); persist();
-});
-function renderTip(){
-  $('tipTitle').textContent='Dica · '+state.type.charAt(0).toUpperCase()+state.type.slice(1);
-  $('tipText').textContent=TIPS[state.type];
-}
-
-/* ============================================================
-   PWA — Service Worker + Ícone + INSTALAÇÃO UNIVERSAL
-   Android (prompt nativo) · iPhone (guia A2HS) · Desktop
-   O botão some: appinstalled, modo standalone, flag ou "Já instalei".
-============================================================ */
-if('serviceWorker' in navigator){
-  window.addEventListener('load',()=>{ navigator.serviceWorker.register('sw.js').catch(()=>{}); });
-}
-
-/* ícone do app desenhado em canvas — usado no guia e como fallback */
-function makeIcon(size){
-  const c=document.createElement('canvas'); c.width=c.height=size;
-  const x=c.getContext('2d'), s=size/24; x.scale(s,s);
-  const rr=(ctx,rad)=>{ ctx.beginPath();
-    ctx.moveTo(rad,0); ctx.lineTo(24-rad,0); ctx.quadraticCurveTo(24,0,24,rad);
-    ctx.lineTo(24,24-rad); ctx.quadraticCurveTo(24,24,24-rad,24);
-    ctx.lineTo(rad,24); ctx.quadraticCurveTo(0,24,0,24-rad);
-    ctx.lineTo(0,rad); ctx.quadraticCurveTo(0,0,rad,0); ctx.closePath(); };
-  rr(x,5.6); x.fillStyle='#007A8C'; x.fill();
-  const drop=new Path2D('M12 3.5C15.5 7.6 18 10.4 18 13.4A6 6 0 1 1 6 13.4C6 10.4 8.5 7.6 12 3.5Z');
-  x.fillStyle='#fff'; x.fill(drop);
-  x.save(); x.clip(drop); x.fillStyle='#007A8C';
-  x.fill(new Path2D('M0 15.4Q3 13.9 6 15.4T12 15.4T18 15.4T24 15.4V23H0Z'));
-  x.restore(); return c.toDataURL('image/png');
-}
-
-/* apple-touch-icon: usa o arquivo real; sem o arquivo, troca pelo gerado */
-(function(){
-  const l=document.querySelector('link[rel="apple-touch-icon"]');
-  fetch('icon-180.png',{method:'HEAD'})
-    .then(r=>{ if(!r.ok) throw 0; })
-    .catch(()=>{ if(l) l.href=makeIcon(180); });
-})();
-
-/* fallback de manifest fora de host HTTP */
-fetch('manifest.json').then(r=>{ if(!r.ok) throw 0; }).catch(()=>{
-  try{
-    const m={name:'PoolApp Universal',short_name:'PoolApp',start_url:'.',display:'standalone',
-      background_color:'#F2F7F8',theme_color:'#007A8C',
-      icons:[{src:makeIcon(192),sizes:'192x192',type:'image/png'},{src:makeIcon(512),sizes:'512x512',type:'image/png'}]};
-    const l=document.createElement('link'); l.rel='manifest';
-    l.href='data:application/manifest+json;charset=utf-8,'+encodeURIComponent(JSON.stringify(m));
-    document.head.appendChild(l);
-  }catch(e){}
-});
-
-/* ---------- detecção ---------- */
-const installBtn=$('installBtn'), installSheet=$('installSheet');
+ $('volPlus').addEventListener('click',()=>setVolume(state.volume+100));
+volInput.addEventListener('input',()=>{const v=parseInt(volInput.value,10);if(!Number.isNaN(v)&&v>=1000){state.volume=v;renderVol();refreshAll();}});
+volInput.addEventListener('change',()=>{let v=parseInt(volInput.value,10);if(Number.isNaN(v))v=48588;setVolume(v);});
+function renderVol(){const v=state.volume,m=v/1000;$('volLive').innerHTML='<b>'+nf0.format(v)+' L</b><span>= '+fmt(m,m%1?1:0)+' m³</span>';}
+/* ===== PILLS ===== */
+ $('typePills').addEventListener('click',e=>{const b=e.target.closest('.pill');if(!b)return;state.type=b.dataset.type;document.querySelectorAll('.pill').forEach(p=>{const on=p===b;p.classList.toggle('active',on);p.setAttribute('aria-selected',on);});renderTip();persist();});
+function renderTip(){$('tipTitle').textContent='Dica · '+state.type.charAt(0).toUpperCase()+state.type.slice(1);$('tipText').textContent=TIPS[state.type];}
+/* ===== PWA: status + instalação universal ===== */
+function setPwaStatus(txt,ok){const el=$('pwaStatus');if(!el)return;el.textContent=(ok?'✅ ':'⚠️ ')+txt;el.style.color=ok?'#14724E':'#96521A';}
+function renderPwaStatus(){if(!('serviceWorker'in navigator))return setPwaStatus('Este navegador não suporta modo app offline',false);if(!location.protocol.startsWith('http'))return setPwaStatus('Abrindo como arquivo — publique em HTTPS para o modo app offline',false);navigator.serviceWorker.getRegistration().then(r=>{if(r&&(r.active||r.installing||r.waiting))setPwaStatus('Pronto para offline — pode usar sem internet',true);else setPwaStatus('Preparando offline… recarregue a página uma vez',false);}).catch(()=>setPwaStatus('Não foi possível ativar o offline (verifique HTTPS)',false));}
+if('serviceWorker'in navigator&&location.protocol.startsWith('http')){
+window.addEventListener('load',()=>{navigator.serviceWorker.register('sw.js').then(()=>{renderPwaStatus();let rel=false;navigator.serviceWorker.addEventListener('controllerchange',()=>{if(rel)return;rel=true;if(sessionStorage.getItem('poolapp.reloaded')!=='1'){sessionStorage.setItem('poolapp.reloaded','1');location.reload();}});}).catch(()=>renderPwaStatus());});
+}else{renderPwaStatus();}
+function makeIcon(size){const c=document.createElement('canvas');c.width=c.height=size;const x=c.getContext('2d'),s=size/24;x.scale(s,s);const rr=(ctx,r)=>{ctx.beginPath();ctx.moveTo(r,0);ctx.lineTo(24-r,0);ctx.quadraticCurveTo(24,0,24,r);ctx.lineTo(24,24-r);ctx.quadraticCurveTo(24,24,24-r,24);ctx.lineTo(r,24);ctx.quadraticCurveTo(0,24,0,24-r);ctx.lineTo(0,r);ctx.quadraticCurveTo(0,0,r,0);ctx.closePath();};rr(x,5.6);x.fillStyle='#007A8C';x.fill();const d=new Path2D('M12 3.5C15.5 7.6 18 10.4 18 13.4A6 6 0 1 1 6 13.4C6 10.4 8.5 7.6 12 3.5Z');x.fillStyle='#fff';x.fill(d);x.save();x.clip(d);x.fillStyle='#007A8C';x.fill(new Path2D('M0 15.4Q3 13.9 6 15.4T12 15.4T18 15.4T24 15.4V23H0Z'));x.restore();return c.toDataURL('image/png');}
+(function(){const l=document.querySelector('link[rel="apple-touch-icon"]');fetch('icon-180.png',{method:'HEAD'}).then(r=>{if(!r.ok)throw 0;}).catch(()=>{if(l)l.href=makeIcon(180);});})();
+fetch('manifest.json').then(r=>{if(!r.ok)throw 0;}).catch(()=>{try{const m={name:'PoolApp Universal',short_name:'PoolApp',start_url:'.',display:'standalone',background_color:'#F2F7F8',theme_color:'#007A8C',icons:[{src:makeIcon(192),sizes:'192x192',type:'image/png'},{src:makeIcon(512),sizes:'512x512',type:'image/png'}]};const l=document.createElement('link');l.rel='manifest';l.href='data:application/manifest+json;charset=utf-8,'+encodeURIComponent(JSON.stringify(m));document.head.appendChild(l);}catch(e){}});
+const installBtn=$('installBtn'),installSheet=$('installSheet');
 let deferredPrompt=null;
-
-const isIOS=()=> /iphone|ipad|ipod/i.test(navigator.userAgent)
-  || (navigator.platform==='MacIntel' && navigator.maxTouchPoints>1);
-const isAndroid=()=> /android/i.test(navigator.userAgent);
-
-const isStandalone=()=>
-  window.matchMedia('(display-mode: standalone)').matches ||
-  window.matchMedia('(display-mode: fullscreen)').matches ||
-  window.matchMedia('(display-mode: minimal-ui)').matches ||
-  window.navigator.standalone===true;
-
-const wasInstalled=()=>{ try{ return localStorage.getItem('poolapp.installed')==='1'; }catch(e){ return false; } };
-const markInstalled=()=>{ try{ localStorage.setItem('poolapp.installed','1'); }catch(e){} };
-
-function hideInstall(){ installBtn.hidden=true; }
-
-function updateInstallUI(){
-  if(isStandalone() || wasInstalled()){ hideInstall(); return; }
-  installBtn.hidden=false;
-  installBtn.dataset.mode = deferredPrompt ? 'native' : (isIOS() ? 'ios' : (isAndroid() ? 'android' : 'desktop'));
-}
-
-window.addEventListener('beforeinstallprompt',e=>{
-  e.preventDefault(); deferredPrompt=e; updateInstallUI();
-});
-
-/* INSTALOU → botão some na hora */
-window.addEventListener('appinstalled',()=>{
-  markInstalled(); deferredPrompt=null; hideInstall();
-  toast('PoolApp instalado! Abra pela tela inicial.');
-});
-try{
-  const dmMQ=window.matchMedia('(display-mode: standalone)');
-  const onDm=e=>{ if(e.matches){ markInstalled(); hideInstall(); } };
-  if(dmMQ.addEventListener) dmMQ.addEventListener('change',onDm);
-  else if(dmMQ.addListener) dmMQ.addListener(onDm);
-}catch(e){}
-
-/* clique: prompt nativo ou guia ilustrado */
-installBtn.addEventListener('click',async()=>{
-  if(deferredPrompt){
-    deferredPrompt.prompt();
-    const {outcome}=await deferredPrompt.userChoice;
-    deferredPrompt=null;
-    if(outcome==='accepted'){ markInstalled(); hideInstall(); toast('Instalando…'); }
-    updateInstallUI();
-    return;
-  }
-  openInstallSheet(installBtn.dataset.mode||'android');
-});
-
-/* ---------- guia de instalação ---------- */
+const isIOS=()=>/iphone|ipad|ipod/i.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+const isAndroid=()=>/android/i.test(navigator.userAgent);
+const isStandalone=()=>window.matchMedia('(display-mode: standalone)').matches||window.matchMedia('(display-mode: fullscreen)').matches||window.matchMedia('(display-mode: minimal-ui)').matches||window.navigator.standalone===true;
+const wasInstalled=()=>{try{return localStorage.getItem('poolapp.installed')==='1';}catch(e){return false;}};
+const markInstalled=()=>{try{localStorage.setItem('poolapp.installed','1');}catch(e){}};
+function hideInstall(){installBtn.hidden=true;}
+function updateInstallUI(){if(isStandalone()||wasInstalled()){hideInstall();return;}installBtn.hidden=false;installBtn.dataset.mode=deferredPrompt?'native':(isIOS()?'ios':(isAndroid()?'android':'desktop'));}
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;updateInstallUI();});
+window.addEventListener('appinstalled',()=>{markInstalled();deferredPrompt=null;hideInstall();toast('PoolApp instalado! Abra pela tela inicial.');});
+try{const mq=window.matchMedia('(display-mode: standalone)');const on=e=>{if(e.matches){markInstalled();hideInstall();}};if(mq.addEventListener)mq.addEventListener('change',on);else if(mq.addListener)mq.addListener(on);}catch(e){}
+installBtn.addEventListener('click',async()=>{if(deferredPrompt){deferredPrompt.prompt();const{outcome}=await deferredPrompt.userChoice;deferredPrompt=null;if(outcome==='accepted'){markInstalled();hideInstall();toast('Instalando…');}updateInstallUI();return;}
+openInstallSheet(installBtn.dataset.mode||'android');});
 const SHARE_SVG='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V4M8 7l4-4 4 4M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg>';
-const PLUS_SVG ='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8.5v7M8.5 12h7"/></svg>';
-
-function openInstallSheet(mode){
-  const browser = /firefox/i.test(navigator.userAgent) ? 'Firefox'
-                : /samsungbrowser/i.test(navigator.userAgent) ? 'Samsung Internet' : 'Chrome';
-  $('insAppIcon').src=makeIcon(192);
-
-  if(mode==='ios'){
-    $('insTitle').textContent='Instalar no iPhone / iPad';
-    $('insSub').textContent='Safari · Adicionar à Tela de Início';
-    $('insSteps').innerHTML=
-      `<li><span class="vs-n">1</span><span>Toque no botão <b>Compartilhar</b> ${SHARE_SVG} na barra de baixo do Safari</span></li>
-       <li><span class="vs-n">2</span><span>Role a lista e toque em <b>“Adicionar à Tela de Início”</b></span></li>
-       <li><span class="vs-n">3</span><span>Confirme em <b>“Adicionar”</b> — o ícone teal do PoolApp aparece na sua tela inicial</span></li>`;
-    $('insExtra').innerHTML='<button class="btn ghostD" id="insDone" style="margin-bottom:14px">Já adicionei à Tela de Início</button>';
-  }else if(mode==='android'){
-    $('insTitle').textContent='Instalar no Android';
-    $('insSub').textContent=browser+' · menu do navegador';
-    const menu=browser==='Firefox'?'<b>Instalar</b>' : browser==='Samsung Internet'?'<b>Adicionar página à</b> → <b>Tela inicial</b>' : '<b>Instalar aplicativo</b>';
-    $('insSteps').innerHTML=
-      `<li><span class="vs-n">1</span><span>Abra o menu ${browser==='Samsung Internet'?'☰':'⋮'} no canto do ${browser}</span></li>
-       <li><span class="vs-n">2</span><span>Toque em ${menu}</span></li>
-       <li><span class="vs-n">3</span><span>Confirme — o PoolApp fica na lista de apps, em tela cheia e offline</span></li>`;
-    $('insExtra').innerHTML='<button class="btn ghostD" id="insDone" style="margin-bottom:14px">Já instalei</button>';
-  }else{
-    $('insTitle').textContent='Instalar no computador';
-    $('insSub').textContent='Chrome / Edge · ícone na barra de endereço';
-    $('insSteps').innerHTML=
-      `<li><span class="vs-n">1</span><span>Olhe o ícone ${PLUS_SVG} no fim da barra de endereço</span></li>
-       <li><span class="vs-n">2</span><span>Clique em <b>Instalar</b> e confirme</span></li>`;
-    $('insExtra').innerHTML='';
-  }
-
-  scrim.classList.add('show');
-  installSheet.classList.add('open');
-  document.body.classList.add('locked');
-
-  const done=$('insDone');
-  if(done) done.addEventListener('click',()=>{ markInstalled(); hideInstall(); closeInstallSheet(); toast('Perfeito — bom uso! 💧'); });
-}
-function closeInstallSheet(){
-  if(!installSheet.classList.contains('open')) return;
-  installSheet.classList.remove('open');
-  if(!$('sheet').classList.contains('open')&&!$('valveSheet').classList.contains('open')&&!$('diagSheet').classList.contains('open')){
-    scrim.classList.remove('show'); document.body.classList.remove('locked');
-  }
-}
+const PLUS_SVG='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8.5v7M8.5 12h7"/></svg>';
+function openInstallSheet(mode){const browser=/firefox/i.test(navigator.userAgent)?'Firefox':/samsungbrowser/i.test(navigator.userAgent)?'Samsung Internet':'Chrome';
+ $('insAppIcon').src=makeIcon(192);
+if(mode==='ios'){$('insTitle').textContent='Instalar no iPhone / iPad';$('insSub').textContent='Safari · Adicionar à Tela de Início';
+ $('insSteps').innerHTML='<li><span class="vs-n">1</span><span>Toque no botão <b>Compartilhar</b> '+SHARE_SVG+' na barra de baixo do Safari</span></li><li><span class="vs-n">2</span><span>Role a lista e toque em <b>"Adicionar à Tela de Início"</b></span></li><li><span class="vs-n">3</span><span>Confirme em <b>"Adicionar"</b> — o ícone teal do PoolApp aparece na sua tela inicial</span></li>';
+ $('insExtra').innerHTML='<button class="btn ghostD" id="insDone" style="margin-bottom:14px">Já adicionei à Tela de Início</button>';}
+else if(mode==='android'){$('insTitle').textContent='Instalar no Android';$('insSub').textContent=browser+' · menu do navegador';
+const menu=browser==='Firefox'?'<b>Instalar</b>':browser==='Samsung Internet'?'<b>Adicionar página à</b> → <b>Tela inicial</b>':'<b>Instalar aplicativo</b>';
+ $('insSteps').innerHTML='<li><span class="vs-n">1</span><span>Abra o menu '+(browser==='Samsung Internet'?'☰':'⋮')+' no canto do '+browser+'</span></li><li><span class="vs-n">2</span><span>Toque em '+menu+'</span></li><li><span class="vs-n">3</span><span>Confirme — o PoolApp fica na lista de apps, em tela cheia e offline</span></li>';
+ $('insExtra').innerHTML='<button class="btn ghostD" id="insDone" style="margin-bottom:14px">Já instalei</button>';}
+else{$('insTitle').textContent='Instalar no computador';$('insSub').textContent='Chrome / Edge · ícone na barra de endereço';
+ $('insSteps').innerHTML='<li><span class="vs-n">1</span><span>Olhe o ícone '+PLUS_SVG+' no fim da barra de endereço</span></li><li><span class="vs-n">2</span><span>Clique em <b>Instalar</b> e confirme</span></li>';
+ $('insExtra').innerHTML='';}
+scrim.classList.add('show');installSheet.classList.add('open');document.body.classList.add('locked');
+const done=$('insDone');if(done)done.addEventListener('click',()=>{markInstalled();hideInstall();closeInstallSheet();toast('Perfeito — bom uso! 💧');});}
+function closeInstallSheet(){if(!installSheet.classList.contains('open'))return;installSheet.classList.remove('open');if(!$('sheet').classList.contains('open')&&!$('valveSheet').classList.contains('open')&&!$('diagSheet').classList.contains('open')){scrim.classList.remove('show');document.body.classList.remove('locked');}}
  $('insClose').addEventListener('click',closeInstallSheet);
  $('insOk').addEventListener('click',closeInstallSheet);
-
-/* ---------- init ---------- */
-(function init(){
-  buildCards();
-  refreshAll();
-  document.querySelectorAll('.pill').forEach(p=>{
-    const on=p.dataset.type===state.type;
-    p.classList.toggle('active',on); p.setAttribute('aria-selected',on);
-  });
-  renderTip();
-  volInput.value=state.volume;
-  renderVol();
-  renderLit();
-  $('todayLbl').textContent=new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'short'});
-  vLever.classList.add('no-anim');
-  leverAngle=VALVE_POS[valveIndex].angle;
-  vLever.style.transform=`rotate(${leverAngle}deg)`;
-  void vLever.offsetHeight;
-  requestAnimationFrame(()=>vLever.classList.remove('no-anim'));
-  applyValveVisual();
-  renderOnline();
-  if(isStandalone()) markInstalled();   /* aberto pelo ícone = já instalado */
-  updateInstallUI();
-  renderWeather();
-  updateWeather();
-  startWatch();
-  setInterval(refreshWeather,10*60*1000);
-})();
+/* ===== INIT ===== */
+(function init(){buildCards();refreshAll();
+document.querySelectorAll('.pill').forEach(p=>{const on=p.dataset.type===state.type;p.classList.toggle('active',on);p.setAttribute('aria-selected',on);});
+renderTip();volInput.value=state.volume;renderVol();renderLit();
+ $('todayLbl').textContent=new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'short'});
+vLever.classList.add('no-anim');leverAngle=VALVE_POS[valveIndex].angle;vLever.style.transform='rotate('+leverAngle+'deg)';void vLever.offsetHeight;requestAnimationFrame(()=>vLever.classList.remove('no-anim'));
+applyValveVisual();renderOnline();
+if(isStandalone())markInstalled();updateInstallUI();
+renderWeather();updateWeather();startWatch();setInterval(refreshWeather,600000);})();
 </script>
 </body>
 </html>
