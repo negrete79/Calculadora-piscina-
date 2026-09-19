@@ -8,8 +8,10 @@
 <meta name="description" content="PoolApp Universal — tratamento e manutenção de piscina, offline-first.">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="PoolApp">
 <title>PoolApp Universal — Manutenção de Piscina</title>
 <link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" sizes="180x180" href="icon-180.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -159,11 +161,11 @@
     background:var(--teal);border-radius:999px;padding:9px 16px;flex:none}
   .l-apply svg{width:14px;height:14px}
 
-  /* ---------- válvula: stage NÃO captura toque; só manopla e estações ---------- */
+  /* ---------- válvula ---------- */
   .valve-card{padding:18px 16px 14px;display:flex;flex-direction:column;gap:4px}
   .vc-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:0 4px}
   .valve-stage{position:relative;width:100%;max-width:300px;aspect-ratio:1;margin:2px auto 0;
-    user-select:none;-webkit-user-select:none;pointer-events:none}   /* ← scroll livre na área vazia */
+    user-select:none;-webkit-user-select:none;pointer-events:none}
   .v-plate{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:47%;max-width:150px;aspect-ratio:1;border-radius:50%;
     background:#fff;box-shadow:var(--shadow), inset 0 0 0 1px rgba(13,48,56,.05);
     touch-action:none;cursor:grab;z-index:2;pointer-events:auto}
@@ -296,7 +298,7 @@
   .sh-unit{font-size:15px;font-weight:700;color:var(--sub)}
   .sh-valrow .badge{margin-left:auto;align-self:center}
 
-  /* track visual + SLIDER COM ± e height 44px */
+  /* track visual + slider com ± e height 44px */
   .track{padding:16px 0 4px;user-select:none;-webkit-user-select:none}
   .t-bar{position:relative;height:10px;border-radius:99px;background:rgba(13,48,56,.08);touch-action:none;cursor:pointer}
   .t-zone{position:absolute;top:0;bottom:0;border-radius:99px;background:rgba(47,191,143,.22)}
@@ -353,7 +355,7 @@
   .dose.instr.mint .dose-text{color:#14724E}
   .sh-last{text-align:center;font-size:12px;color:var(--sub);margin-top:12px;font-family:var(--mono);overflow-wrap:break-word}
 
-  /* sheet do diagnóstico */
+  /* diagnóstico */
   .diag-lead{font-size:14px;line-height:1.55;font-weight:600;color:var(--sub);margin-bottom:14px;overflow-wrap:break-word}
   .diag-opts{display:flex;flex-direction:column;gap:10px;margin-bottom:16px}
   .diag-opt{display:flex;align-items:center;gap:12px;width:100%;text-align:left;min-width:0;
@@ -367,12 +369,16 @@
   .d-resume{font-size:14px;line-height:1.55;font-weight:500;margin-bottom:14px;overflow-wrap:break-word}
   .d-steps{list-style:none;display:flex;flex-direction:column;gap:9px;margin-bottom:14px}
   .d-steps li{display:flex;gap:10px;font-size:13px;line-height:1.5;min-width:0}
+  .d-steps svg{width:15px;height:15px;vertical-align:-2px;color:var(--teal-deep)}
   .vs-n{flex:none;width:22px;height:22px;border-radius:50%;background:rgba(0,122,140,.1);color:var(--teal-deep);
     font-family:var(--mono);font-size:11px;font-weight:600;display:grid;place-items:center;margin-top:1px}
   .v-warn{display:flex;gap:10px;background:rgba(226,135,67,.09);border:1px solid rgba(226,135,67,.28);
     border-radius:14px;padding:12px 14px;margin-bottom:16px}
   .v-warn svg{width:17px;height:17px;color:#96521A;flex:none;margin-top:1px}
   .v-warn p{font-size:12.5px;line-height:1.5;color:#96521A;font-weight:600;overflow-wrap:break-word}
+
+  /* guia de instalação */
+  .ins-icon{display:block;width:64px;height:64px;border-radius:16px;margin:0 auto 12px;box-shadow:var(--shadow)}
 
   /* ---------- toast ---------- */
   .toasts{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom));transform:translateX(-50%);
@@ -493,7 +499,7 @@
   <!-- ===== Válvula ===== -->
   <section class="card valve-card" aria-label="Válvula seletora do filtro">
     <div class="vc-head">
-      <p class="lbl">Válvula seletora gire a lavanca ⬇️</p>
+      <p class="lbl">Válvula do filtro</p>
       <span class="badge mint" id="valveBadge"><i></i><b id="valveBadgeT">Filtrar</b></span>
     </div>
     <div class="valve-stage" id="valveStage">
@@ -627,6 +633,32 @@
   <div class="diag-opts" id="diagOpts"></div>
   <div class="diag-result" id="diagResult" hidden></div>
   <button class="btn ghostD" id="dgBack" hidden>Voltar às opções</button>
+</section>
+
+<!-- ===== Sheet guia de instalação ===== -->
+<section class="sheet" id="installSheet" role="dialog" aria-modal="true" aria-labelledby="insTitle">
+  <div class="grab-zone"><span class="grab"></span></div>
+  <header class="sh-head">
+    <span class="sh-ico" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v10m-4.5-4L12 14.5 16.5 10M5 19.5h14"/></svg>
+    </span>
+    <div><h3 id="insTitle">Instalar app</h3><p id="insSub">—</p></div>
+    <button class="sh-close" id="insClose" aria-label="Fechar">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
+    </button>
+  </header>
+  <img class="ins-icon" id="insAppIcon" alt="Ícone do PoolApp">
+  <p class="d-resume">Instale na tela inicial para abrir em tela cheia, sem barra do navegador, e continuar funcionando <b>sem internet</b>.</p>
+  <ol class="d-steps" id="insSteps"></ol>
+  <div id="insExtra"></div>
+  <div class="v-warn">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4.5 20.8 19.5H3.2Z"/><path d="M12 10.2v3.6"/><circle cx="12" cy="16.6" r=".9" fill="currentColor" stroke="none"/></svg>
+    <p>Depois de instalado, o botão “Instalar” some automaticamente.</p>
+  </div>
+  <button class="btn primary" id="insOk">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>
+    Entendi
+  </button>
 </section>
 
 <div class="toasts" id="toasts" aria-live="polite"></div>
@@ -1115,7 +1147,7 @@ function openDiag(){
 function closeDiag(){
   if(!$('diagSheet').classList.contains('open')) return;
   $('diagSheet').classList.remove('open');
-  if(!$('sheet').classList.contains('open')&&!$('valveSheet').classList.contains('open')){
+  if(!$('sheet').classList.contains('open')&&!$('valveSheet').classList.contains('open')&&!$('installSheet').classList.contains('open')){
     scrim.classList.remove('show'); document.body.classList.remove('locked');
   }
 }
@@ -1125,8 +1157,7 @@ function closeDiag(){
 });
 
 /* ============================================================
-   VÁLVULA — stage sem pointer-events; stations com data-i + onClick;
-   drag (opcional) somente na manopla, sem travar o scroll.
+   VÁLVULA — stage sem pointer-events; stations com data-i + onClick
 ============================================================ */
 const vStage=$('valveStage'), vPlate=$('vPlate'), vLever=$('vLever');
 let vSheetTimer=null;
@@ -1139,12 +1170,10 @@ VALVE_POS.forEach((v,i)=>{
   const st=document.createElement('button');
   st.type='button';
   st.className='station'+(i<2||i===5?' up':'')+' st-'+i;
-  st.dataset.i=i;                                     /* ← valveIndex vem daqui */
+  st.dataset.i=i;
   st.setAttribute('aria-label','Posição '+(i+1)+': '+v.full);
   st.innerHTML=`<span class="v-num">${i+1}</span><span class="v-name">${v.label}</span>`;
-  st.addEventListener('click',()=>{                   /* ← onClick exigido */
-    selectValve(+st.dataset.i,{fromUser:true});
-  });
+  st.addEventListener('click',()=>{ selectValve(+st.dataset.i,{fromUser:true}); });
   vStage.appendChild(st);
 });
 const stations=[...vStage.querySelectorAll('.station')];
@@ -1166,7 +1195,6 @@ function selectValve(idx,opts={}){
   if(opts.fromUser){ clearTimeout(vSheetTimer); vSheetTimer=setTimeout(openValveSheet,300); }
 }
 
-/* drag só na manopla (a manopla tem touch-action:none; o resto da stage deixa rolar) */
 let vDrag=null,vMoved=false,vSX=0,vSY=0;
 vPlate.addEventListener('pointerdown',e=>{
   vDrag=e.pointerId; vMoved=false; vSX=e.clientX; vSY=e.clientY;
@@ -1199,7 +1227,7 @@ function openValveSheet(){
 function closeValveSheet(){
   if(!valveSheet.classList.contains('open')) return;
   valveSheet.classList.remove('open');
-  if(!$('sheet').classList.contains('open')&&!$('diagSheet').classList.contains('open')){
+  if(!$('sheet').classList.contains('open')&&!$('diagSheet').classList.contains('open')&&!$('installSheet').classList.contains('open')){
     scrim.classList.remove('show'); document.body.classList.remove('locked');
   }
 }
@@ -1295,7 +1323,7 @@ function closeSheet(){
   }
   sheet.style.transform=''; sheet.style.transition='';
   sheet.classList.remove('open'); currentKey=null;
-  if(!valveSheet.classList.contains('open')&&!$('diagSheet').classList.contains('open')){
+  if(!valveSheet.classList.contains('open')&&!$('diagSheet').classList.contains('open')&&!$('installSheet').classList.contains('open')){
     scrim.classList.remove('show'); document.body.classList.remove('locked');
   }
 }
@@ -1310,7 +1338,7 @@ function setSheetValue(v,src){
   v=clampSnap(v); state.values[currentKey]=v;
   $('shVal').textContent=fmt(v,p.dec);
   if(src!=='input') $('shInput').value=v;
-  shSlider.value=v;                                   /* ← range sempre sincronizado */
+  shSlider.value=v;
   const st=statusOf(currentKey,v), pos=pct(currentKey,v);
   const b=$('shBadge'); b.className='badge '+st.c; b.querySelector('b').textContent=st.t;
   const f=$('tFill'),k=$('tKnob');
@@ -1341,13 +1369,10 @@ function doseHTML(key,v){
     <p class="dose-sub">Base 30 m³ ajustada ao seu volume: ${fmt(m3(),m3()%1?1:0)} m³ · alvo ${fmt(p.dose.target,p.dec)} ${p.unit}</p></div>`;
 }
 
-/* range nativo */
 shSlider.addEventListener('input',e=>{ if(currentKey) setSheetValue(parseFloat(e.target.value),'slider'); });
-/* botões ± : um passo por clique */
 slMinus.addEventListener('click',()=>{ if(currentKey) setSheetValue(state.values[currentKey]-PARAMS[currentKey].step,'btn'); });
 slPlus .addEventListener('click',()=>{ if(currentKey) setSheetValue(state.values[currentKey]+PARAMS[currentKey].step,'btn'); });
 
-/* arrastar o track visual (opcional, além do range) */
 let dragId=null;
 tBar.addEventListener('pointerdown',e=>{ dragId=e.pointerId; tBar.setPointerCapture(dragId); fromX(e); });
 tBar.addEventListener('pointermove',e=>{ if(e.pointerId===dragId) fromX(e); });
@@ -1374,12 +1399,13 @@ function fromX(e){
   toast(p.label+' salvo · '+fmt(v,p.dec)+(p.unit?' '+p.unit:''));
 });
  $('shClose').addEventListener('click',closeSheet);
-scrim.addEventListener('click',()=>{ closeSheet(); closeValveSheet(); closeDiag(); });
+scrim.addEventListener('click',()=>{ closeSheet(); closeValveSheet(); closeDiag(); closeInstallSheet(); });
 document.addEventListener('keydown',e=>{
   if(e.key!=='Escape') return;
   if(sheet.classList.contains('open')) closeSheet();
   if(valveSheet.classList.contains('open')) closeValveSheet();
   if($('diagSheet').classList.contains('open')) closeDiag();
+  if($('installSheet').classList.contains('open')) closeInstallSheet();
   wPop.classList.remove('show'); wChip.setAttribute('aria-expanded','false');
 });
 const grabZone=$('grabZone'); let gy=null,gdy=0;
@@ -1403,8 +1429,8 @@ function setVolume(v,fromTyping){
   if(!fromTyping) volInput.value=v;
   renderVol(); persist(); refreshAll();
 }
- $('volMinus').addEventListener('click',()=>setVolume(state.volume-100));   /* −100 L */
- $('volPlus') .addEventListener('click',()=>setVolume(state.volume+100));   /* +100 L */
+ $('volMinus').addEventListener('click',()=>setVolume(state.volume-100));
+ $('volPlus') .addEventListener('click',()=>setVolume(state.volume+100));
 volInput.addEventListener('input',()=>{
   const v=parseInt(volInput.value,10);
   if(!Number.isNaN(v)&&v>=1000){ state.volume=v; renderVol(); refreshAll(); }
@@ -1434,30 +1460,42 @@ function renderTip(){
 }
 
 /* ============================================================
-   PWA — sw.js + manifest (com fallback inline se aberto fora de host)
+   PWA — Service Worker + Ícone + INSTALAÇÃO UNIVERSAL
+   Android (prompt nativo) · iPhone (guia A2HS) · Desktop
+   O botão some: appinstalled, modo standalone, flag ou "Já instalei".
 ============================================================ */
 if('serviceWorker' in navigator){
-  window.addEventListener('load',()=>{
-    navigator.serviceWorker.register('sw.js').catch(()=>{});
-  });
+  window.addEventListener('load',()=>{ navigator.serviceWorker.register('sw.js').catch(()=>{}); });
 }
+
+/* ícone do app desenhado em canvas — usado no guia e como fallback */
+function makeIcon(size){
+  const c=document.createElement('canvas'); c.width=c.height=size;
+  const x=c.getContext('2d'), s=size/24; x.scale(s,s);
+  const rr=(ctx,rad)=>{ ctx.beginPath();
+    ctx.moveTo(rad,0); ctx.lineTo(24-rad,0); ctx.quadraticCurveTo(24,0,24,rad);
+    ctx.lineTo(24,24-rad); ctx.quadraticCurveTo(24,24,24-rad,24);
+    ctx.lineTo(rad,24); ctx.quadraticCurveTo(0,24,0,24-rad);
+    ctx.lineTo(0,rad); ctx.quadraticCurveTo(0,0,rad,0); ctx.closePath(); };
+  rr(x,5.6); x.fillStyle='#007A8C'; x.fill();
+  const drop=new Path2D('M12 3.5C15.5 7.6 18 10.4 18 13.4A6 6 0 1 1 6 13.4C6 10.4 8.5 7.6 12 3.5Z');
+  x.fillStyle='#fff'; x.fill(drop);
+  x.save(); x.clip(drop); x.fillStyle='#007A8C';
+  x.fill(new Path2D('M0 15.4Q3 13.9 6 15.4T12 15.4T18 15.4T24 15.4V23H0Z'));
+  x.restore(); return c.toDataURL('image/png');
+}
+
+/* apple-touch-icon: usa o arquivo real; sem o arquivo, troca pelo gerado */
+(function(){
+  const l=document.querySelector('link[rel="apple-touch-icon"]');
+  fetch('icon-180.png',{method:'HEAD'})
+    .then(r=>{ if(!r.ok) throw 0; })
+    .catch(()=>{ if(l) l.href=makeIcon(180); });
+})();
+
+/* fallback de manifest fora de host HTTP */
 fetch('manifest.json').then(r=>{ if(!r.ok) throw 0; }).catch(()=>{
   try{
-    function makeIcon(size){
-      const c=document.createElement('canvas'); c.width=c.height=size;
-      const x=c.getContext('2d'), s=size/24; x.scale(s,s);
-      const rr=(ctx,rad)=>{ ctx.beginPath();
-        ctx.moveTo(rad,0); ctx.lineTo(24-rad,0); ctx.quadraticCurveTo(24,0,24,rad);
-        ctx.lineTo(24,24-rad); ctx.quadraticCurveTo(24,24,24-rad,24);
-        ctx.lineTo(rad,24); ctx.quadraticCurveTo(0,24,0,24-rad);
-        ctx.lineTo(0,rad); ctx.quadraticCurveTo(0,0,rad,0); ctx.closePath(); };
-      rr(x,5.6); x.fillStyle='#007A8C'; x.fill();
-      const drop=new Path2D('M12 3.5C15.5 7.6 18 10.4 18 13.4A6 6 0 1 1 6 13.4C6 10.4 8.5 7.6 12 3.5Z');
-      x.fillStyle='#fff'; x.fill(drop);
-      x.save(); x.clip(drop); x.fillStyle='#007A8C';
-      x.fill(new Path2D('M0 15.4Q3 13.9 6 15.4T12 15.4T18 15.4T24 15.4V23H0Z'));
-      x.restore(); return c.toDataURL('image/png');
-    }
     const m={name:'PoolApp Universal',short_name:'PoolApp',start_url:'.',display:'standalone',
       background_color:'#F2F7F8',theme_color:'#007A8C',
       icons:[{src:makeIcon(192),sizes:'192x192',type:'image/png'},{src:makeIcon(512),sizes:'512x512',type:'image/png'}]};
@@ -1466,14 +1504,112 @@ fetch('manifest.json').then(r=>{ if(!r.ok) throw 0; }).catch(()=>{
     document.head.appendChild(l);
   }catch(e){}
 });
+
+/* ---------- detecção ---------- */
+const installBtn=$('installBtn'), installSheet=$('installSheet');
 let deferredPrompt=null;
-window.addEventListener('beforeinstallprompt',e=>{ e.preventDefault(); deferredPrompt=e; $('installBtn').hidden=false; });
- $('installBtn').addEventListener('click',async()=>{
-  if(!deferredPrompt) return;
-  deferredPrompt.prompt();
-  await deferredPrompt.userChoice;
-  deferredPrompt=null; $('installBtn').hidden=true;
+
+const isIOS=()=> /iphone|ipad|ipod/i.test(navigator.userAgent)
+  || (navigator.platform==='MacIntel' && navigator.maxTouchPoints>1);
+const isAndroid=()=> /android/i.test(navigator.userAgent);
+
+const isStandalone=()=>
+  window.matchMedia('(display-mode: standalone)').matches ||
+  window.matchMedia('(display-mode: fullscreen)').matches ||
+  window.matchMedia('(display-mode: minimal-ui)').matches ||
+  window.navigator.standalone===true;
+
+const wasInstalled=()=>{ try{ return localStorage.getItem('poolapp.installed')==='1'; }catch(e){ return false; } };
+const markInstalled=()=>{ try{ localStorage.setItem('poolapp.installed','1'); }catch(e){} };
+
+function hideInstall(){ installBtn.hidden=true; }
+
+function updateInstallUI(){
+  if(isStandalone() || wasInstalled()){ hideInstall(); return; }
+  installBtn.hidden=false;
+  installBtn.dataset.mode = deferredPrompt ? 'native' : (isIOS() ? 'ios' : (isAndroid() ? 'android' : 'desktop'));
+}
+
+window.addEventListener('beforeinstallprompt',e=>{
+  e.preventDefault(); deferredPrompt=e; updateInstallUI();
 });
+
+/* INSTALOU → botão some na hora */
+window.addEventListener('appinstalled',()=>{
+  markInstalled(); deferredPrompt=null; hideInstall();
+  toast('PoolApp instalado! Abra pela tela inicial.');
+});
+try{
+  const dmMQ=window.matchMedia('(display-mode: standalone)');
+  const onDm=e=>{ if(e.matches){ markInstalled(); hideInstall(); } };
+  if(dmMQ.addEventListener) dmMQ.addEventListener('change',onDm);
+  else if(dmMQ.addListener) dmMQ.addListener(onDm);
+}catch(e){}
+
+/* clique: prompt nativo ou guia ilustrado */
+installBtn.addEventListener('click',async()=>{
+  if(deferredPrompt){
+    deferredPrompt.prompt();
+    const {outcome}=await deferredPrompt.userChoice;
+    deferredPrompt=null;
+    if(outcome==='accepted'){ markInstalled(); hideInstall(); toast('Instalando…'); }
+    updateInstallUI();
+    return;
+  }
+  openInstallSheet(installBtn.dataset.mode||'android');
+});
+
+/* ---------- guia de instalação ---------- */
+const SHARE_SVG='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V4M8 7l4-4 4 4M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg>';
+const PLUS_SVG ='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8.5v7M8.5 12h7"/></svg>';
+
+function openInstallSheet(mode){
+  const browser = /firefox/i.test(navigator.userAgent) ? 'Firefox'
+                : /samsungbrowser/i.test(navigator.userAgent) ? 'Samsung Internet' : 'Chrome';
+  $('insAppIcon').src=makeIcon(192);
+
+  if(mode==='ios'){
+    $('insTitle').textContent='Instalar no iPhone / iPad';
+    $('insSub').textContent='Safari · Adicionar à Tela de Início';
+    $('insSteps').innerHTML=
+      `<li><span class="vs-n">1</span><span>Toque no botão <b>Compartilhar</b> ${SHARE_SVG} na barra de baixo do Safari</span></li>
+       <li><span class="vs-n">2</span><span>Role a lista e toque em <b>“Adicionar à Tela de Início”</b></span></li>
+       <li><span class="vs-n">3</span><span>Confirme em <b>“Adicionar”</b> — o ícone teal do PoolApp aparece na sua tela inicial</span></li>`;
+    $('insExtra').innerHTML='<button class="btn ghostD" id="insDone" style="margin-bottom:14px">Já adicionei à Tela de Início</button>';
+  }else if(mode==='android'){
+    $('insTitle').textContent='Instalar no Android';
+    $('insSub').textContent=browser+' · menu do navegador';
+    const menu=browser==='Firefox'?'<b>Instalar</b>' : browser==='Samsung Internet'?'<b>Adicionar página à</b> → <b>Tela inicial</b>' : '<b>Instalar aplicativo</b>';
+    $('insSteps').innerHTML=
+      `<li><span class="vs-n">1</span><span>Abra o menu ${browser==='Samsung Internet'?'☰':'⋮'} no canto do ${browser}</span></li>
+       <li><span class="vs-n">2</span><span>Toque em ${menu}</span></li>
+       <li><span class="vs-n">3</span><span>Confirme — o PoolApp fica na lista de apps, em tela cheia e offline</span></li>`;
+    $('insExtra').innerHTML='<button class="btn ghostD" id="insDone" style="margin-bottom:14px">Já instalei</button>';
+  }else{
+    $('insTitle').textContent='Instalar no computador';
+    $('insSub').textContent='Chrome / Edge · ícone na barra de endereço';
+    $('insSteps').innerHTML=
+      `<li><span class="vs-n">1</span><span>Olhe o ícone ${PLUS_SVG} no fim da barra de endereço</span></li>
+       <li><span class="vs-n">2</span><span>Clique em <b>Instalar</b> e confirme</span></li>`;
+    $('insExtra').innerHTML='';
+  }
+
+  scrim.classList.add('show');
+  installSheet.classList.add('open');
+  document.body.classList.add('locked');
+
+  const done=$('insDone');
+  if(done) done.addEventListener('click',()=>{ markInstalled(); hideInstall(); closeInstallSheet(); toast('Perfeito — bom uso! 💧'); });
+}
+function closeInstallSheet(){
+  if(!installSheet.classList.contains('open')) return;
+  installSheet.classList.remove('open');
+  if(!$('sheet').classList.contains('open')&&!$('valveSheet').classList.contains('open')&&!$('diagSheet').classList.contains('open')){
+    scrim.classList.remove('show'); document.body.classList.remove('locked');
+  }
+}
+ $('insClose').addEventListener('click',closeInstallSheet);
+ $('insOk').addEventListener('click',closeInstallSheet);
 
 /* ---------- init ---------- */
 (function init(){
@@ -1495,6 +1631,8 @@ window.addEventListener('beforeinstallprompt',e=>{ e.preventDefault(); deferredP
   requestAnimationFrame(()=>vLever.classList.remove('no-anim'));
   applyValveVisual();
   renderOnline();
+  if(isStandalone()) markInstalled();   /* aberto pelo ícone = já instalado */
+  updateInstallUI();
   renderWeather();
   updateWeather();
   startWatch();
