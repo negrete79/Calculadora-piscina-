@@ -22,7 +22,6 @@ self.addEventListener('fetch', e => {
   const url = new URL(req.url);
 
   if (url.origin === location.origin) {
-    // App shell: cache primeiro (offline instantâneo), atualiza por baixo
     e.respondWith(
       caches.match(req).then(hit => {
         const net = fetch(req).then(res => {
@@ -36,7 +35,6 @@ self.addEventListener('fetch', e => {
       })
     );
   } else {
-    // APIs (clima/geocode): rede primeiro; se falhar, responde do cache
     e.respondWith(
       fetch(req).then(res => {
         if (res && res.ok) {
