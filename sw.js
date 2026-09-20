@@ -1,5 +1,5 @@
 /* PoolApp Universal — Service Worker v5 (Elias costa NEGRET'S)
-   Navegação (HTML): NETWORK-FIRST → deploy novo aparece na hora; offline usa cache.
+   Navegação (HTML): NETWORK-FIRST — deploy novo aparece na hora; offline usa cache.
    Estáticos (css/js/ícones): CACHE-FIRST com refresh em segundo plano.
    Externo (clima/geocode/fontes): NETWORK-FIRST com fallback de cache.
    localStorage ("dados salvos neste dispositivo"): nunca é tocado pelo SW. */
@@ -31,7 +31,7 @@ self.addEventListener('fetch', (e) => {
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
 
-  /* 1) navegação: REDE PRIMEIRO — sempre a versão mais nova do app */
+  /* 1) navegação: REDE PRIMEIRO */
   if (req.mode === 'navigate') {
     e.respondWith(
       fetch(req).then((res) => {
@@ -50,7 +50,7 @@ self.addEventListener('fetch', (e) => {
     return;
   }
 
-  /* 2) mesma origem (assets): cache primeiro + atualização por baixo */
+  /* 2) mesma origem (assets): cache primeiro + refresh por baixo */
   if (url.origin === location.origin) {
     e.respondWith(
       caches.match(req).then((hit) => {
