@@ -121,7 +121,6 @@ button:active{transform:scale(.97)}
 .v-foot svg{width:16px;height:16px;color:#96521A;flex:none;margin-top:2px}
 .v-foot p{font-size:12px;line-height:1.5;color:var(--sub);font-weight:500}
 .v-foot b{color:#96521A}
-/* registros do Elias */
 .reg-manivela{width:60px;height:60px;border-radius:50%;margin:0 auto;display:flex;align-items:center;justify-content:center;transition:transform .35s ease,background .35s ease}
 .reg-manivela span{width:40px;height:6px;background:white;border-radius:3px;display:block}
 #alerta-registros{transition:background .3s}
@@ -182,6 +181,21 @@ button:active{transform:scale(.97)}
 .btn.primary{width:100%;background:var(--teal);color:#fff}
 .btn.amberB{width:100%;background:rgba(226,135,67,.12);color:#96521A;border:1.5px solid rgba(226,135,67,.35)}
 .btn.ghostD{width:100%;background:transparent;color:var(--sub);border:1.5px solid var(--line)}
+/* cor da água */
+.ac-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
+.ac-chip{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:700;padding:10px 14px;border-radius:999px;background:rgba(13,48,56,.06);color:var(--sub);cursor:pointer;transition:all .2s}
+.ac-chip:active{transform:scale(.95)}
+.ac-chip.on{background:var(--teal);color:#fff;box-shadow:0 4px 10px -4px rgba(0,122,140,.6)}
+.ac-plan{margin-top:12px;display:none;flex-direction:column;gap:8px}
+.ac-plan.show{display:flex;animation:slideDownReg .35s ease}
+.ac-pre{border-radius:12px;padding:10px 12px;font-size:12.5px;line-height:1.5;font-weight:700}
+.ac-pre.bad{background:rgba(226,135,67,.09);border:1px solid rgba(226,135,67,.28);color:#96521A}
+.ac-pre.ok{background:rgba(47,191,143,.09);border:1px solid rgba(47,191,143,.28);color:#14724E}
+.ac-step{display:flex;gap:10px;align-items:flex-start;background:rgba(0,122,140,.05);border-radius:14px;padding:12px;min-width:0}
+.ac-n{flex:none;width:24px;height:24px;border-radius:50%;background:var(--teal);color:#fff;font-family:var(--mono);font-size:11px;font-weight:600;display:grid;place-items:center;margin-top:1px}
+.ac-t{flex:1;min-width:0;font-size:13px;line-height:1.55;color:var(--ink);font-weight:500;overflow-wrap:break-word}
+.ac-t b{font-weight:800}
+.ac-foot{font-size:11px;color:var(--sub);font-weight:600;margin-top:4px;font-family:var(--mono)}
 .ft{display:flex;align-items:center;gap:14px;margin-top:4px;flex-wrap:wrap}
 .ft-h{display:flex;flex-direction:column;flex:none}
 .ft-h strong{font-family:var(--mono);font-size:32px;font-weight:600;letter-spacing:-.02em;line-height:1}
@@ -340,7 +354,6 @@ button:active{transform:scale(.97)}
 <div class="v-foot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 4.5 20.8 19.5H3.2Z"/><path d="M12 10.2v3.6"/><circle cx="12" cy="16.6" r=".9" fill="currentColor" stroke="none"/></svg><p><b>Regra de ouro:</b> desligue a bomba antes de girar. Toque no número da posição, toque na manopla ou arraste-a.</p></div>
 </section>
 
-<!-- Limpeza de Bordas · Vinil -->
 <div id="limpeza-bordas" style="background:#fff;border-radius:16px;padding:16px;box-shadow:0 2px 8px rgba(0,0,0,.08)">
 <h3 style="margin:0 0 8px;font-size:15px">🧽 Limpeza de Bordas · Vinil - 1× por semana</h3>
 <div style="font-size:13px;line-height:1.5;color:#333;display:flex;flex-direction:column;gap:8px">
@@ -350,7 +363,6 @@ button:active{transform:scale(.97)}
 </div>
 </div>
 
-<!-- Posição dos Registros -->
 <div id="posicao-registros" style="background:#fff;border-radius:16px;padding:16px;box-shadow:0 2px 8px rgba(0,0,0,.08)">
 <h3 style="margin:0 0 12px;font-size:15px">🔧 Posição dos Registros</h3>
 <div style="display:flex;gap:12px;justify-content:space-between">
@@ -380,6 +392,21 @@ button:active{transform:scale(.97)}
 <section class="card treat" aria-label="Tratamento orientado">
 <div class="vc-head"><p class="lbl">Tratamento orientado</p><span class="badge mint" id="treatBadge"><i></i><b id="treatBadgeT">—</b></span></div>
 <div id="treatSteps"></div>
+</section>
+
+<!-- Cor da Água · Diagnóstico -->
+<section class="card treat" aria-label="Diagnóstico pela cor da água">
+<div class="vc-head"><p class="lbl">Cor da água · Diagnóstico</p><span class="badge mint" id="acBadge"><i></i><b id="acBadgeT">Toque na cor</b></span></div>
+<p style="font-size:13px;color:var(--sub);font-weight:500;margin-top:2px">Que cor está a água hoje? O app monta o plano na ordem certa, com as doses para o seu volume.</p>
+<div class="ac-chips" id="acChips">
+<button class="ac-chip" type="button" data-c="cristalina">💧 Cristalina</button>
+<button class="ac-chip" type="button" data-c="turva">⚪ Turva / leitosa</button>
+<button class="ac-chip" type="button" data-c="verde">🟢 Verde clara</button>
+<button class="ac-chip" type="button" data-c="verdeEscuro">🟢 Verde escura</button>
+<button class="ac-chip" type="button" data-c="amarelada">🟡 Amarelada / marrom</button>
+</div>
+<div class="ac-plan" id="acPlan"></div>
+<p class="ac-foot" id="acFoot"></p>
 </section>
 
 <section class="card treat" aria-label="Tempo de filtragem pelo clima">
@@ -482,7 +509,7 @@ function renderOnline(){$('offbar').hidden=navigator.onLine;}
 window.addEventListener('offline',renderOnline);
 window.addEventListener('online',()=>{renderOnline();try{updateWeather();}catch(e){}});
 
-/* ══════ CLIMA — Open-Meteo grátis, sem chave. Fallback Uberlândia. ══════ */
+/* ══════ CLIMA — Open-Meteo grátis, sem chave. Fallback Uberlândia -18.91/-48.27 ══════ */
 let wCache=null,lastFix=null,watchId=null,wFail=null;
 try{wCache=JSON.parse(localStorage.getItem('poolapp.weather')||'null');}catch(e){}
 function waEmoji(c,d){if(c===0)return d?'☀️':'🌙';if(c<=3)return d?'⛅':'🌙';if(c<=57)return'☁️';if(c<=82)return'🌧️';if(c>=95)return'⛈️';return'⛅';}
@@ -491,16 +518,12 @@ function fetchJSON(url,ms){const c=new AbortController();const t=setTimeout(()=>
 function getCoordsOnce(){return new Promise(res=>{if(!('geolocation'in navigator))return res(null);navigator.geolocation.getCurrentPosition(p=>res({lat:p.coords.latitude,lon:p.coords.longitude}),()=>res(null),{enableHighAccuracy:true,timeout:8000,maximumAge:0});});}
 async function updateWeather(){
   const p=await getCoordsOnce();
-  /* GPS falhou? fallback Uberlândia -18.91 / -48.27 */
   const lat=p?p.lat:-18.91, lon=p?p.lon:-48.27;
   if(p)lastFix=p;else lastFix=null;
   try{
     const r=await fetchJSON('https://api.open-meteo.com/v1/forecast?latitude='+lat+'&longitude='+lon+'&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m,is_day&timezone=America/Sao_Paulo',9000);
-    const c=r.current;
-    const isDay=c.is_day===1;
-    wCache={lat,lon,fixed:!p,gps:p?'GPS':'Fixo',temp:c.temperature_2m,
-      emoji:waEmoji(c.weather_code,isDay),
-      hum:c.relative_humidity_2m,wind:c.wind_speed_10m,at:Date.now()};
+    const c=r.current,isDay=c.is_day===1;
+    wCache={lat,lon,fixed:!p,temp:c.temperature_2m,emoji:waEmoji(c.weather_code,isDay),hum:c.relative_humidity_2m,wind:c.wind_speed_10m,at:Date.now()};
     wFail=null;
     try{localStorage.setItem('poolapp.weather',JSON.stringify(wCache));}catch(e){}
     renderWeather();renderFilterCard();
@@ -517,13 +540,13 @@ function renderWeather(){if(!wCache)return;
  $('wCity').textContent='· '+(wCache.fixed?'Uberlândia':'GPS');
  $('wpEmoji').textContent=wCache.emoji;
  $('wpCond').textContent=wCache.fixed?'Uberlândia · MG':'Sua região';
- $('wpCity').textContent='📍 '+(wCache.fixed?'Uberlândia (fallback)':'Coordenadas GPS')+(wCache.fixed?'':' ');
+ $('wpCity').textContent='📍 '+(wCache.fixed?'Uberlândia (fallback)':'Coordenadas GPS');
  $('wpTemp').textContent=fmt(wCache.temp,Number.isInteger(wCache.temp)?0:1)+'°C';
  $('wpHum').textContent=(wCache.hum!=null?Math.round(wCache.hum):'—')+'%';
  $('wpWind').textContent=(wCache.wind!=null?fmt(wCache.wind,wCache.wind%1?1:0):'—')+' km/h';
  $('wpDica').textContent=dicaFor(wCache.temp);
  $('wpTime').textContent='Open-Meteo · atualizado '+timeAgo(wCache.at);
- $('wChip').hidden=false;   /* ★ chip aparece assim que o fetch retorna */
+ $('wChip').hidden=false;
 renderFilterCard();}
 const wChip=$('wChip'),wPop=$('wPop');
 wChip.addEventListener('click',e=>{e.stopPropagation();const o=wPop.classList.toggle('show');wChip.setAttribute('aria-expanded',o);});
@@ -572,7 +595,6 @@ else{bb.className='badge amber';$('treatBadgeT').textContent='Em andamento';}
 const bA=$('btnAplicar');if(bA)bA.addEventListener('click',()=>{treat.lastSulfato=Date.now();persistTreat();toast('Aplicação registrada — nova liberação em 24h',true);renderTreat();});
 const bD=$('btnDiag');if(bD)bD.addEventListener('click',openDiag);}
 
-/* ---- diagnóstico pós-sulfato ---- */
 const DIAG=[
 {e:'🟢',t:'Ainda VERDE',s:'algas ativas',render(){return '<div class="t-wait"><p><b>Supercloração — sulfato não mata alga.</b></p><div class="t-dose"><strong>'+nf0.format(superDose())+' g</strong><span>de cloro granulado (28 g / 1.000 L)</span></div><ul class="t-steps"><li>Dissolva em balde e espalhe com bomba em RECIRCULAR</li><li>Escove paredes e fundo</li><li>Filtre 12h, re-meça o cloro e só então reavalie a decantação</li><li><b>NÃO use sulfato agora</b></li></ul></div>';}},
 {e:'⚪',t:'Branca / leitosa / turva',s:'flóculos em suspensão',render(){return '<div class="t-ok"><p><b>O sulfato decantou em pó fino — falta filtração + clarificante.</b></p><div class="t-dose"><strong>'+nf0.format(clarDose())+' ml</strong><span>de clarificante ('+CLAR_PER_M3+' ml/m³)</span></div><ul class="t-steps"><li><b>FILTRAR 24h seguidos</b></li><li>Aplique o clarificante com bomba em FILTRAR</li><li>Retro-lave a areia do filtro a cada 12h</li><li><b>NÃO repita sulfato</b></li></ul></div>';}},
@@ -596,7 +618,7 @@ st.innerText=aberto?'ABERTO':'FECHADO';
 function gira(el){
 var nome=el.dataset.nome;
 var man=el.querySelector('.reg-manivela'),st=el.querySelector('.status');
-var aberto=est[nome]==='aberto';   /* fonte da verdade = est */
+var aberto=est[nome]==='aberto';
 if(aberto){man.style.transform='rotate(90deg)';man.style.background='#8ca3ad';st.innerText='FECHADO';est[nome]='fechado';}
 else{man.style.transform='rotate(0deg)';man.style.background='#0fb98a';st.innerText='ABERTO';est[nome]='aberto';}
 if(navigator.vibrate)navigator.vibrate(40);
@@ -661,7 +683,7 @@ function buildCards(){grid.innerHTML=Object.keys(PARAMS).map(k=>{const p=PARAMS[
 Object.keys(PARAMS).forEach(k=>{const p=PARAMS[k],el=cardEl(k),z=el.querySelector('.m-zone');z.style.left=((p.idealMin-p.min)/(p.max-p.min)*100)+'%';z.style.width=((p.idealMax-p.idealMin)/(p.max-p.min)*100)+'%';el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openSheet(k);}});});}
 const cardEl=k=>grid.querySelector('[data-key="'+k+'"]');
 function updateCard(k){const p=PARAMS[k],el=cardEl(k);if(!el)return;const v=state.values[k],st=statusOf(k,v),pos=pct(k,v);el.querySelector('[data-val]').textContent=fmt(v,p.dec);const b=el.querySelector('[data-badge]');b.className='badge '+st.c;el.querySelector('[data-badge-t]').textContent=st.t;const f=el.querySelector('.m-fill'),kn=el.querySelector('.m-knob');f.style.width=pos+'%';kn.style.left=pos+'%';f.classList.toggle('warn',st.c==='amber');kn.classList.toggle('warn',st.c==='amber');const m=measures[k];el.querySelector('[data-time]').textContent=m?'atualizado '+timeAgo(m.at):'sem medição salva';}
-function refreshAll(){Object.keys(PARAMS).forEach(updateCard);renderTreat();renderFilterCard();updateBorders();}
+function refreshAll(){Object.keys(PARAMS).forEach(updateCard);renderTreat();renderFilterCard();updateBorders();renderAgua();}
 
 /* ══════ SHEET PARÂMETROS ══════ */
 const sheet=$('sheet'),scrim=$('scrim'),tBar=$('tBar'),shSlider=$('shSlider');
@@ -680,7 +702,8 @@ const m=measures[k];$('shLast').textContent=m?'Última medição: '+timeAgo(m.at
 setSheetValue(val,'open');scrim.classList.add('show');sheet.classList.add('open');document.body.classList.add('locked');}
 function closeSheet(){if(currentKey){const s=measures[currentKey];state.values[currentKey]=s?s.v:DEFAULTS[currentKey];updateCard(currentKey);}
 sheet.style.transform='';sheet.style.transition='';sheet.classList.remove('open');currentKey=null;
-if(!$('valveSheet').classList.contains('open')&&!$('diagSheet').classList.contains('open')&&!$('installSheet').classList.contains('open')){scrim.classList.remove('show');document.body.classList.remove('locked');}}
+if(!$('valveSheet').classList.contains('open')&&!$('diagSheet').classList.contains('open')&&!$('installSheet').classList.contains('open')){scrim.classList.remove('show');document.body.classList.remove('locked');}
+renderAgua();}
 function clampSnap(v){const p=PARAMS[currentKey];v=Math.min(p.max,Math.max(p.min,v));v=Math.round((v-p.min)/p.step)*p.step+p.min;return +v.toFixed(2);}
 function setSheetValue(v,src){const p=PARAMS[currentKey];v=clampSnap(v);state.values[currentKey]=v;
  $('shVal').textContent=fmt(v,p.dec);if(src!=='input')$('shInput').value=v;
@@ -707,7 +730,7 @@ tBar.addEventListener('pointermove',e=>{if(e.pointerId===dragId)fromX(e);});
 function fromX(e){if(!currentKey)return;const p=PARAMS[currentKey],r=tBar.getBoundingClientRect();const t=Math.min(1,Math.max(0,(e.clientX-r.left)/r.width));setSheetValue(p.min+t*(p.max-p.min),'track');}
  $('shInput').addEventListener('input',e=>{if(!currentKey)return;const r=parseFloat(e.target.value);if(!Number.isNaN(r))setSheetValue(r,'input');});
  $('shInput').addEventListener('blur',()=>{if(currentKey)$('shInput').value=state.values[currentKey];});
- $('shSave').addEventListener('click',()=>{if(!currentKey)return;const p=PARAMS[currentKey],v=state.values[currentKey];measures[currentKey]={v,at:Date.now()};persistMeasures();persist();updateCard(currentKey);renderTreat();renderFilterCard();$('shLast').textContent='Última medição: agora · '+new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});toast(p.label+' salvo · '+fmt(v,p.dec)+(p.unit?' '+p.unit:''));});
+ $('shSave').addEventListener('click',()=>{if(!currentKey)return;const p=PARAMS[currentKey],v=state.values[currentKey];measures[currentKey]={v,at:Date.now()};persistMeasures();persist();updateCard(currentKey);renderTreat();renderFilterCard();renderAgua();$('shLast').textContent='Última medição: agora · '+new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});toast(p.label+' salvo · '+fmt(v,p.dec)+(p.unit?' '+p.unit:''));});
  $('shClose').addEventListener('click',closeSheet);
 const grabZone=$('grabZone');let gy=null,gdy=0;
 grabZone.addEventListener('pointerdown',e=>{gy=e.clientY;gdy=0;grabZone.setPointerCapture(e.pointerId);sheet.style.transition='none';});
@@ -738,6 +761,71 @@ if(c.cat==='RAIN'){const phv=state.values.ph;
 ph=(phv>=7&&phv<=7.4)?'<div class="ft-ph ok">pH '+phv.toLocaleString('pt-BR')+' em ordem — re-meça depois da chuva.</div>':'<div class="ft-ph bad">Corrija o pH antes de nadar: está '+phv.toLocaleString('pt-BR')+' — a chuva desequilibra a água. Ideal 7,0–7,4.</div>';}
 body.innerHTML='<div class="ft"><div class="ft-h"><strong>'+c.hours+'h</strong><span>por dia</span></div><div class="ft-i"><span class="badge '+c.bc+'"><i></i>'+c.label+'</span><div class="ft-split">'+c.split.map(s=>'<span>'+s+'</span>').join('')+'</div></div></div>'+ph+'<p class="ft-foot">Sugestão automática pelo clima · '+nf0.format(state.volume)+' L — não altera nenhum ajuste seu.</p>';
  $('ftBadge').className='badge '+c.bc;$('ftBadgeT').textContent=c.hours+'h/dia';}
+
+/* ══════ COR DA ÁGUA · DIAGNÓSTICO (doses vivas, ordem correta) ══════ */
+let aguaSel=null;
+try{aguaSel=localStorage.getItem('poolapp_agua')||null;}catch(e){}
+function acPlano(c){
+const V=state.volume,choque=Math.round(28*V/1000),clar=Math.round(CLAR_PER_M3*m3()),
+dec=Math.round(SULFATO_PER_M3*m3()),alg=Math.round(10*m3()),met=Math.round(METAL_PER_M3*m3());
+switch(c){
+case 'verde':return{t:'Água VERDE clara · algas iniciais',steps:[
+['Escove paredes e fundo','Retira a camada de alga para o cloro agir direto.'],
+['CHOQUE de cloro granulado',nf0.format(choque)+' g dissolvidos em balde, bomba em RECIRCULAR por 30 min.'],
+['Filtrar 12h seguidas','Manopla em FILTRAR (1). Retro-lave se a pressão subir.'],
+['Re-meça o cloro','Se continuar esverdeada, repita o choque (mais '+nf0.format(choque)+' g) antes de qualquer outra coisa.'],
+['Se ficar TURVA depois','Aí sim: decantador do diagnóstico "Turva" — só com cloro entre 1 e 3 ppm.']],
+wait:'Cloro fica alto (~24h sem nadar). Só decante depois que baixar para 1–3 ppm.'};
+case 'verdeEscuro':return{t:'Água VERDE ESCURA · algas instaladas',steps:[
+['Escove TUDO com força','Parede, fundo, escada e cantos — a alga está incrustada.'],
+['CHOQUE DOBRO em 2 vezes',nf0.format(choque)+' g agora + '+nf0.format(choque)+' g em 12h, ambos em RECIRCULAR.'],
+['Algicida de choque',nf0.format(alg)+' ml (10 ml/m³) espalhado com a bomba em FILTRAR.'],
+['Filtrar 24h seguidas','Retro-lave a cada 8h — o filtro segura muita alga morta.'],
+['Clarificante quando clarear',nf0.format(clar)+' ml com cloro entre 1–3 ppm, depois aspirar no DRENO/WASTE.']],
+wait:'Processo leva 2–3 dias. NÃO aplique decantador com a água verde — primeiro mate a alga.'};
+case 'turva':return{t:'Água TURVA / leitosa · partículas em suspensão',steps:[
+['Confira o cloro antes','Se estiver abaixo de 1 ppm, choque de '+nf0.format(choque)+' g primeiro e espere 12h.'],
+['DECANTADOR (sulfato de alumínio)',nf0.format(dec)+' g dissolvido em balde, espalhe com bomba em RECIRCULAR por 10 min.'],
+['DESLIGUE a bomba 12–24h','A água fica parada e a sujeira assenta no fundo. Não perturbe.'],
+['Aspire o fundo no DRENO/WASTE','Nunca em FILTRAR — a sujeira sai direto pro esgoto.'],
+['Filtre 4h para finalizar','Volte a manopla para FILTRAR (1) e re-meça o cloro.']],
+wait:'Decantador só com cloro entre 1 e 3 ppm e pH 7,0–7,4 — fora disso ele não assenta.'};
+case 'amarelada':return{t:'Água AMARELADA / marrom · metais (ferro/cobre)',steps:[
+['NÃO use sulfato/decantador','O oxidante escurece ainda mais o metal na água.'],
+['Sequestrante de metais',nf0.format(met)+' ml (10 ml/m³) com bomba em FILTRAR por 6h.'],
+['Teste o pH e corrija','Mantenha 7,0–7,4 — pH alto precipita o metal como mancha.'],
+['Reavalie em 24h','A água costuma clarear. Manchas na parede saem com ácido ascórbico.'],
+['Choque só depois de clarear',nf0.format(choque)+' g apenas quando o tom amarelado sumir.']],
+wait:'A origem costuma ser água de poço ou troca de água — trate a fonte também.'};
+default:return{t:'Água CRISTALINA · manter a rotina',steps:[
+['Meça os 5 parâmetros','pH, Cloro, Alcalinidade, Dureza e Turbidez no card acima.'],
+['Cloro entre 1–3 ppm','Abaixo disso, choque de '+nf0.format(choque)+' g.'],
+['Filtre conforme o clima','Siga a sugestão do card "Filtragem pelo clima".'],
+['Bordas 1× por semana','Card "Limpeza de Bordas" — previne a próxima verde.']],
+wait:'Prevenção é mais barata que correção: meça 2× por semana.'};}}
+function renderAgua(){
+const plan=$('acPlan');if(!plan)return;
+document.querySelectorAll('#acChips .ac-chip').forEach(ch=>ch.classList.toggle('on',ch.dataset.c===aguaSel));
+if(!aguaSel){plan.classList.remove('show');$('acFoot').textContent='Doses calculadas para '+nf0.format(state.volume)+' L.';return;}
+const p=acPlano(aguaSel),ph=state.values.ph,cl=state.values.cloro;
+let pre='';
+if(aguaSel!=='cristalina'&&ph!=null&&(ph<7||ph>7.4)){
+pre='<div class="ac-pre bad">Antes de tudo: corrija o pH (está '+ph.toLocaleString('pt-BR')+', ideal 7,0–7,4) — cloro e decantador só funcionam com pH certo.</div>';
+}else if(aguaSel!=='cristalina'&&cl!=null&&cl>3.5){
+pre='<div class="ac-pre bad">Cloro já está alto ('+cl.toLocaleString('pt-BR')+' ppm) — NÃO dê choque agora. Espere cair para 1–3 ppm (Tratamento Orientado).</div>';
+}else if(aguaSel==='turva'&&cl!=null&&cl>=1&&cl<=3.5){
+pre='<div class="ac-pre ok">Cloro em '+cl.toLocaleString('pt-BR')+' ppm — pode aplicar o decantador agora.</div>';}
+const steps=p.steps.map((s,i)=>'<div class="ac-step"><span class="ac-n">'+(i+1)+'</span><span class="ac-t"><b>'+s[0]+'</b><br>'+s[1]+'</span></div>').join('');
+plan.innerHTML=pre+steps+'<div class="ac-pre bad" style="background:rgba(226,135,67,.09);border-color:rgba(226,135,67,.28);color:#96521A">⏱ '+p.wait+'</div>';
+plan.classList.add('show');
+ $('acFoot').textContent='Doses para '+nf0.format(state.volume)+' L · recalcule sempre que mudar o volume.';
+ $('acBadgeT').textContent=p.t.split(' · ')[1]||p.t;
+try{localStorage.setItem('poolapp_agua',aguaSel);}catch(e){}}
+ $('acChips').addEventListener('click',e=>{
+const b=e.target.closest('.ac-chip');if(!b)return;
+aguaSel=(aguaSel===b.dataset.c)?null:b.dataset.c;
+renderAgua();
+if(aguaSel&&navigator.vibrate)navigator.vibrate(40);});
 
 /* ══════ BORDAS VINIL ══════ */
 function updateBorders(){const act=document.querySelector('#typePills .pill.active');const vinil=act?act.dataset.type==='vinil':true;$('limpeza-bordas').hidden=!vinil;}
@@ -776,11 +864,11 @@ const PLUS_SVG='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strok
 function openInstallSheet(mode){const browser=/firefox/i.test(navigator.userAgent)?'Firefox':/samsungbrowser/i.test(navigator.userAgent)?'Samsung Internet':'Chrome';
  $('insAppIcon').src=makeIcon(192);
 if(mode==='ios'){$('insTitle').textContent='Instalar no iPhone / iPad';$('insSub').textContent='Safari · Adicionar à Tela de Início';
- $('insSteps').innerHTML='<li><span class="vs-n">1</span><span>Toque no botão <b>Compartilhar</b> '+SHARE_SVG+' na barra de baixo do Safari</span></li><li><span class="vs-n">2</span><span>Role e toque em <b>"Adicionar à Tela de Início"</b></span></li><li><span class="vs-n">3</span><span>Confirme em <b>"Adicionar"</b> — o ícone teal do PoolApp aparece na sua tela inicial</span></li>';
+ $('insSteps').innerHTML='<li><span class="vs-n">1</span><span>Toque no botão <b>Compartilhar</b> '+SHARE_SVG+' na barra de baixo do Safari</span></li><li><span class="vs-n">2</span><span>Role e toque em <b>"Adicionar à Tela de Início"</b></span></li><li><span class="vs-n">3</span><span>Confirme em <b>"Adicionar"</b></span></li>';
  $('insExtra').innerHTML='<button class="btn ghostD" id="insDone" style="margin-bottom:14px">Já adicionei à Tela de Início</button>';}
 else if(mode==='android'){$('insTitle').textContent='Instalar no Android';$('insSub').textContent=browser+' · menu do navegador';
 const menu=browser==='Firefox'?'<b>Instalar</b>':browser==='Samsung Internet'?'<b>Adicionar página à</b> → <b>Tela inicial</b>':'<b>Instalar aplicativo</b>';
- $('insSteps').innerHTML='<li><span class="vs-n">1</span><span>Abra o menu '+(browser==='Samsung Internet'?'☰':'⋮')+' no canto do '+browser+'</span></li><li><span class="vs-n">2</span><span>Toque em '+menu+'</span></li><li><span class="vs-n">3</span><span>Confirme — o PoolApp fica na lista de apps, em tela cheia e offline</span></li>';
+ $('insSteps').innerHTML='<li><span class="vs-n">1</span><span>Abra o menu '+(browser==='Samsung Internet'?'☰':'⋮')+' do '+browser+'</span></li><li><span class="vs-n">2</span><span>Toque em '+menu+'</span></li><li><span class="vs-n">3</span><span>Confirme — tela cheia e offline</span></li>';
  $('insExtra').innerHTML='<button class="btn ghostD" id="insDone" style="margin-bottom:14px">Já instalei</button>';}
 else{$('insTitle').textContent='Instalar no computador';$('insSub').textContent='Chrome / Edge · ícone na barra de endereço';
  $('insSteps').innerHTML='<li><span class="vs-n">1</span><span>Olhe o ícone '+PLUS_SVG+' no fim da barra de endereço</span></li><li><span class="vs-n">2</span><span>Clique em <b>Instalar</b> e confirme</span></li>';
@@ -800,7 +888,7 @@ if($('diagSheet').classList.contains('open'))closeDiag();
 if($('installSheet').classList.contains('open'))closeInstallSheet();
 wPop.classList.remove('show');wChip.setAttribute('aria-expanded','false');});
 
-/* ══════ INIT — blindado em 2 blocos; clima sempre inicia ══════ */
+/* ══════ INIT — blindado; clima sempre inicia ══════ */
 (function init(){
 try{
 buildCards();
@@ -819,10 +907,10 @@ if(isStandalone())markInstalled();
 updateInstallUI();
 }catch(e){console.warn('[PoolApp] init parcial:',e);}
 try{
-renderWeather();       /* último clima salvo → chip + dicas na hora */
-updateWeather();       /* busca clima novo (chip aparece quando o fetch retorna) */
+renderWeather();
+updateWeather();
 startWatch();
-setInterval(updateWeather,600000);   /* a cada 10 minutos */
+setInterval(updateWeather,600000);
 }catch(e){console.warn('[PoolApp] clima:',e);}
 })();
 </script>
