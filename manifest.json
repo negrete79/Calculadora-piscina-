@@ -1,22 +1,19 @@
 {
-  "id": "./",
   "name": "PoolApp Universal",
   "short_name": "PoolApp",
-  "description": "Tratamento e manutenção de piscina — pH, cloro, decantação, cor da água e clima. Funciona offline.",
+  "description": "Manutenção orientada de piscina de vinil, fibra e alvenaria — funciona 100% offline.",
   "lang": "pt-BR",
   "dir": "ltr",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
-  "display_override": ["standalone", "minimal-ui"],
   "orientation": "portrait",
   "background_color": "#F2F7F8",
   "theme_color": "#0f5f6e",
-  "prefer_related_applications": false,
+  "categories": ["utilities", "lifestyle"],
   "icons": [
-    { "src": "./icon-192.png", "sizes": "192x192", "type": "image/png" },
-    { "src": "./icon-512.png", "sizes": "512x512", "type": "image/png" },
-    { "src": "./icon-512-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
-    { "src": "./icon-180.png", "sizes": "180x180", "type": "image/png" }
+    { "src": "./icon-180.png", "sizes": "180x180", "type": "image/png", "purpose": "any" },
+    { "src": "./icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "./icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
   ]
 }
