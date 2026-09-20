@@ -10,13 +10,12 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="PoolApp">
 <title>PoolApp Universal — Manutenção de Piscina</title>
-<link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" sizes="180x180" href="icon-180.png">
+<link rel="manifest" href="./manifest.json">
+<link rel="apple-touch-icon" sizes="180x180" href="./icon-180.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-/* ══════ BASE ══════ */
 :root{--teal:#007A8C;--teal-deep:#035A67;--ink:#0D3038;--sub:#5B7680;--bg:#F2F7F8;--card:rgba(255,255,255,.9);--line:rgba(13,48,56,.08);--mint:#2FBF8F;--amber:#E28743;--red:#D64545;--radius:24px;--shadow:0 1px 2px rgba(9,48,56,.04),0 16px 36px -14px rgba(0,90,104,.18);--mono:'IBM Plex Mono',ui-monospace,monospace}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 [hidden]{display:none!important}
@@ -35,11 +34,9 @@ button:active{transform:scale(.97)}
 .badge.mint{background:rgba(47,191,143,.14);color:#14724E}.badge.mint i{background:var(--mint)}
 .badge.amber{background:rgba(226,135,67,.15);color:#96521A}.badge.amber i{background:var(--amber)}
 .badge.red{background:rgba(214,69,69,.12);color:#A02222}.badge.red i{background:var(--red)}
-/* ══════ BARRA OFFLINE ══════ */
 .offbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:center;gap:8px;background:#0f5f6e;color:#fff;font-size:12.5px;font-weight:700;padding:10px 16px;border-radius:0 0 16px 16px}
 .offbar i{width:8px;height:8px;border-radius:50%;background:var(--amber);flex:none;animation:pl 1.6s ease infinite}
 @keyframes pl{0%,100%{opacity:1}50%{opacity:.3}}
-/* ══════ HEADER ══════ */
 .brand{display:flex;align-items:center;gap:12px;padding:8px 2px 2px;flex-wrap:wrap}
 .logo{width:42px;height:42px;flex:none;border-radius:14px;background:var(--teal);display:grid;place-items:center;color:#fff}
 .logo svg{width:22px;height:22px}
@@ -49,7 +46,6 @@ button:active{transform:scale(.97)}
 .brand p{font-size:12.5px;color:var(--sub);font-weight:500;margin-top:1px}
 .btn-install{display:inline-flex;align-items:center;gap:6px;flex:none;font-size:12.5px;font-weight:700;color:var(--teal);border:1.5px solid rgba(0,122,140,.35);border-radius:999px;padding:8px 13px}
 .btn-install svg{width:14px;height:14px}
-/* ══════ CONFIG ══════ */
 .config{padding:18px 18px 16px;display:flex;flex-direction:column;gap:10px;min-width:0}
 .pills{display:flex;flex-wrap:wrap;gap:6px;background:rgba(13,48,56,.05);padding:4px;border-radius:999px}
 .pill{flex:1 1 auto;min-width:0;padding:9px 4px;border-radius:999px;font-size:12.5px;font-weight:700;color:var(--sub);white-space:nowrap;transition:all .22s}
@@ -70,14 +66,10 @@ button:active{transform:scale(.97)}
 .wp-tv{font-size:18px;font-weight:600;color:var(--teal-deep)}
 .wp-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 2px;border-top:1px solid var(--line);font-size:12.5px;color:var(--sub);font-weight:600}
 .wp-row b{font-family:var(--mono);color:var(--ink)}
-.wp-alert{display:flex;gap:8px;margin-top:10px;background:rgba(226,90,67,.09);border:1px solid rgba(226,90,67,.3);border-radius:12px;padding:10px 12px}
-.wp-alert svg{width:15px;height:15px;color:#B03A22;flex:none}
-.wp-alert p{font-size:12px;line-height:1.45;font-weight:700;color:#B03A22}
 .wp-dica{margin-top:10px;background:rgba(226,135,67,.09);border:1px solid rgba(226,135,67,.26);border-radius:12px;padding:10px 12px}
 .wp-dica .lbl{color:#96521A;margin-bottom:3px}
 .wp-dica p:last-child{font-size:12.5px;line-height:1.5;font-weight:600;color:#96521A}
 .wp-time{text-align:center;font-size:10px;color:var(--sub);font-family:var(--mono);margin-top:8px}
-/* ══════ VOLUME ══════ */
 .vol-row{display:flex;gap:10px;min-width:0}
 .volume-wrap{flex:1 1 150px;min-width:0;height:64px;display:flex;align-items:center;gap:8px;background:#fff;border:1.5px solid rgba(0,122,140,.28);border-radius:14px;padding:0 8px}
 .vol-btn{flex:none;width:48px;height:48px;border-radius:12px;background:rgba(0,122,140,.08);color:var(--teal-deep);font-size:24px;font-weight:800;display:grid;place-items:center;user-select:none}
@@ -87,7 +79,6 @@ button:active{transform:scale(.97)}
 .vol-live b{color:var(--ink)}
 .hint{font-size:12px;color:var(--sub);line-height:1.45}
 @media(max-width:400px){.vol-row{flex-direction:column}.vol-live{flex-direction:row;align-items:baseline;gap:8px}}
-/* ══════ LITRAGEM ══════ */
 .lit{padding:16px 18px}
 .lit summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:10px}
 .lit summary::-webkit-details-marker{display:none}
@@ -104,7 +95,6 @@ button:active{transform:scale(.97)}
 .l-total b{font-family:var(--mono);font-size:20px}
 .l-total span{font-size:12px;color:var(--sub);font-weight:600}
 .l-apply{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:700;color:#fff;background:var(--teal);border-radius:999px;padding:9px 16px}
-/* ══════ VÁLVULA ══════ */
 .valve-card{padding:18px 16px 14px;display:flex;flex-direction:column;gap:4px}
 .vc-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:0 4px}
 .valve-stage{position:relative;width:100%;max-width:300px;aspect-ratio:1;margin:2px auto 0;user-select:none;pointer-events:none}
@@ -131,12 +121,14 @@ button:active{transform:scale(.97)}
 .v-foot svg{width:16px;height:16px;color:#96521A;flex:none;margin-top:2px}
 .v-foot p{font-size:12px;line-height:1.5;color:var(--sub);font-weight:500}
 .v-foot b{color:#96521A}
-/* ══════ REGISTROS — animações ══════ */
-@keyframes blinkRedReg{0%,100%{box-shadow:0 0 0 0 rgba(214,69,69,0)}50%{box-shadow:0 0 0 5px rgba(214,69,69,.4)}}
-.reg.blink{animation:blinkRedReg 1s ease infinite;border-radius:12px}
-@keyframes slideDownReg{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+/* registros do Elias */
+.reg-manivela{width:60px;height:60px;border-radius:50%;margin:0 auto;display:flex;align-items:center;justify-content:center;transition:transform .35s ease,background .35s ease}
+.reg-manivela span{width:40px;height:6px;background:white;border-radius:3px;display:block}
+#alerta-registros{transition:background .3s}
+@keyframes slideDownReg{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
 #alerta-registros.slide{animation:slideDownReg .35s ease}
-/* ══════ PARÂMETROS ══════ */
+@keyframes blinkRedReg{0%,100%{box-shadow:0 0 0 0 rgba(214,69,69,0)}50%{box-shadow:0 0 0 5px rgba(214,69,69,.4)}}
+.regblink{animation:blinkRedReg 1s ease infinite;border-radius:12px}
 .sec-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:6px 4px 0}
 .sec-head h3{font-size:17px;font-weight:800}
 .sec-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
@@ -165,7 +157,6 @@ button:active{transform:scale(.97)}
 .m-scale{display:flex;justify-content:space-between;gap:4px;font-size:9.5px;color:var(--sub);font-family:var(--mono)}
 .pc-note{font-size:12px;font-weight:600;color:#96521A;line-height:1.45}
 .pc-time{font-size:10.5px;color:var(--sub);font-family:var(--mono)}
-/* ══════ TRATAMENTO ══════ */
 .treat{padding:18px 16px 16px;display:flex;flex-direction:column;gap:12px}
 .tstep{display:flex;gap:12px;align-items:flex-start;min-width:0}
 .ts-n{flex:none;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font-family:var(--mono);font-size:12px;font-weight:600;margin-top:2px;background:rgba(13,48,56,.06);color:var(--sub);border:2px solid transparent}
@@ -191,7 +182,6 @@ button:active{transform:scale(.97)}
 .btn.primary{width:100%;background:var(--teal);color:#fff}
 .btn.amberB{width:100%;background:rgba(226,135,67,.12);color:#96521A;border:1.5px solid rgba(226,135,67,.35)}
 .btn.ghostD{width:100%;background:transparent;color:var(--sub);border:1.5px solid var(--line)}
-/* ══════ FILTRAGEM PELO CLIMA ══════ */
 .ft{display:flex;align-items:center;gap:14px;margin-top:4px;flex-wrap:wrap}
 .ft-h{display:flex;flex-direction:column;flex:none}
 .ft-h strong{font-family:var(--mono);font-size:32px;font-weight:600;letter-spacing:-.02em;line-height:1}
@@ -199,11 +189,10 @@ button:active{transform:scale(.97)}
 .ft-i{flex:1;min-width:0;display:flex;flex-direction:column;gap:6px}
 .ft-split{display:flex;gap:6px;flex-wrap:wrap}
 .ft-split span{font-size:11px;font-weight:700;background:rgba(0,122,140,.08);color:var(--teal-deep);border-radius:999px;padding:5px 10px}
-.ft-ph{display:flex;gap:8px;align-items:flex-start;border-radius:12px;padding:9px 12px;font-size:12px;line-height:1.5;font-weight:700;margin-top:10px}
+.ft-ph{border-radius:12px;padding:9px 12px;font-size:12px;line-height:1.5;font-weight:700;margin-top:10px}
 .ft-ph.ok{background:rgba(47,191,143,.09);border:1px solid rgba(47,191,143,.28);color:#14724E}
 .ft-ph.bad{background:rgba(226,135,67,.09);border:1px solid rgba(226,135,67,.28);color:#96521A}
 .ft-foot{font-size:11px;color:var(--sub);font-weight:600;margin-top:8px;font-family:var(--mono)}
-/* ══════ DICA / RODAPÉ ══════ */
 .tip{padding:15px 16px;display:flex;gap:12px;align-items:flex-start}
 .tip-ico{width:34px;height:34px;flex:none;border-radius:12px;background:rgba(0,122,140,.09);color:var(--teal);display:grid;place-items:center}
 .tip-ico svg{width:17px;height:17px}
@@ -211,7 +200,6 @@ button:active{transform:scale(.97)}
 .offline-note{text-align:center;font-size:11.5px;color:var(--sub);line-height:1.7}
 .offline-note b{color:var(--teal-deep)}
 .pwa-status{text-align:center;font-size:12px;font-weight:700;margin-top:2px}
-/* ══════ SHEETS ══════ */
 .scrim{position:fixed;inset:0;background:rgba(9,40,46,.45);z-index:60;opacity:0;visibility:hidden;transition:.35s}
 .scrim.show{opacity:1;visibility:visible}
 .sheet{position:fixed;left:50%;bottom:0;z-index:70;width:100%;max-width:430px;transform:translate(-50%,105%);visibility:hidden;pointer-events:none;background:#fff;border-radius:24px 24px 0 0;padding:8px 20px calc(22px + env(safe-area-inset-bottom));box-shadow:0 -12px 40px rgba(9,48,56,.18);transition:transform .44s cubic-bezier(.32,.72,.24,1),visibility 0s .44s;max-height:92dvh;overflow-y:auto;overscroll-behavior:contain}
@@ -283,7 +271,6 @@ button:active{transform:scale(.97)}
 .v-warn svg{width:17px;height:17px;color:#96521A;flex:none;margin-top:1px}
 .v-warn p{font-size:12.5px;line-height:1.5;color:#96521A;font-weight:600}
 .ins-icon{display:block;width:64px;height:64px;border-radius:16px;margin:0 auto 12px;box-shadow:var(--shadow)}
-/* ══════ TOASTS ══════ */
 .toasts{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:90;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none;width:min(430px,calc(100vw - 32px))}
 .toast{display:flex;align-items:center;gap:9px;max-width:100%;background:var(--ink);color:#fff;font-size:13px;font-weight:600;padding:11px 16px;border-radius:14px;opacity:0;transform:translateY(14px);transition:.35s}
 .toast svg{width:15px;height:15px;color:#4FE0AE;flex:none}
@@ -298,14 +285,12 @@ button:active{transform:scale(.97)}
 
 <div class="app">
 
-<!-- ══════ HEADER ══════ -->
 <header class="brand">
 <div class="logo" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5C15.5 7.6 18 10.4 18 13.4A6 6 0 1 1 6 13.4C6 10.4 8.5 7.6 12 3.5Z"/><path d="M8.2 14.6c1.2-.8 2.4-.8 3.6 0s2.4.8 3.6 0" stroke-width="1.5"/></svg></div>
 <div class="brand-t"><h1>PoolApp <span>Universal</span></h1><p>Piscina · Casa</p></div>
 <button class="btn-install" id="installBtn" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v10m-4.5-4L12 14.5 16.5 10M5 19.5h14"/></svg>Instalar</button>
 </header>
 
-<!-- ══════ CONFIGURAÇÃO ══════ -->
 <section class="card config" aria-label="Configuração da piscina">
 <div class="cfg-row">
 <p class="lbl">Tipo de piscina</p>
@@ -314,7 +299,6 @@ button:active{transform:scale(.97)}
 <div class="wp-head"><span class="wp-e" id="wpEmoji">☀️</span><div class="wp-t"><b id="wpCond">—</b><span id="wpCity"></span></div><b class="wp-tv mono" id="wpTemp"></b></div>
 <div class="wp-row"><span>Umidade</span><b class="mono" id="wpHum">—</b></div>
 <div class="wp-row"><span>Vento</span><b class="mono" id="wpWind">—</b></div>
-<div class="wp-alert" id="wpAlert" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 4.5 20.8 19.5H3.2Z"/><path d="M12 10.2v3.6"/><circle cx="12" cy="16.6" r=".9" fill="currentColor" stroke="none"/></svg><p id="wpAlertText"></p></div>
 <div class="wp-dica"><p class="lbl">Dica</p><p id="wpDica">—</p></div>
 <p class="wp-time" id="wpTime"></p>
 </div>
@@ -338,7 +322,6 @@ button:active{transform:scale(.97)}
 <p class="hint">Use − e + para ajustar de 100 em 100 litros, ou digite direto. Calcule também pelas dimensões do projeto abaixo.</p>
 </section>
 
-<!-- ══════ LITRAGEM DO PROJETO ══════ -->
 <details class="card lit">
 <summary><p class="lbl">Litragem do projeto</p><span class="l-open" id="litTotalMini">48.588 L</span></summary>
 <div class="lit-body">
@@ -349,7 +332,6 @@ button:active{transform:scale(.97)}
 </div>
 </details>
 
-<!-- ══════ VÁLVULA DO FILTRO ══════ -->
 <section class="card valve-card" aria-label="Válvula seletora do filtro">
 <div class="vc-head"><p class="lbl">Válvula do filtro</p><span class="badge mint" id="valveBadge"><i></i><b id="valveBadgeT">Filtrar</b></span></div>
 <div class="valve-stage" id="valveStage">
@@ -358,57 +340,53 @@ button:active{transform:scale(.97)}
 <div class="v-foot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 4.5 20.8 19.5H3.2Z"/><path d="M12 10.2v3.6"/><circle cx="12" cy="16.6" r=".9" fill="currentColor" stroke="none"/></svg><p><b>Regra de ouro:</b> desligue a bomba antes de girar. Toque no número da posição, toque na manopla ou arraste-a.</p></div>
 </section>
 
-<!-- ══════ LIMPEZA DE BORDAS · VINIL ══════ -->
-<div id="limpeza-bordas" style="background:#fff; border-radius:16px; padding:16px; box-shadow:0 2px 8px rgba(0,0,0,.08)">
-  <h3 style="margin:0 0 8px; font-size:15px">🧽 Limpeza de Bordas · Vinil - 1× por semana</h3>
-  <div style="font-size:13px; line-height:1.4; color:#333; display:flex; flex-direction:column; gap:8px">
-    <div>→ Use <b>suporte de pastilha no cabo telescópico</b>. Nunca solte a pastilha direto na água.</div>
-    <div>→ Escove com <b>escova macia</b>, de cima para baixo na linha d'água.</div>
-    <div>→ Nunca deixe a pastilha encostar direto no vinil — mancha e perfura.</div>
-  </div>
+<!-- Limpeza de Bordas · Vinil -->
+<div id="limpeza-bordas" style="background:#fff;border-radius:16px;padding:16px;box-shadow:0 2px 8px rgba(0,0,0,.08)">
+<h3 style="margin:0 0 8px;font-size:15px">🧽 Limpeza de Bordas · Vinil - 1× por semana</h3>
+<div style="font-size:13px;line-height:1.5;color:#333;display:flex;flex-direction:column;gap:8px">
+<div>→ Use <b>suporte de pastilha no cabo telescópico</b>. Nunca solte direto.</div>
+<div>→ Escove com <b>escova macia</b> de cima pra baixo.</div>
+<div>→ <b>Nunca encostar no vinil</b>.</div>
+</div>
 </div>
 
-<!-- ══════ POSIÇÃO DOS REGISTROS ══════ -->
-<div id="posicao-registros" style="background:#fff; border-radius:16px; padding:16px; box-shadow:0 2px 8px rgba(0,0,0,.08)">
-  <h3 style="margin:0 0 12px; font-size:15px">🔧 Posição dos Registros</h3>
-  <div style="display:flex; gap:12px; justify-content:space-between">
-    <div class="reg" data-nome="dreno" onclick="gira(this)" style="text-align:center; flex:1; cursor:pointer">
-      <div class="manivela" style="width:60px; height:60px; border-radius:50%; background:#8ca3ad; margin:0 auto; display:flex; align-items:center; justify-content:center; transition:0.35s; transform:rotate(90deg)"> <span style="width:40px; height:6px; background:white; border-radius:3px; display:block"></span> </div>
-      <b style="font-size:12px; display:block; margin-top:6px">DRENO</b>
-      <small class="status" style="font-size:11px">FECHADO</small>
-    </div>
-    <div class="reg" data-nome="skimmer" onclick="gira(this)" style="text-align:center; flex:1; cursor:pointer">
-      <div class="manivela" style="width:60px; height:60px; border-radius:50%; background:#0fb98a; margin:0 auto; display:flex; align-items:center; justify-content:center; transition:0.35s; transform:rotate(0deg)"> <span style="width:40px; height:6px; background:white; border-radius:3px; display:block"></span> </div>
-      <b style="font-size:12px; display:block; margin-top:6px">SKIMMER</b>
-      <small class="status" style="font-size:11px">ABERTO</small>
-    </div>
-    <div class="reg" data-nome="aspiracao" onclick="gira(this)" style="text-align:center; flex:1; cursor:pointer">
-      <div class="manivela" style="width:60px; height:60px; border-radius:50%; background:#0fb98a; margin:0 auto; display:flex; align-items:center; justify-content:center; transition:0.35s; transform:rotate(0deg)"> <span style="width:40px; height:6px; background:white; border-radius:3px; display:block"></span> </div>
-      <b style="font-size:12px; display:block; margin-top:6px">ASPIRAÇÃO</b>
-      <small class="status" style="font-size:11px">ABERTO</small>
-    </div>
-  </div>
-  <div id="alerta-registros" style="margin-top:12px; padding:10px; border-radius:10px; background:#e6f7f0; font-size:12px; transition:0.3s">✅ Filtragem perfeita dia a dia. Skimmer puxa folhas de cima, aspiração do meio.</div>
-  <div style="margin-top:10px; padding:10px; border-radius:10px; background:#fff8e1; font-size:12px; font-weight:700; color:#96521A">⚠️ Desligue a bomba antes de girar qualquer registro ou a manopla.</div>
+<!-- Posição dos Registros -->
+<div id="posicao-registros" style="background:#fff;border-radius:16px;padding:16px;box-shadow:0 2px 8px rgba(0,0,0,.08)">
+<h3 style="margin:0 0 12px;font-size:15px">🔧 Posição dos Registros</h3>
+<div style="display:flex;gap:12px;justify-content:space-between">
+<div class="reg" data-nome="dreno" onclick="gira(this)" style="text-align:center;flex:1;cursor:pointer">
+<div class="reg-manivela" style="background:#8ca3ad;transform:rotate(90deg)"><span></span></div>
+<b style="font-size:12px;display:block;margin-top:6px">DRENO</b>
+<small class="status" style="font-size:11px">FECHADO</small>
+</div>
+<div class="reg" data-nome="skimmer" onclick="gira(this)" style="text-align:center;flex:1;cursor:pointer">
+<div class="reg-manivela" style="background:#0fb98a;transform:rotate(0deg)"><span></span></div>
+<b style="font-size:12px;display:block;margin-top:6px">SKIMMER</b>
+<small class="status" style="font-size:11px">ABERTO</small>
+</div>
+<div class="reg" data-nome="aspiracao" onclick="gira(this)" style="text-align:center;flex:1;cursor:pointer">
+<div class="reg-manivela" style="background:#0fb98a;transform:rotate(0deg)"><span></span></div>
+<b style="font-size:12px;display:block;margin-top:6px">ASPIRAÇÃO</b>
+<small class="status" style="font-size:11px">ABERTO</small>
+</div>
+</div>
+<div id="alerta-registros" style="margin-top:12px;padding:10px;border-radius:10px;background:#e6f7f0;font-size:12px;line-height:1.5">✅ Filtragem perfeita dia a dia. Skimmer puxa folhas de cima, aspiração do meio.</div>
+<div style="margin-top:10px;padding:10px;border-radius:10px;background:#fff8e1;font-size:12px;font-weight:700;color:#96521A">⚠️ Desligue a bomba antes de girar qualquer registro ou a manopla.</div>
 </div>
 
-<!-- ══════ PARÂMETROS ══════ -->
 <div class="sec-head"><h3>Parâmetros</h3><div class="sec-right"><span class="mono" id="todayLbl"></span><button class="chip" onclick="openSheet('cloro')" aria-label="Medir cloro"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6M10 3v4.5L6.6 13a5 5 0 1 0 10.8 0L14 7.5V3"/><circle cx="12" cy="15" r=".9" fill="currentColor" stroke="none"/><circle cx="10.3" cy="16.8" r=".8" fill="currentColor" stroke="none"/><circle cx="13.7" cy="16.8" r=".8" fill="currentColor" stroke="none"/></svg>Cloro</button></div></div>
 <section class="grid" id="grid"></section>
 
-<!-- ══════ TRATAMENTO ORIENTADO ══════ -->
 <section class="card treat" aria-label="Tratamento orientado">
 <div class="vc-head"><p class="lbl">Tratamento orientado</p><span class="badge mint" id="treatBadge"><i></i><b id="treatBadgeT">—</b></span></div>
 <div id="treatSteps"></div>
 </section>
 
-<!-- ══════ FILTRAGEM PELO CLIMA ══════ -->
 <section class="card treat" aria-label="Tempo de filtragem pelo clima">
 <div class="vc-head"><p class="lbl">Filtragem pelo clima</p><span class="badge mint" id="ftBadge"><i></i><b id="ftBadgeT">—</b></span></div>
 <div id="filterBody"></div>
 </section>
 
-<!-- ══════ DICA ══════ -->
 <footer class="tip card">
 <span class="tip-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="8.2"/><path d="M12 11.2v4.6"/><circle cx="12" cy="8" r="1" fill="currentColor" stroke="none"/></svg></span>
 <div><p class="lbl" id="tipTitle">Dica · Vinil</p><p id="tipText">Use bicarbonato, nunca cal. pH 7,0-7,4 evita rugas no vinil</p></div>
@@ -418,7 +396,6 @@ button:active{transform:scale(.97)}
 <p class="pwa-status" id="pwaStatus"></p>
 </div>
 
-<!-- ══════ SHEET: PARÂMETROS ══════ -->
 <div class="scrim" id="scrim"></div>
 <section class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="shTitle">
 <div class="grab-zone" id="grabZone"><span class="grab"></span></div>
@@ -433,7 +410,6 @@ button:active{transform:scale(.97)}
 <p class="sh-last" id="shLast"></p>
 </section>
 
-<!-- ══════ SHEET: VÁLVULA ══════ -->
 <section class="sheet" id="valveSheet" role="dialog" aria-modal="true" aria-labelledby="vsTitle">
 <div class="grab-zone" id="vGrabZone"><span class="grab"></span></div>
 <header class="sh-head"><span class="sh-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="13.5" r="7"/><path d="M12 13.5V5.8"/><circle cx="12" cy="4.6" r="1.7" fill="currentColor" stroke="none"/><path d="M6.2 11.2l1.4.7M17.8 11.2l-1.4.7" stroke-width="1.4"/></svg></span><div><h3 id="vsTitle">Filtrar</h3><p id="vsPos">Posição 1 de 6</p></div><button class="sh-close" id="vsClose" aria-label="Fechar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button></header>
@@ -443,7 +419,6 @@ button:active{transform:scale(.97)}
 <button class="btn primary" id="vsOk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Entendi</button>
 </section>
 
-<!-- ══════ SHEET: DIAGNÓSTICO ══════ -->
 <section class="sheet" id="diagSheet" role="dialog" aria-modal="true" aria-labelledby="dgTitle">
 <div class="grab-zone"><span class="grab"></span></div>
 <header class="sh-head"><span class="sh-ico red"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 4.5 20.8 19.5H3.2Z"/><path d="M12 10.2v3.6"/><circle cx="12" cy="16.6" r=".9" fill="currentColor" stroke="none"/></svg></span><div><h3 id="dgTitle">Diagnóstico</h3><p>Sulfato aplicado · água não clareou</p></div><button class="sh-close" id="dgClose" aria-label="Fechar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button></header>
@@ -453,7 +428,6 @@ button:active{transform:scale(.97)}
 <button class="btn ghostD" id="dgBack" hidden>Voltar às opções</button>
 </section>
 
-<!-- ══════ SHEET: GUIA DE INSTALAÇÃO ══════ -->
 <section class="sheet" id="installSheet" role="dialog" aria-modal="true" aria-labelledby="insTitle">
 <div class="grab-zone"><span class="grab"></span></div>
 <header class="sh-head"><span class="sh-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 4v10m-4.5-4L12 14.5 16.5 10M5 19.5h14"/></svg></span><div><h3 id="insTitle">Instalar app</h3><p id="insSub">—</p></div><button class="sh-close" id="insClose" aria-label="Fechar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button></header>
@@ -468,13 +442,9 @@ button:active{transform:scale(.97)}
 <div class="toasts" id="toasts" aria-live="polite"></div>
 
 <script>
-/* ════════════════════════════════════════════════════════════
-   PoolApp Universal — por Elias costa NEGRET'S
-   Offline-first · clima: chip instantâneo, cidade em paralelo
-════════════════════════════════════════════════════════════ */
+/* ══════ PoolApp Universal — Elias costa NEGRET'S — offline-first ══════ */
 const ICONS={ph:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5C15.5 7.6 18 10.4 18 13.4A6 6 0 1 1 6 13.4C6 10.4 8.5 7.6 12 3.5Z"/><path d="M8.2 14.6c1.2-.8 2.4-.8 3.6 0s2.4.8 3.6 0" stroke-width="1.4"/></svg>',cloro:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6M10 3v4.5L6.6 13a5 5 0 1 0 10.8 0L14 7.5V3"/><circle cx="12" cy="15" r=".9" fill="currentColor" stroke="none"/><circle cx="10.3" cy="16.8" r=".8" fill="currentColor" stroke="none"/><circle cx="13.7" cy="16.8" r=".8" fill="currentColor" stroke="none"/></svg>',turbidez:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="8.2"/><circle cx="9" cy="10.5" r="1" fill="currentColor" stroke="none"/><circle cx="14.5" cy="9.8" r=".8" fill="currentColor" stroke="none"/><circle cx="12.5" cy="13.8" r="1.1" fill="currentColor" stroke="none"/><circle cx="9.6" cy="14.6" r=".7" fill="currentColor" stroke="none"/><circle cx="15" cy="13.5" r=".6" fill="currentColor" stroke="none"/></svg>',alcalinidade:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M3 9c2.2 0 2.2 1.8 4.5 1.8S9.8 9 12 9s2.2 1.8 4.5 1.8S18.8 9 21 9"/><path d="M3 15c2.2 0 2.2 1.8 4.5 1.8S9.8 15 12 15s2.2 1.8 4.5 1.8S18.8 15 21 15"/></svg>',dureza:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.6 20.5 8 12 12.4 3.5 8Z"/><path d="M20.5 12.5 12 16.9 3.5 12.5"/><path d="M20.5 16.5 12 20.9 3.5 16.5"/></svg>',check:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>',alert:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 4.5 20.8 19.5H3.2Z"/><path d="M12 10.2v3.6"/><circle cx="12" cy="16.6" r=".9" fill="currentColor" stroke="none"/></svg>'};
 
-/* ---- parâmetros (defaults = teste dos prints) ---- */
 const DEFAULTS={ph:7.4,cloro:4.0,turbidez:47,alcalinidade:70,dureza:200};
 const PARAMS={
 ph:{label:'pH',unit:'',dec:1,min:6,max:8.5,step:0.1,idealMin:7,idealMax:7.4,dose:{target:7.2,per:100,up:'barrilha (bicarbonato de sódio)',downName:'redutor de pH'}},
@@ -482,10 +452,7 @@ cloro:{label:'Cloro livre',unit:'ppm',dec:1,min:0,max:8,step:0.1,idealMin:1,idea
 turbidez:{label:'Turbidez',unit:'%',dec:0,min:0,max:100,step:1,idealMin:0,idealMax:20,full:true},
 alcalinidade:{label:'Alcalinidade Total',unit:'ppm',dec:0,min:0,max:240,step:5,idealMin:80,idealMax:120,target:100,dose:{target:100,per:45,up:'bicarbonato de sódio',downMsg:'Alcalinidade acima do alvo — reduza com ácido muriático em etapas curtas.'}},
 dureza:{label:'Dureza Cálcica',unit:'ppm',dec:0,min:0,max:500,step:10,idealMin:200,idealMax:400,dose:{target:250,per:30,up:'cloreto de cálcio',downMsg:'Dureza acima do alvo — dilua 20–30% da água com água nova.'}}};
-
 const TIPS={vinil:'Use bicarbonato, nunca cal. pH 7,0-7,4 evita rugas no vinil',fibra:'Evite ácido em excesso, agride gel coat',alvenaria:'Pode usar cal hidratada',infinity:'Atenção perda na borda'};
-
-/* ---- válvula: 6 posições ---- */
 const VALVE_POS=[{id:'filtrar',label:'FILTRAR',full:'Filtrar',angle:0},{id:'lavar',label:'RETRO-LAVAR',full:'Retro-lavar',angle:60},{id:'enxaguar',label:'ENXAGUAR',full:'Enxaguar',angle:120},{id:'recircular',label:'RECIRCULAR',full:'Recircular',angle:180},{id:'dreno',label:'DRENO',full:'Dreno / Waste',angle:240},{id:'fechado',label:'FECHADO',full:'Fechado',angle:300}];
 const VALVE_INFO={
 filtrar:{resume:'A posição do dia a dia: a água sai da piscina, atravessa a areia do filtro e volta limpa.',steps:['Filtre de 6 a 8 h por dia no verão (4 a 6 h no inverno)','Limpe o pré-filtro da bomba a cada 15 dias','Retro-lave quando o manômetro subir ~8 psi'],warn:'Desligue SEMPRE a bomba antes de girar a manopla — girar sob pressão rompe a junta.'},
@@ -494,20 +461,14 @@ enxaguar:{resume:'Assenta a areia depois da retro-lavagem.',steps:['Vem sempre D
 recircular:{resume:'Circula SEM passar pelo filtro.',steps:['Use para diluir produtos com a água em movimento','Confira antes de sair — nada é filtrado'],warn:'Água sem filtrar por dias vira água verde.'},
 dreno:{resume:'Joga água direto no esgoto — o nível desce.',steps:['Baixar nível após chuva','Aspiração: sujeira sai em vez de voltar','Bomba em baixa rotação'],warn:'Não deixe o nível descer além da metade do skimmer.'},
 fechado:{resume:'Bloqueia todas as linhas — inverno/manutenção.',steps:['Bomba DESLIGADA','Reabrir: girar para FILTRAR'],warn:'NUNCA ligue a bomba em FECHADO — a pressão pode romper o filtro.'}};
-
-/* ---- litragem do projeto ---- */
 const LIT=[{name:'Principal retangular',a:7.8,b:3.8},{name:'Hidro · banco 40 cm',a:2.6,b:2.6},{name:'Quadrado central',a:1.2,b:1.2}];
 let litProf=[1.40,0.90,0.70];
-
-/* ---- estado persistido (localStorage) ---- */
 let state={type:'vinil',volume:45000,values:{...DEFAULTS}};
 let measures={},valveIndex=0,leverAngle=0,treat={lastSulfato:null};
 try{const s=JSON.parse(localStorage.getItem('poolapp.state')||'null');if(s){state.type=s.type||'vinil';state.volume=s.volume||45000;Object.assign(state.values,s.values||{});}measures=JSON.parse(localStorage.getItem('poolapp.measures')||'{}');valveIndex=Math.min(5,Math.max(0,parseInt(localStorage.getItem('poolapp.valve'),10)||0));treat=JSON.parse(localStorage.getItem('poolapp.treat')||'null')||treat;const lp=JSON.parse(localStorage.getItem('poolapp.lit')||'null');if(lp&&lp.length===3)litProf=lp;}catch(e){}
 const persist=()=>localStorage.setItem('poolapp.state',JSON.stringify(state));
 const persistMeasures=()=>localStorage.setItem('poolapp.measures',JSON.stringify(measures));
 const persistTreat=()=>localStorage.setItem('poolapp.treat',JSON.stringify(treat));
-
-/* ---- utilidades ---- */
 const $=id=>document.getElementById(id);
 const nf0=new Intl.NumberFormat('pt-BR');
 const fmt=(v,d)=>v.toLocaleString('pt-BR',{minimumFractionDigits:d,maximumFractionDigits:d});
@@ -521,101 +482,60 @@ function renderOnline(){$('offbar').hidden=navigator.onLine;}
 window.addEventListener('offline',renderOnline);
 window.addEventListener('online',()=>{renderOnline();try{updateWeather();}catch(e){}});
 
-/* ═══════════ CLIMA v2 — chip instantâneo, cidade em paralelo ═══════════
-   WeatherAPI (cole sua key) → Open-Meteo (grátis, sem chave)            */
-const WEATHER_API_KEY="";
-const W_FALLBACK={lat:-20.43606,lon:-43.7722,city:'Miguel Burnier'};
+/* ══════ CLIMA — Open-Meteo grátis, sem chave. Fallback Uberlândia. ══════ */
 let wCache=null,lastFix=null,watchId=null,wFail=null;
 try{wCache=JSON.parse(localStorage.getItem('poolapp.weather')||'null');}catch(e){}
-const hasKey=()=>WEATHER_API_KEY&&WEATHER_API_KEY!=='SUA_KEY_AQUI'&&WEATHER_API_KEY.trim().length>10;
-function distKm(a,b){const R=6371,r=Math.PI/180,dL=(b.lat-a.lat)*r,dO=(b.lon-a.lon)*r,s=Math.sin(dL/2)**2+Math.cos(a.lat*r)*Math.cos(b.lat*r)*Math.sin(dO/2)**2;return 2*R*Math.asin(Math.sqrt(s));}
-const nearBurnier=(la,lo)=>distKm({lat:W_FALLBACK.lat,lon:W_FALLBACK.lon},{lat:la,lon:lo})<8;
-const fixCityName=(n,la,lo)=>(n&&n.includes('Ouro Preto')&&nearBurnier(la,lo))?'Miguel Burnier':n;
-function waEmoji(c,d){if(c===1000)return d?'☀️':'🌙';if(c===1003)return d?'⛅':'🌙';if([1006,1009,1030,1135,1147].includes(c))return'☁️';if([1063,1150,1153,1168,1171,1180,1183,1186,1189,1192,1195,1198,1201,1240,1243,1246].includes(c))return'🌧️';if([1087,1273,1276,1279,1282].includes(c))return'⛈️';if([1066,1069,1072,1114,1117,1204,1207,1210,1213,1216,1219,1222,1225,1237,1249,1252,1255,1258,1261,1264].includes(c))return'🌨️';return d?'⛅':'🌙';}
-function weatherInfo(c,d){if(c===0)return{e:d?'☀️':'🌙',t:'Céu limpo'};if(c<=3)return{e:d?'⛅':'🌙',t:'Parcialmente nublado'};if(c<=57)return{e:'☁️',t:'Nublado'};if(c<=82)return{e:'🌧️',t:'Chuva'};if(c>=95)return{e:'⛈️',t:'Tempestade'};return{e:'⛅',t:'Parcialmente nublado'};}
+function waEmoji(c,d){if(c===0)return d?'☀️':'🌙';if(c<=3)return d?'⛅':'🌙';if(c<=57)return'☁️';if(c<=82)return'🌧️';if(c>=95)return'⛈️';return'⛅';}
 function dicaFor(t){if(t>=32)return'Com '+Math.round(t)+'°C o cloro evapora 40% mais rápido, adicione +50g';if(t>=28)return'Com '+Math.round(t)+'°C o cloro evapora ~25% mais rápido, adicione +30g';return'Com '+Math.round(t)+'°C a evaporação está sob controle — mantenha a dosagem padrão';}
 function fetchJSON(url,ms){const c=new AbortController();const t=setTimeout(()=>c.abort(),ms);return fetch(url,{signal:c.signal}).then(r=>{if(!r.ok)throw 0;return r.json();}).finally(()=>clearTimeout(t));}
 function getCoordsOnce(){return new Promise(res=>{if(!('geolocation'in navigator))return res(null);navigator.geolocation.getCurrentPosition(p=>res({lat:p.coords.latitude,lon:p.coords.longitude}),()=>res(null),{enableHighAccuracy:true,timeout:8000,maximumAge:0});});}
-function pickCity(a,r){return a.city||a.town||a.village||a.municipality||a.hamlet||a.suburb||a.county||(r.display_name?r.display_name.split(',')[0]:null);}
-/* cidade por coordenadas — roda EM PARALELO, nunca trava o chip */
-async function reverseCity(la,lo){
-  const k=la.toFixed(2)+','+lo.toFixed(2);let g={};
-  try{g=JSON.parse(localStorage.getItem('poolapp.geo')||'{}');}catch(e){}
-  const h=g[k];
-  if(h&&Date.now()-h.at<6048e5)return fixCityName(h.city,la,lo);
+async function updateWeather(){
+  const p=await getCoordsOnce();
+  /* GPS falhou? fallback Uberlândia -18.91 / -48.27 */
+  const lat=p?p.lat:-18.91, lon=p?p.lon:-48.27;
+  if(p)lastFix=p;else lastFix=null;
   try{
-    const r=await fetchJSON('https://nominatim.openstreetmap.org/reverse?lat='+la+'&lon='+lo+'&format=json&accept-language=pt-BR',9000);
-    const c=pickCity(r.address||{},r);
-    if(c){g[k]={city:c,at:Date.now()};try{localStorage.setItem('poolapp.geo',JSON.stringify(g));}catch(e){}return fixCityName(c,la,lo);}
-  }catch(e){}
-  try{
-    const r=await fetchJSON('https://api.bigdatacloud.net/data/reverse-geocode-client?latitude='+la+'&longitude='+lo+'&localityLanguage=pt',8000);
-    const c=r.city||r.locality||r.principalSubdivision;
-    if(c){g[k]={city:c,at:Date.now()};try{localStorage.setItem('poolapp.geo',JSON.stringify(g));}catch(e){}return fixCityName(c,la,lo);}
-  }catch(e){}
-  return null;
-}
-/* Open-Meteo: clima chega → CHIP APARECE AGORA → cidade resolve em paralelo */
-async function fetchOpenMeteo(la,lo,fx){
-  try{
-    const r=await fetchJSON('https://api.open-meteo.com/v1/forecast?latitude='+la+'&longitude='+lo+'&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m,is_day&timezone=America/Sao_Paulo',9000);
-    const c=r.current,i=weatherInfo(c.weather_code,c.is_day);
-    const mesmaCidade=wCache&&wCache.lat===la&&wCache.lon===lo&&wCache.city&&wCache.city!=='Localizando…'&&wCache.city!=='Sua região';
-    wCache={source:'Open-Meteo',lat:la,lon:lo,fixed:!!fx,
-      city:mesmaCidade?wCache.city:'Localizando…',
-      temp:c.temperature_2m,dec:Number.isInteger(c.temperature_2m)?0:1,cond:i.t,emoji:i.e,
-      hum:c.relative_humidity_2m,wind:c.wind_speed_10m,alert:null,at:Date.now()};
-    wFail=null;saveWeather();renderWeather();renderFilterCard();
-    const city=await reverseCity(la,lo);
-    if(city){wCache.city=fixCityName(city,la,lo);saveWeather();renderWeather();}
+    const r=await fetchJSON('https://api.open-meteo.com/v1/forecast?latitude='+lat+'&longitude='+lon+'&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m,is_day&timezone=America/Sao_Paulo',9000);
+    const c=r.current;
+    const isDay=c.is_day===1;
+    wCache={lat,lon,fixed:!p,gps:p?'GPS':'Fixo',temp:c.temperature_2m,
+      emoji:waEmoji(c.weather_code,isDay),
+      hum:c.relative_humidity_2m,wind:c.wind_speed_10m,at:Date.now()};
+    wFail=null;
+    try{localStorage.setItem('poolapp.weather',JSON.stringify(wCache));}catch(e){}
+    renderWeather();renderFilterCard();
   }catch(e){
     wFail=Date.now();renderFilterCard();
     setTimeout(()=>{if(navigator.onLine)updateWeather();},30000);
   }
 }
-async function fetchWeatherAPI(la,lo,fx){
-  try{
-    const r=await fetchJSON('https://api.weatherapi.com/v1/current.json?key='+encodeURIComponent(WEATHER_API_KEY.trim())+'&q='+la+','+lo+'&lang=pt&aqi=no',9000);
-    const c=r.current;
-    wCache={source:'WeatherAPI',lat:la,lon:lo,fixed:!!fx,city:fixCityName(r.location.name,la,lo)||'Sua região',
-      temp:Math.round(c.temp_c),dec:0,cond:c.condition.text,emoji:waEmoji(c.condition.code,c.is_day),
-      hum:c.humidity,wind:Math.round(c.wind_kph),
-      alert:(r.alerts&&r.alerts.alert&&r.alerts.alert[0])?r.alerts.alert[0].headline:null,at:Date.now()};
-    wFail=null;saveWeather();renderWeather();return true;
-  }catch(e){return false;}
-}
-function saveWeather(){try{localStorage.setItem('poolapp.weather',JSON.stringify(wCache));}catch(e){}}
-async function weatherChain(la,lo,fx){
-  const pc=wCache&&wCache.city;
-  if(hasKey()&&await fetchWeatherAPI(la,lo,fx))return notifyCity(pc);
-  await fetchOpenMeteo(la,lo,fx);notifyCity(pc);
-}
-function notifyCity(pc){if(pc&&wCache&&wCache.city&&pc!==wCache.city&&wCache.city!=='Localizando…'&&!wCache.fixed)toast('Local detectado: '+wCache.city);}
-async function updateWeather(){
-  const p=await getCoordsOnce();
-  if(p){lastFix=p;await weatherChain(p.lat,p.lon,false);}
-  else{lastFix=null;await weatherChain(W_FALLBACK.lat,W_FALLBACK.lon,true);}
-}
-function refreshWeather(){if(lastFix)weatherChain(lastFix.lat,lastFix.lon,false);else updateWeather();}
-function startWatch(){if(!('geolocation'in navigator)||watchId!==null)return;watchId=navigator.geolocation.watchPosition(p=>{const n={lat:p.coords.latitude,lon:p.coords.longitude};if(!lastFix||distKm(lastFix,n)>5){lastFix=n;weatherChain(n.lat,n.lon,false);}},()=>{},{enableHighAccuracy:true,timeout:15000,maximumAge:0});}
+function refreshWeather(){updateWeather();}
+function startWatch(){if(!('geolocation'in navigator)||watchId!==null)return;watchId=navigator.geolocation.watchPosition(p=>{const n={lat:p.coords.latitude,lon:p.coords.longitude};if(!lastFix||Math.abs(n.lat-lastFix.lat)>0.05||Math.abs(n.lon-lastFix.lon)>0.05){lastFix=n;updateWeather();}},()=>{},{enableHighAccuracy:true,timeout:15000,maximumAge:0});}
 function renderWeather(){if(!wCache)return;
- $('wEmoji').textContent=wCache.emoji;$('wTemp').textContent=Math.round(wCache.temp)+'°C';$('wCity').textContent='· '+(wCache.city||'Sua região');
- $('wpEmoji').textContent=wCache.emoji;$('wpCond').textContent=wCache.cond||'—';$('wpCity').textContent='📍 '+(wCache.city||'Sua região')+(wCache.fixed?' · GPS indisponível':'');
- $('wpTemp').textContent=fmt(wCache.temp,wCache.dec!=null?wCache.dec:0)+'°C';$('wpHum').textContent=(wCache.hum!=null?Math.round(wCache.hum):'—')+'%';$('wpWind').textContent=(wCache.wind!=null?fmt(wCache.wind,wCache.wind%1?1:0):'—')+' km/h';
-const al=$('wpAlert');if(wCache.alert){al.hidden=false;$('wpAlertText').textContent=wCache.alert;}else al.hidden=true;
- $('wpDica').textContent=dicaFor(wCache.temp);$('wpTime').textContent=wCache.source+' · atualizado '+timeAgo(wCache.at);
- $('wChip').hidden=false;renderFilterCard();}
+ $('wEmoji').textContent=wCache.emoji;
+ $('wTemp').textContent=Math.round(wCache.temp)+'°C';
+ $('wCity').textContent='· '+(wCache.fixed?'Uberlândia':'GPS');
+ $('wpEmoji').textContent=wCache.emoji;
+ $('wpCond').textContent=wCache.fixed?'Uberlândia · MG':'Sua região';
+ $('wpCity').textContent='📍 '+(wCache.fixed?'Uberlândia (fallback)':'Coordenadas GPS')+(wCache.fixed?'':' ');
+ $('wpTemp').textContent=fmt(wCache.temp,Number.isInteger(wCache.temp)?0:1)+'°C';
+ $('wpHum').textContent=(wCache.hum!=null?Math.round(wCache.hum):'—')+'%';
+ $('wpWind').textContent=(wCache.wind!=null?fmt(wCache.wind,wCache.wind%1?1:0):'—')+' km/h';
+ $('wpDica').textContent=dicaFor(wCache.temp);
+ $('wpTime').textContent='Open-Meteo · atualizado '+timeAgo(wCache.at);
+ $('wChip').hidden=false;   /* ★ chip aparece assim que o fetch retorna */
+renderFilterCard();}
 const wChip=$('wChip'),wPop=$('wPop');
 wChip.addEventListener('click',e=>{e.stopPropagation();const o=wPop.classList.toggle('show');wChip.setAttribute('aria-expanded',o);});
 document.addEventListener('click',e=>{if(wPop.classList.contains('show')&&!wPop.contains(e.target)&&!wChip.contains(e.target)){wPop.classList.remove('show');wChip.setAttribute('aria-expanded','false');}});
 document.addEventListener('visibilitychange',()=>{if(!document.hidden&&!wCache)try{updateWeather();}catch(e){}});
 
-/* ═══════════ LITRAGEM ═══════════ */
+/* ══════ LITRAGEM ══════ */
 function renderLit(){let t=0;LIT.forEach((L,i)=>{const p=L.a*L.b*litProf[i]*1000;t+=p;$('litO'+i).textContent=nf0.format(Math.round(p))+' L';});const r=Math.round(t);$('litTotal').textContent=nf0.format(r)+' L';$('litTotalMini').textContent=nf0.format(r)+' L';return r;}
 [0,1,2].forEach(i=>{$('litD'+i).value=litProf[i];$('litD'+i).addEventListener('input',e=>{const v=parseFloat(e.target.value);if(!Number.isNaN(v)&&v>0){litProf[i]=v;renderLit();}});$('litD'+i).addEventListener('change',()=>{try{localStorage.setItem('poolapp.lit',JSON.stringify(litProf));}catch(e){}});});
  $('litApply').addEventListener('click',()=>{const t=renderLit();setVolume(Math.max(1000,Math.round(t)));toast('Volume atualizado: '+nf0.format(state.volume)+' L');});
 
-/* ═══════════ TRATAMENTO ORIENTADO ═══════════ */
+/* ══════ TRATAMENTO ORIENTADO ══════ */
 const SULFATO_PER_M3=20,SUPER_PER_1000L=28,CLAR_PER_M3=1.95,METAL_PER_M3=10;
 const sulfatoDose=()=>Math.round(SULFATO_PER_M3*m3());
 const superDose=()=>Math.round(SUPER_PER_1000L*state.volume/1000);
@@ -655,72 +575,61 @@ const bD=$('btnDiag');if(bD)bD.addEventListener('click',openDiag);}
 /* ---- diagnóstico pós-sulfato ---- */
 const DIAG=[
 {e:'🟢',t:'Ainda VERDE',s:'algas ativas',render(){return '<div class="t-wait"><p><b>Supercloração — sulfato não mata alga.</b></p><div class="t-dose"><strong>'+nf0.format(superDose())+' g</strong><span>de cloro granulado (28 g / 1.000 L)</span></div><ul class="t-steps"><li>Dissolva em balde e espalhe com bomba em RECIRCULAR</li><li>Escove paredes e fundo</li><li>Filtre 12h, re-meça o cloro e só então reavalie a decantação</li><li><b>NÃO use sulfato agora</b></li></ul></div>';}},
-{e:'⚪',t:'Branca / leitosa / turva',s:'flóculos em suspensão',render(){return '<div class="t-ok"><p><b>O sulfato decantou em pó fino — falta filtração + clarificante.</b></p><div class="t-dose"><strong>'+nf0.format(clarDose())+' ml</strong><span>de clarificante ('+CLAR_PER_M3+' ml/m³)</span></div><ul class="t-steps"><li><b>FILTRAR 24h seguidos</b></li><li>Aplique o clarificante com bomba em FILTRAR</li><li>Retro-lave a areia do filtro a cada 12h durante esse período</li><li><b>NÃO repita sulfato</b></li></ul></div>';}},
-{e:'🟡',t:'Amarelada / marrom',s:'ferro ou cobre oxidado',render(){return '<div class="t-block"><p><b>METAIS na água — sulfato e cloro agravam a mancha.</b></p><div class="t-dose"><strong>'+nf0.format(metalDose())+' ml</strong><span>de sequestrante de metais ('+METAL_PER_M3+' ml/m³)</span></div><ul class="t-steps"><li>Bomba em FILTRAR 6h com o produto circulando</li><li>Reavalie em 24h — mancha amarela/marrom costuma clarear</li><li><b>NUNCA use sulfato nesta água</b> — oxida mais metal</li></ul></div>';}}];
+{e:'⚪',t:'Branca / leitosa / turva',s:'flóculos em suspensão',render(){return '<div class="t-ok"><p><b>O sulfato decantou em pó fino — falta filtração + clarificante.</b></p><div class="t-dose"><strong>'+nf0.format(clarDose())+' ml</strong><span>de clarificante ('+CLAR_PER_M3+' ml/m³)</span></div><ul class="t-steps"><li><b>FILTRAR 24h seguidos</b></li><li>Aplique o clarificante com bomba em FILTRAR</li><li>Retro-lave a areia do filtro a cada 12h</li><li><b>NÃO repita sulfato</b></li></ul></div>';}},
+{e:'🟡',t:'Amarelada / marrom',s:'ferro ou cobre oxidado',render(){return '<div class="t-block"><p><b>METAIS na água — sulfato e cloro agravam a mancha.</b></p><div class="t-dose"><strong>'+nf0.format(metalDose())+' ml</strong><span>de sequestrante de metais ('+METAL_PER_M3+' ml/m³)</span></div><ul class="t-steps"><li>Bomba em FILTRAR 6h com o produto circulando</li><li>Reavalie em 24h</li><li><b>NUNCA use sulfato nesta água</b></li></ul></div>';}}];
 function openDiag(){const o=$('diagOpts');o.innerHTML=DIAG.map((d,i)=>'<button class="diag-opt" data-i="'+i+'"><span class="d-e">'+d.e+'</span><span class="d-t"><b>'+d.t+'</b><span>'+d.s+'</span></span></button>').join('');o.onclick=e=>{const b=e.target.closest('.diag-opt');if(!b)return;$('diagResult').innerHTML=DIAG[+b.dataset.i].render();$('diagResult').hidden=false;$('dgBack').hidden=false;o.style.display='none';$('diagSheet').scrollTo({top:$('diagResult').offsetTop-70,behavior:'smooth'});};o.style.display='';$('diagResult').hidden=true;$('dgBack').hidden=true;$('scrim').classList.add('show');$('diagSheet').classList.add('open');document.body.classList.add('locked');}
 function closeDiag(){const s=$('diagSheet');if(!s.classList.contains('open'))return;s.classList.remove('open');if(!$('sheet').classList.contains('open')&&!$('valveSheet').classList.contains('open')&&!$('installSheet').classList.contains('open')){$('scrim').classList.remove('show');document.body.classList.remove('locked');}}
  $('dgClose').addEventListener('click',closeDiag);
  $('dgBack').addEventListener('click',()=>{$('diagResult').hidden=true;$('dgBack').hidden=true;$('diagOpts').style.display='';});
 
-/* ═══════════ REGISTROS — manivelas (fonte da verdade = est) ═══════════ */
+/* ══════ REGISTROS — manivelas com giro, vibração, localStorage e alertas ══════ */
 let est=JSON.parse(localStorage.getItem('poolapp_registros')||'{"dreno":"fechado","skimmer":"aberto","aspiracao":"aberto"}');
 function aplicarEstado(){
-  ['dreno','skimmer','aspiracao'].forEach(function(n){
-    var el=document.querySelector('.reg[data-nome="'+n+'"]');
-    if(!el) return;
-    var mani=el.querySelector('.manivela'), stat=el.querySelector('.status');
-    var aberto=est[n]==='aberto';
-    mani.style.transform=aberto?'rotate(0deg)':'rotate(90deg)';
-    mani.style.background=aberto?'#0fb98a':'#8ca3ad';
-    stat.innerText=aberto?'ABERTO':'FECHADO';
-  });
-}
+['dreno','skimmer','aspiracao'].forEach(function(n){
+var el=document.querySelector('.reg[data-nome="'+n+'"]');if(!el)return;
+var man=el.querySelector('.reg-manivela'),st=el.querySelector('.status');
+var aberto=est[n]==='aberto';
+man.style.transform=aberto?'rotate(0deg)':'rotate(90deg)';
+man.style.background=aberto?'#0fb98a':'#8ca3ad';
+st.innerText=aberto?'ABERTO':'FECHADO';
+});}
 function gira(el){
-  var nome=el.dataset.nome;
-  var mani=el.querySelector('.manivela');
-  var stat=el.querySelector('.status');
-  var aberto=est[nome]==='aberto';
-  if(aberto){mani.style.transform='rotate(90deg)';mani.style.background='#8ca3ad';stat.innerText='FECHADO';est[nome]='fechado';}
-  else{mani.style.transform='rotate(0deg)';mani.style.background='#0fb98a';stat.innerText='ABERTO';est[nome]='aberto';}
-  if(navigator.vibrate) navigator.vibrate(40);
-  localStorage.setItem('poolapp_registros',JSON.stringify(est));
-  check();
-}
+var nome=el.dataset.nome;
+var man=el.querySelector('.reg-manivela'),st=el.querySelector('.status');
+var aberto=est[nome]==='aberto';   /* fonte da verdade = est */
+if(aberto){man.style.transform='rotate(90deg)';man.style.background='#8ca3ad';st.innerText='FECHADO';est[nome]='fechado';}
+else{man.style.transform='rotate(0deg)';man.style.background='#0fb98a';st.innerText='ABERTO';est[nome]='aberto';}
+if(navigator.vibrate)navigator.vibrate(40);
+try{localStorage.setItem('poolapp_registros',JSON.stringify(est));}catch(e){}
+check();}
 function check(){
-  var d=est.dreno, s=est.skimmer, a=est.aspiracao;
-  var box=document.getElementById('alerta-registros');
-  var drenoCard=document.querySelector('.reg[data-nome="dreno"]');
-  var msg='', cor='#e6f7f0', perigo=false, blink=false;
-  if(d=='aberto' && (s=='aberto' || a=='aberto')){
-    msg='⚠️ VAI DRENAR! Você abriu o DRENO com Skimmer/Aspiração. A piscina vai esvaziar pro esgoto. Deixe só o DRENO aberto no modo DRENO (5).';
-    cor='#fde8e8'; perigo=true; blink=true;
-  }
-  else if(d=='fechado' && s=='fechado' && a=='fechado'){
-    msg='🛑 PERIGO BOMBA SEM ÁGUA! Abra pelo menos 1 registro ou a bomba queima!';
-    cor='#fde8e8'; perigo=true;
-  }
-  else if(d=='aberto' && s=='fechado' && a=='fechado'){
-    msg='✅ Modo DRENO correto. Só dreno aberto levando água pro esgoto.';
-  }
-  else if(d=='fechado' && s=='aberto' && a=='aberto'){
-    msg='✅ Filtragem perfeita dia a dia. Skimmer puxa folhas de cima, aspiração do meio.';
-  }
-  else if(d=='fechado' && s=='fechado' && a=='aberto'){
-    msg='💡 Modo ASPIRAR! Força total na mangueira, é assim mesmo.';
-    cor='#fff8e1';
-  }
-  else{
-    msg='💡 Skimmer sozinho bom pra folhas. Aspiração sozinha boa pra sujeira grossa.';
-    cor='#fff8e1';
-  }
-  box.style.background=cor;
-  box.innerText=msg;
-  box.classList.remove('slide'); void box.offsetWidth; box.classList.add('slide');
-  if(drenoCard) drenoCard.classList.toggle('blink', blink);
-  if(perigo && navigator.vibrate){ try{ navigator.vibrate([120,60,120]); }catch(e){} }
-}
+var d=est.dreno,s=est.skimmer,a=est.aspiracao;
+var box=document.getElementById('alerta-registros');
+var drenoCard=document.querySelector('.reg[data-nome="dreno"]');
+var msg='',cor='#e6f7f0',perigo=false,blink=false;
+if(d=='aberto'&&(s=='aberto'||a=='aberto')){
+msg='⚠️ VAI DRENAR! Você abriu o DRENO com Skimmer/Aspiração. A piscina vai esvaziar pro esgoto. Deixe só o DRENO aberto no modo DRENO (5).';
+cor='#fde8e8';perigo=true;blink=true;}
+else if(d=='fechado'&&s=='fechado'&&a=='fechado'){
+msg='🛑 PERIGO BOMBA SEM ÁGUA! Abra pelo menos 1 registro ou a bomba queima!';
+cor='#fde8e8';perigo=true;}
+else if(d=='aberto'&&s=='fechado'&&a=='fechado'){
+msg='✅ Modo DRENO correto. Só dreno aberto levando água pro esgoto.';}
+else if(d=='fechado'&&s=='aberto'&&a=='aberto'){
+msg='✅ Filtragem perfeita dia a dia. Skimmer puxa folhas de cima, aspiração do meio.';}
+else if(d=='fechado'&&s=='fechado'&&a=='aberto'){
+msg='💡 Modo ASPIRAR! Força total na mangueira, é assim mesmo.';
+cor='#fff8e1';}
+else{
+msg='💡 Skimmer sozinho bom pra folhas. Aspiração sozinha boa pra sujeira grossa.';
+cor='#fff8e1';}
+box.style.background=cor;
+box.innerText=msg;
+box.classList.remove('slide');void box.offsetWidth;box.classList.add('slide');
+if(drenoCard)drenoCard.classList.toggle('regblink',blink);
+if(perigo&&navigator.vibrate){try{navigator.vibrate([120,60,120]);}catch(e){}}}
 
-/* ═══════════ VÁLVULA — manopla + estações ═══════════ */
+/* ══════ VÁLVULA ══════ */
 const vPlate=$('vPlate'),vLever=$('vLever'),vStage=$('valveStage');
 VALVE_POS.forEach(v=>{const t=document.createElement('span');t.className='v-tick';t.style.setProperty('--a',v.angle+'deg');vPlate.insertBefore(t,vLever);});
 VALVE_POS.forEach((v,i)=>{const s=document.createElement('button');s.type='button';s.className='station'+(i<2||i===5?' up':'')+' st-'+i;s.dataset.i=i;s.setAttribute('aria-label','Posição '+(i+1)+': '+v.full);s.innerHTML='<span class="v-num">'+(i+1)+'</span><span class="v-name">'+v.label+'</span>';s.addEventListener('click',()=>selectValve(+s.dataset.i,{fromUser:true}));vStage.appendChild(s);});
@@ -746,7 +655,7 @@ vGrab.addEventListener('pointerdown',e=>{vgy=e.clientY;vgdy=0;vGrab.setPointerCa
 vGrab.addEventListener('pointermove',e=>{if(vgy===null)return;vgdy=Math.max(0,e.clientY-vgy);$('valveSheet').style.transform='translate(-50%,'+vgdy+'px)';});
 ['pointerup','pointercancel'].forEach(ev=>vGrab.addEventListener(ev,()=>{if(vgy===null)return;$('valveSheet').style.transition='';$('valveSheet').style.transform='';if(vgdy>110)closeValveSheet();vgy=null;vgdy=0;}));
 
-/* ═══════════ GRID DE PARÂMETROS ═══════════ */
+/* ══════ GRID ══════ */
 const grid=$('grid');
 function buildCards(){grid.innerHTML=Object.keys(PARAMS).map(k=>{const p=PARAMS[k];const n=k==='turbidez'?'<p class="pc-note">Aspirar no DRENO/WASTE, não FILTRAR</p>':'';return '<article class="pcard card'+(p.full?' full':'')+'" data-key="'+k+'" onclick="openSheet(\''+k+'\')" tabindex="0" role="button" aria-label="Abrir '+p.label+'"><div class="pc-top"><span class="pc-ico">'+ICONS[k]+'</span><span class="pc-lbl">'+p.label+'</span><span class="badge mint" data-badge><i></i><b style="font-weight:700" data-badge-t></b></span></div><div class="pc-val"><span class="mono" data-val></span><em>'+(p.unit||'pH')+'</em></div>'+n+'<div class="mini"><div class="m-bar"><span class="m-zone"></span><span class="m-fill"></span><span class="m-knob"></span></div><div class="m-scale"><span>'+fmt(p.min,p.dec)+'</span><span>'+fmt(p.idealMin,p.dec)+'–'+fmt(p.idealMax,p.dec)+'</span><span>'+fmt(p.max,p.dec)+'</span></div></div><p class="pc-time" data-time></p></article>';}).join('');
 Object.keys(PARAMS).forEach(k=>{const p=PARAMS[k],el=cardEl(k),z=el.querySelector('.m-zone');z.style.left=((p.idealMin-p.min)/(p.max-p.min)*100)+'%';z.style.width=((p.idealMax-p.idealMin)/(p.max-p.min)*100)+'%';el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openSheet(k);}});});}
@@ -754,7 +663,7 @@ const cardEl=k=>grid.querySelector('[data-key="'+k+'"]');
 function updateCard(k){const p=PARAMS[k],el=cardEl(k);if(!el)return;const v=state.values[k],st=statusOf(k,v),pos=pct(k,v);el.querySelector('[data-val]').textContent=fmt(v,p.dec);const b=el.querySelector('[data-badge]');b.className='badge '+st.c;el.querySelector('[data-badge-t]').textContent=st.t;const f=el.querySelector('.m-fill'),kn=el.querySelector('.m-knob');f.style.width=pos+'%';kn.style.left=pos+'%';f.classList.toggle('warn',st.c==='amber');kn.classList.toggle('warn',st.c==='amber');const m=measures[k];el.querySelector('[data-time]').textContent=m?'atualizado '+timeAgo(m.at):'sem medição salva';}
 function refreshAll(){Object.keys(PARAMS).forEach(updateCard);renderTreat();renderFilterCard();updateBorders();}
 
-/* ═══════════ SHEET DE PARÂMETROS ═══════════ */
+/* ══════ SHEET PARÂMETROS ══════ */
 const sheet=$('sheet'),scrim=$('scrim'),tBar=$('tBar'),shSlider=$('shSlider');
 let currentKey=null;
 function openSheet(k,v){currentKey=k;const p=PARAMS[k],val=(v!==undefined)?v:state.values[k];
@@ -805,7 +714,7 @@ grabZone.addEventListener('pointerdown',e=>{gy=e.clientY;gdy=0;grabZone.setPoint
 grabZone.addEventListener('pointermove',e=>{if(gy===null)return;gdy=Math.max(0,e.clientY-gy);sheet.style.transform='translate(-50%,'+gdy+'px)';});
 ['pointerup','pointercancel'].forEach(ev=>grabZone.addEventListener(ev,()=>{if(gy===null)return;sheet.style.transition='';sheet.style.transform='';if(gdy>110)closeSheet();gy=null;gdy=0;}));
 
-/* ═══════════ VOLUME — stepper −100 / +100 ═══════════ */
+/* ══════ VOLUME ══════ */
 const volInput=$('volInput');
 function setVolume(v,typing){v=Math.round(v);v=Math.min(300000,Math.max(1000,v));state.volume=v;if(!typing)volInput.value=v;renderVol();persist();refreshAll();}
  $('volMinus').addEventListener('click',()=>setVolume(state.volume-100));
@@ -814,7 +723,7 @@ volInput.addEventListener('input',()=>{const v=parseInt(volInput.value,10);if(!N
 volInput.addEventListener('change',()=>{let v=parseInt(volInput.value,10);if(Number.isNaN(v))v=45000;setVolume(v);});
 function renderVol(){const v=state.volume,m=v/1000;$('volLive').innerHTML='<b>'+nf0.format(v)+' L</b><span>= '+fmt(m,m%1?1:0)+' m³</span>';}
 
-/* ═══════════ FILTRAGEM PELO CLIMA ═══════════ */
+/* ══════ FILTRAGEM PELO CLIMA ══════ */
 function classifyWeather(){if(!wCache)return null;const e=wCache.emoji||'';
 if(e.indexOf('🌧️')>=0||e.indexOf('⛈️')>=0)return{cat:'RAIN',label:'CHUVOSO',bc:'amber',hours:3,split:['3h contínuo ou dividido']};
 if(e.indexOf('☁️')>=0)return{cat:'CLOUD',label:'NUBLADO',bc:'amber',hours:4,split:['4h contínuo']};
@@ -822,7 +731,7 @@ if(e.indexOf('☀️')>=0||e.indexOf('⛅')>=0||e.indexOf('🌙')>=0){const t=ty
 return t>=28?{cat:'HOT',label:'SOL QUENTE · '+Math.round(t)+'°C',bc:'mint',hours:6,split:['3h manhã','3h tarde']}:{cat:'MILD',label:'SOL AMENO · '+Math.round(t)+'°C',bc:'amber',hours:4,split:['4h contínuo']};}
 return null;}
 function renderFilterCard(){const c=classifyWeather(),body=$('filterBody');
-if(!c&&wFail){body.innerHTML='<div class="ft-ph bad">Não deu para carregar o clima agora (rede instável ou bloqueio). Tentando de novo automaticamente…</div><p class="ft-foot">As doses e o tratamento funcionam normalmente offline.</p>';$('ftBadge').className='badge amber';$('ftBadgeT').textContent='Sem clima';return;}
+if(!c&&wFail){body.innerHTML='<div class="ft-ph bad">Não deu para carregar o clima agora (rede instável). Tentando de novo automaticamente…</div><p class="ft-foot">As doses e o tratamento funcionam normalmente offline.</p>';$('ftBadge').className='badge amber';$('ftBadgeT').textContent='Sem clima';return;}
 if(!c){body.innerHTML='<p class="ft-foot">Aguardando dados do clima… a sugestão aparece automaticamente (funciona offline com o último clima salvo).</p>';return;}
 let ph='';
 if(c.cat==='RAIN'){const phv=state.values.ph;
@@ -830,24 +739,24 @@ ph=(phv>=7&&phv<=7.4)?'<div class="ft-ph ok">pH '+phv.toLocaleString('pt-BR')+' 
 body.innerHTML='<div class="ft"><div class="ft-h"><strong>'+c.hours+'h</strong><span>por dia</span></div><div class="ft-i"><span class="badge '+c.bc+'"><i></i>'+c.label+'</span><div class="ft-split">'+c.split.map(s=>'<span>'+s+'</span>').join('')+'</div></div></div>'+ph+'<p class="ft-foot">Sugestão automática pelo clima · '+nf0.format(state.volume)+' L — não altera nenhum ajuste seu.</p>';
  $('ftBadge').className='badge '+c.bc;$('ftBadgeT').textContent=c.hours+'h/dia';}
 
-/* ═══════════ BORDAS VINIL ═══════════ */
+/* ══════ BORDAS VINIL ══════ */
 function updateBorders(){const act=document.querySelector('#typePills .pill.active');const vinil=act?act.dataset.type==='vinil':true;$('limpeza-bordas').hidden=!vinil;}
 
-/* ═══════════ TIPO DE PISCINA ═══════════ */
+/* ══════ TIPO DE PISCINA ══════ */
  $('typePills').addEventListener('click',e=>{const b=e.target.closest('.pill');if(!b)return;state.type=b.dataset.type;document.querySelectorAll('.pill').forEach(p=>{const on=p===b;p.classList.toggle('active',on);p.setAttribute('aria-selected',on);});renderTip();persist();updateBorders();});
 function renderTip(){$('tipTitle').textContent='Dica · '+state.type.charAt(0).toUpperCase()+state.type.slice(1);$('tipText').textContent=TIPS[state.type];}
 
-/* ═══════════ PWA — status de offline ═══════════ */
+/* ══════ PWA — SW relativo + status ══════ */
 function setPwaStatus(txt,ok){const el=$('pwaStatus');if(!el)return;el.textContent=(ok?'✅ ':'⚠️ ')+txt;el.style.color=ok?'#14724E':'#96521A';}
 function renderPwaStatus(){if(!('serviceWorker'in navigator))return setPwaStatus('Este navegador não suporta modo app offline',false);if(!location.protocol.startsWith('http'))return setPwaStatus('Abrindo como arquivo — publique em HTTPS para o modo app offline',false);navigator.serviceWorker.getRegistration().then(r=>{if(r&&(r.active||r.installing||r.waiting))setPwaStatus('Pronto para offline — pode usar sem internet',true);else setPwaStatus('Preparando offline… recarregue a página uma vez',false);}).catch(()=>setPwaStatus('Não foi possível ativar o offline (verifique HTTPS)',false));}
 if('serviceWorker'in navigator&&location.protocol.startsWith('http')){
-window.addEventListener('load',()=>{navigator.serviceWorker.register('sw.js').then(()=>{renderPwaStatus();let rel=false;navigator.serviceWorker.addEventListener('controllerchange',()=>{if(rel)return;rel=true;if(sessionStorage.getItem('poolapp.reloaded')!=='1'){sessionStorage.setItem('poolapp.reloaded','1');location.reload();}});}).catch(()=>renderPwaStatus());});
-}else{renderPwaStatus();}
+window.addEventListener('load',()=>{
+navigator.serviceWorker.register('./sw.js').then(()=>{renderPwaStatus();let rel=false;navigator.serviceWorker.addEventListener('controllerchange',()=>{if(rel)return;rel=true;if(sessionStorage.getItem('poolapp.reloaded')!=='1'){sessionStorage.setItem('poolapp.reloaded','1');location.reload();}});}).catch(()=>renderPwaStatus());
+});}else{renderPwaStatus();}
 
-/* ═══════════ ÍCONE GERADO + INSTALL UNIVERSAL ═══════════ */
+/* ══════ ÍCONE GERADO + INSTALL UNIVERSAL ══════ */
 function makeIcon(size){const c=document.createElement('canvas');c.width=c.height=size;const x=c.getContext('2d'),s=size/24;x.scale(s,s);const rr=(ctx,r)=>{ctx.beginPath();ctx.moveTo(r,0);ctx.lineTo(24-r,0);ctx.quadraticCurveTo(24,0,24,r);ctx.lineTo(24,24-r);ctx.quadraticCurveTo(24,24,24-r,24);ctx.lineTo(r,24);ctx.quadraticCurveTo(0,24,0,24-r);ctx.lineTo(0,r);ctx.quadraticCurveTo(0,0,r,0);ctx.closePath();};rr(x,5.6);x.fillStyle='#007A8C';x.fill();const d=new Path2D('M12 3.5C15.5 7.6 18 10.4 18 13.4A6 6 0 1 1 6 13.4C6 10.4 8.5 7.6 12 3.5Z');x.fillStyle='#fff';x.fill(d);x.save();x.clip(d);x.fillStyle='#007A8C';x.fill(new Path2D('M0 15.4Q3 13.9 6 15.4T12 15.4T18 15.4T24 15.4V23H0Z'));x.restore();return c.toDataURL('image/png');}
-(function(){const l=document.querySelector('link[rel="apple-touch-icon"]');fetch('icon-180.png',{method:'HEAD'}).then(r=>{if(!r.ok)throw 0;}).catch(()=>{if(l)l.href=makeIcon(180);});})();
-fetch('manifest.json').then(r=>{if(!r.ok)throw 0;}).catch(()=>{try{const m={name:'PoolApp Universal',short_name:'PoolApp',start_url:'.',display:'standalone',background_color:'#F2F7F8',theme_color:'#0f5f6e',icons:[{src:makeIcon(192),sizes:'192x192',type:'image/png'},{src:makeIcon(512),sizes:'512x512',type:'image/png'}]};const l=document.createElement('link');l.rel='manifest';l.href='data:application/manifest+json;charset=utf-8,'+encodeURIComponent(JSON.stringify(m));document.head.appendChild(l);}catch(e){}});
+(function(){const l=document.querySelector('link[rel="apple-touch-icon"]');fetch('./icon-180.png',{method:'HEAD'}).then(r=>{if(!r.ok)throw 0;}).catch(()=>{if(l)l.href=makeIcon(180);});})();
 const installBtn=$('installBtn'),installSheet=$('installSheet');
 let deferredPrompt=null;
 const isIOS=()=>/iphone|ipad|ipod/i.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
@@ -867,7 +776,7 @@ const PLUS_SVG='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strok
 function openInstallSheet(mode){const browser=/firefox/i.test(navigator.userAgent)?'Firefox':/samsungbrowser/i.test(navigator.userAgent)?'Samsung Internet':'Chrome';
  $('insAppIcon').src=makeIcon(192);
 if(mode==='ios'){$('insTitle').textContent='Instalar no iPhone / iPad';$('insSub').textContent='Safari · Adicionar à Tela de Início';
- $('insSteps').innerHTML='<li><span class="vs-n">1</span><span>Toque no botão <b>Compartilhar</b> '+SHARE_SVG+' na barra de baixo do Safari</span></li><li><span class="vs-n">2</span><span>Role a lista e toque em <b>"Adicionar à Tela de Início"</b></span></li><li><span class="vs-n">3</span><span>Confirme em <b>"Adicionar"</b> — o ícone teal do PoolApp aparece na sua tela inicial</span></li>';
+ $('insSteps').innerHTML='<li><span class="vs-n">1</span><span>Toque no botão <b>Compartilhar</b> '+SHARE_SVG+' na barra de baixo do Safari</span></li><li><span class="vs-n">2</span><span>Role e toque em <b>"Adicionar à Tela de Início"</b></span></li><li><span class="vs-n">3</span><span>Confirme em <b>"Adicionar"</b> — o ícone teal do PoolApp aparece na sua tela inicial</span></li>';
  $('insExtra').innerHTML='<button class="btn ghostD" id="insDone" style="margin-bottom:14px">Já adicionei à Tela de Início</button>';}
 else if(mode==='android'){$('insTitle').textContent='Instalar no Android';$('insSub').textContent=browser+' · menu do navegador';
 const menu=browser==='Firefox'?'<b>Instalar</b>':browser==='Samsung Internet'?'<b>Adicionar página à</b> → <b>Tela inicial</b>':'<b>Instalar aplicativo</b>';
@@ -882,7 +791,7 @@ function closeInstallSheet(){if(!installSheet.classList.contains('open'))return;
  $('insClose').addEventListener('click',closeInstallSheet);
  $('insOk').addEventListener('click',closeInstallSheet);
 
-/* ═══════════ FECHAMENTO GLOBAL (no fim do script) ═══════════ */
+/* ══════ FECHAMENTO GLOBAL ══════ */
 scrim.addEventListener('click',()=>{closeSheet();closeValveSheet();closeDiag();closeInstallSheet();});
 document.addEventListener('keydown',e=>{if(e.key!=='Escape')return;
 if(sheet.classList.contains('open'))closeSheet();
@@ -891,29 +800,29 @@ if($('diagSheet').classList.contains('open'))closeDiag();
 if($('installSheet').classList.contains('open'))closeInstallSheet();
 wPop.classList.remove('show');wChip.setAttribute('aria-expanded','false');});
 
-/* ═══════════ INICIALIZAÇÃO — blindada em 2 blocos ═══════════ */
+/* ══════ INIT — blindado em 2 blocos; clima sempre inicia ══════ */
 (function init(){
 try{
-  buildCards();
-  document.querySelectorAll('.pill').forEach(p=>{const on=p.dataset.type===state.type;p.classList.toggle('active',on);p.setAttribute('aria-selected',on);});
-  renderTip();
-  volInput.value=state.volume;renderVol();
-  renderLit();
-  refreshAll();
-  aplicarEstado();
-  check();
-  $('todayLbl').textContent=new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'short'});
-  vLever.classList.add('no-anim');leverAngle=VALVE_POS[valveIndex].angle;vLever.style.transform='rotate('+leverAngle+'deg)';void vLever.offsetHeight;requestAnimationFrame(()=>vLever.classList.remove('no-anim'));
-  applyValveVisual();
-  renderOnline();
-  if(isStandalone())markInstalled();
-  updateInstallUI();
+buildCards();
+document.querySelectorAll('.pill').forEach(p=>{const on=p.dataset.type===state.type;p.classList.toggle('active',on);p.setAttribute('aria-selected',on);});
+renderTip();
+volInput.value=state.volume;renderVol();
+renderLit();
+refreshAll();
+aplicarEstado();
+check();
+ $('todayLbl').textContent=new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'short'});
+vLever.classList.add('no-anim');leverAngle=VALVE_POS[valveIndex].angle;vLever.style.transform='rotate('+leverAngle+'deg)';void vLever.offsetHeight;requestAnimationFrame(()=>vLever.classList.remove('no-anim'));
+applyValveVisual();
+renderOnline();
+if(isStandalone())markInstalled();
+updateInstallUI();
 }catch(e){console.warn('[PoolApp] init parcial:',e);}
 try{
-  renderWeather();      /* último clima salvo → chip + dicas na hora */
-  updateWeather();      /* clima fresco (chip já aparece durante a busca) */
-  startWatch();
-  setInterval(refreshWeather,600000);
+renderWeather();       /* último clima salvo → chip + dicas na hora */
+updateWeather();       /* busca clima novo (chip aparece quando o fetch retorna) */
+startWatch();
+setInterval(updateWeather,600000);   /* a cada 10 minutos */
 }catch(e){console.warn('[PoolApp] clima:',e);}
 })();
 </script>
