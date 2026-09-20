@@ -1,7 +1,7 @@
 /* PoolApp Universal — Service Worker v4 (Elias costa NEGRET'S)
-   Mesma origem (html/css/js/ícones): CACHE-FIRST com refresh em segundo plano.
+   Mesma origem: CACHE-FIRST com refresh em segundo plano.
    Externo (clima/geocode/fontes): NETWORK-FIRST com fallback de cache.
-   localStorage ("dados salvos neste dispositivo"): nunca é tocado pelo SW. */
+   localStorage: nunca é tocado pelo SW. */
 const CACHE = 'poolapp-v4';
 const CORE = ['./', './index.html', './manifest.json'];
 const OPTIONAL = ['./icon-180.png','./icon-192.png','./icon-512.png','./icon-512-maskable.png','./favicon-32.png'];
