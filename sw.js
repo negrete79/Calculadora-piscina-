@@ -1,8 +1,9 @@
-/* PoolApp Universal — Service Worker v4 (Elias costa NEGRET'S)
-   Mesma origem: CACHE-FIRST com refresh em segundo plano.
+/* PoolApp Universal — Service Worker v5 (Elias costa NEGRET'S)
+   Navegação (HTML): NETWORK-FIRST → deploy novo aparece na hora; offline usa cache.
+   Estáticos (css/js/ícones): CACHE-FIRST com refresh em segundo plano.
    Externo (clima/geocode/fontes): NETWORK-FIRST com fallback de cache.
-   localStorage: nunca é tocado pelo SW. */
-const CACHE = 'poolapp-v4';
+   localStorage ("dados salvos neste dispositivo"): nunca é tocado pelo SW. */
+const CACHE = 'poolapp-v5';
 const CORE = ['./', './index.html', './manifest.json'];
 const OPTIONAL = ['./icon-180.png','./icon-192.png','./icon-512.png','./icon-512-maskable.png','./favicon-32.png'];
 
@@ -30,6 +31,26 @@ self.addEventListener('fetch', (e) => {
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
 
+  /* 1) navegação: REDE PRIMEIRO — sempre a versão mais nova do app */
+  if (req.mode === 'navigate') {
+    e.respondWith(
+      fetch(req).then((res) => {
+        if (res && res.ok) {
+          const cl = res.clone();
+          caches.open(CACHE).then(c => c.put('./index.html', cl)).catch(() => {});
+        }
+        return res;
+      }).catch(async () =>
+        (await caches.match(req)) ||
+        (await caches.match('./index.html')) ||
+        (await caches.match('./')) ||
+        Response.error()
+      )
+    );
+    return;
+  }
+
+  /* 2) mesma origem (assets): cache primeiro + atualização por baixo */
   if (url.origin === location.origin) {
     e.respondWith(
       caches.match(req).then((hit) => {
@@ -46,10 +67,12 @@ self.addEventListener('fetch', (e) => {
     return;
   }
 
+  /* 3) cross-origin (clima/geocode/fontes): rede primeiro, cache como reserva */
   e.respondWith(
     fetch(req).then((res) => {
-      if (res && (res.ok || res.type === 'opaque')) {
-        try { const cl = res.clone(); caches.open(CACHE).then(c => c.put(req, cl)); } catch (_) {}
+      if (res && res.ok) {
+        const cl = res.clone();
+        caches.open(CACHE).then(c => c.put(req, cl)).catch(() => {});
       }
       return res;
     }).catch(() => caches.match(req))
