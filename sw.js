@@ -1,9 +1,10 @@
-/* PoolApp Universal — Service Worker v5 (Elias costa NEGRET'S)
-   Navegação (HTML): NETWORK-FIRST — deploy novo aparece na hora; offline usa cache.
-   Estáticos (css/js/ícones): CACHE-FIRST com refresh em segundo plano.
-   Externo (clima/geocode/fontes): NETWORK-FIRST com fallback de cache.
-   localStorage ("dados salvos neste dispositivo"): nunca é tocado pelo SW. */
-const CACHE = 'poolapp-v5';
+/* PoolApp Universal — Service Worker v7 (Elias costa NEGRET'S)
+   GitHub Pages (/Casa/): tudo relativo.
+   Navegação: NETWORK-FIRST (deploy novo aparece na hora; offline usa cache).
+   Estáticos: CACHE-FIRST com refresh em segundo plano.
+   APIs de clima (open-meteo / weatherapi): NÃO são cacheadas —
+   sempre direto da rede (o app guarda o último clima no localStorage). */
+const CACHE = 'poolapp-v7';
 const CORE = ['./', './index.html', './manifest.json'];
 const OPTIONAL = ['./icon-180.png','./icon-192.png','./icon-512.png','./icon-512-maskable.png','./favicon-32.png'];
 
@@ -31,7 +32,10 @@ self.addEventListener('fetch', (e) => {
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
 
-  /* 1) navegação: REDE PRIMEIRO */
+  /* APIs de clima: NUNCA cachear — deixa passar direto (o app tem o fallback no localStorage) */
+  if (url.hostname === 'api.open-meteo.com' || url.hostname === 'api.weatherapi.com') return;
+
+  /* navegação: rede primeiro */
   if (req.mode === 'navigate') {
     e.respondWith(
       fetch(req).then((res) => {
@@ -50,7 +54,7 @@ self.addEventListener('fetch', (e) => {
     return;
   }
 
-  /* 2) mesma origem (assets): cache primeiro + refresh por baixo */
+  /* mesma origem: cache primeiro + refresh por baixo */
   if (url.origin === location.origin) {
     e.respondWith(
       caches.match(req).then((hit) => {
@@ -67,12 +71,11 @@ self.addEventListener('fetch', (e) => {
     return;
   }
 
-  /* 3) cross-origin (clima/geocode/fontes): rede primeiro, cache como reserva */
+  /* outros cross-origin (Google Fonts etc.): rede primeiro, cache como reserva */
   e.respondWith(
     fetch(req).then((res) => {
       if (res && res.ok) {
-        const cl = res.clone();
-        caches.open(CACHE).then(c => c.put(req, cl)).catch(() => {});
+        try { const cl = res.clone(); caches.open(CACHE).then(c => c.put(req, cl)).catch(() => {}); } catch (_) {}
       }
       return res;
     }).catch(() => caches.match(req))
