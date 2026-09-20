@@ -1,78 +1,39 @@
-/* PoolApp Universal — Service Worker v8 (Elias costa NEGRET'S)
-   GitHub Pages (/Casa/): tudo relativo.
-   Navegação: NETWORK-FIRST. Estáticos: CACHE-FIRST com refresh.
-   APIs de clima: NUNCA cacheadas (fallback offline fica no localStorage). */
+/* PoolApp Universal — Service Worker (GitHub Pages safe: tudo relativo) */
 const CACHE = 'poolapp-v8';
-const CORE = ['./', './index.html', './manifest.json'];
-const OPTIONAL = ['./icon-180.png','./icon-192.png','./icon-512.png','./icon-512-maskable.png','./favicon-32.png'];
+const ASSETS = ['./', './index.html', './manifest.json'];
 
-self.addEventListener('install', (e) => {
-  e.waitUntil((async () => {
-    const c = await caches.open(CACHE);
-    await c.addAll(CORE);
-    await Promise.all(OPTIONAL.map(u => c.add(u).catch(() => {})));
-    self.skipWaiting();
-  })());
+self.addEventListener('install', event => {
+  event.waitUntil(
+    caches.open(CACHE)
+      .then(cache => cache.addAll(ASSETS))
+      .then(() => self.skipWaiting())
+  );
 });
 
-self.addEventListener('activate', (e) => {
-  e.waitUntil((async () => {
-    const keys = await caches.keys();
-    await Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)));
-    await self.clients.claim();
-  })());
+self.addEventListener('activate', event => {
+  event.waitUntil(
+    caches.keys()
+      .then(keys => Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k))))
+      .then(() => self.clients.claim())
+  );
 });
 
-self.addEventListener('message', (e) => { if (e.data === 'SKIP_WAITING') self.skipWaiting(); });
+self.addEventListener('fetch', event => {
+  const url = new URL(event.request.url);
+  /* Clima e geocodificação: sempre rede, nunca cache (o app trata fallback) */
+  if (url.host.includes('open-meteo') || url.host.includes('bigdatacloud')) return;
+  if (event.request.method !== 'GET') return;
 
-self.addEventListener('fetch', (e) => {
-  const req = e.request;
-  if (req.method !== 'GET') return;
-  const url = new URL(req.url);
-
-  /* APIs de clima: passa direto, sem cache */
-  if (url.hostname === 'api.open-meteo.com' || url.hostname === 'api.weatherapi.com') return;
-
-  if (req.mode === 'navigate') {
-    e.respondWith(
-      fetch(req).then((res) => {
-        if (res && res.ok) {
-          const cl = res.clone();
-          caches.open(CACHE).then(c => c.put('./index.html', cl)).catch(() => {});
+  event.respondWith(
+    caches.match(event.request).then(hit =>
+      hit ||
+      fetch(event.request).then(res => {
+        if (res.ok && url.origin === location.origin) {
+          const copy = res.clone();
+          caches.open(CACHE).then(c => c.put(event.request, copy));
         }
         return res;
-      }).catch(async () =>
-        (await caches.match(req)) ||
-        (await caches.match('./index.html')) ||
-        (await caches.match('./')) ||
-        Response.error()
-      )
-    );
-    return;
-  }
-
-  if (url.origin === location.origin) {
-    e.respondWith(
-      caches.match(req).then((hit) => {
-        const net = fetch(req).then((res) => {
-          if (res && res.ok) {
-            const cl = res.clone();
-            caches.open(CACHE).then(c => c.put(req, cl));
-          }
-          return res;
-        }).catch(() => hit);
-        return hit || net;
-      })
-    );
-    return;
-  }
-
-  e.respondWith(
-    fetch(req).then((res) => {
-      if (res && res.ok) {
-        try { const cl = res.clone(); caches.open(CACHE).then(c => c.put(req, cl)).catch(() => {}); } catch (_) {}
-      }
-      return res;
-    }).catch(() => caches.match(req))
+      }).catch(() => caches.match('./index.html'))
+    )
   );
 });
