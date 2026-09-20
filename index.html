@@ -16,7 +16,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-/* ══════════ BASE ══════════ */
+/* ══════ BASE ══════ */
 :root{--teal:#007A8C;--teal-deep:#035A67;--ink:#0D3038;--sub:#5B7680;--bg:#F2F7F8;--card:rgba(255,255,255,.9);--line:rgba(13,48,56,.08);--mint:#2FBF8F;--amber:#E28743;--red:#D64545;--radius:24px;--shadow:0 1px 2px rgba(9,48,56,.04),0 16px 36px -14px rgba(0,90,104,.18);--mono:'IBM Plex Mono',ui-monospace,monospace}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 [hidden]{display:none!important}
@@ -27,7 +27,6 @@ body.locked{overflow:hidden}
 .app{max-width:430px;margin:0 auto;padding:16px 16px calc(40px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:14px;width:100%}
 button{font-family:inherit;border:none;background:none;cursor:pointer;color:inherit;touch-action:manipulation}
 button:active{transform:scale(.97)}
-:disabled{opacity:.45;pointer-events:none}
 :focus-visible{outline:2px solid var(--teal);outline-offset:2px;border-radius:8px}
 .card{background:var(--card);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.7);border-radius:var(--radius);box-shadow:var(--shadow);min-width:0}
 .lbl{font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--sub)}
@@ -36,11 +35,11 @@ button:active{transform:scale(.97)}
 .badge.mint{background:rgba(47,191,143,.14);color:#14724E}.badge.mint i{background:var(--mint)}
 .badge.amber{background:rgba(226,135,67,.15);color:#96521A}.badge.amber i{background:var(--amber)}
 .badge.red{background:rgba(214,69,69,.12);color:#A02222}.badge.red i{background:var(--red)}
-/* ══════════ BARRA OFFLINE ══════════ */
+/* ══════ BARRA OFFLINE ══════ */
 .offbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:center;gap:8px;background:#0f5f6e;color:#fff;font-size:12.5px;font-weight:700;padding:10px 16px;border-radius:0 0 16px 16px}
 .offbar i{width:8px;height:8px;border-radius:50%;background:var(--amber);flex:none;animation:pl 1.6s ease infinite}
 @keyframes pl{0%,100%{opacity:1}50%{opacity:.3}}
-/* ══════════ HEADER ══════════ */
+/* ══════ HEADER ══════ */
 .brand{display:flex;align-items:center;gap:12px;padding:8px 2px 2px;flex-wrap:wrap}
 .logo{width:42px;height:42px;flex:none;border-radius:14px;background:var(--teal);display:grid;place-items:center;color:#fff}
 .logo svg{width:22px;height:22px}
@@ -50,7 +49,7 @@ button:active{transform:scale(.97)}
 .brand p{font-size:12.5px;color:var(--sub);font-weight:500;margin-top:1px}
 .btn-install{display:inline-flex;align-items:center;gap:6px;flex:none;font-size:12.5px;font-weight:700;color:var(--teal);border:1.5px solid rgba(0,122,140,.35);border-radius:999px;padding:8px 13px}
 .btn-install svg{width:14px;height:14px}
-/* ══════════ CONFIG ══════════ */
+/* ══════ CONFIG ══════ */
 .config{padding:18px 18px 16px;display:flex;flex-direction:column;gap:10px;min-width:0}
 .pills{display:flex;flex-wrap:wrap;gap:6px;background:rgba(13,48,56,.05);padding:4px;border-radius:999px}
 .pill{flex:1 1 auto;min-width:0;padding:9px 4px;border-radius:999px;font-size:12.5px;font-weight:700;color:var(--sub);white-space:nowrap;transition:all .22s}
@@ -78,7 +77,7 @@ button:active{transform:scale(.97)}
 .wp-dica .lbl{color:#96521A;margin-bottom:3px}
 .wp-dica p:last-child{font-size:12.5px;line-height:1.5;font-weight:600;color:#96521A}
 .wp-time{text-align:center;font-size:10px;color:var(--sub);font-family:var(--mono);margin-top:8px}
-/* ══════════ VOLUME STEPPER ══════════ */
+/* ══════ VOLUME ══════ */
 .vol-row{display:flex;gap:10px;min-width:0}
 .volume-wrap{flex:1 1 150px;min-width:0;height:64px;display:flex;align-items:center;gap:8px;background:#fff;border:1.5px solid rgba(0,122,140,.28);border-radius:14px;padding:0 8px}
 .vol-btn{flex:none;width:48px;height:48px;border-radius:12px;background:rgba(0,122,140,.08);color:var(--teal-deep);font-size:24px;font-weight:800;display:grid;place-items:center;user-select:none}
@@ -88,7 +87,7 @@ button:active{transform:scale(.97)}
 .vol-live b{color:var(--ink)}
 .hint{font-size:12px;color:var(--sub);line-height:1.45}
 @media(max-width:400px){.vol-row{flex-direction:column}.vol-live{flex-direction:row;align-items:baseline;gap:8px}}
-/* ══════════ LITRAGEM ══════════ */
+/* ══════ LITRAGEM ══════ */
 .lit{padding:16px 18px}
 .lit summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:10px}
 .lit summary::-webkit-details-marker{display:none}
@@ -105,7 +104,7 @@ button:active{transform:scale(.97)}
 .l-total b{font-family:var(--mono);font-size:20px}
 .l-total span{font-size:12px;color:var(--sub);font-weight:600}
 .l-apply{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:700;color:#fff;background:var(--teal);border-radius:999px;padding:9px 16px}
-/* ══════════ VÁLVULA ══════════ */
+/* ══════ VÁLVULA ══════ */
 .valve-card{padding:18px 16px 14px;display:flex;flex-direction:column;gap:4px}
 .vc-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:0 4px}
 .valve-stage{position:relative;width:100%;max-width:300px;aspect-ratio:1;margin:2px auto 0;user-select:none;pointer-events:none}
@@ -132,12 +131,12 @@ button:active{transform:scale(.97)}
 .v-foot svg{width:16px;height:16px;color:#96521A;flex:none;margin-top:2px}
 .v-foot p{font-size:12px;line-height:1.5;color:var(--sub);font-weight:500}
 .v-foot b{color:#96521A}
-/* ══════════ MÓDULO REGISTROS (manivelas do Elias) ══════════ */
+/* ══════ REGISTROS — animações ══════ */
 @keyframes blinkRedReg{0%,100%{box-shadow:0 0 0 0 rgba(214,69,69,0)}50%{box-shadow:0 0 0 5px rgba(214,69,69,.4)}}
 .reg.blink{animation:blinkRedReg 1s ease infinite;border-radius:12px}
 @keyframes slideDownReg{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
 #alerta-registros.slide{animation:slideDownReg .35s ease}
-/* ══════════ PARÂMETROS ══════════ */
+/* ══════ PARÂMETROS ══════ */
 .sec-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:6px 4px 0}
 .sec-head h3{font-size:17px;font-weight:800}
 .sec-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
@@ -166,7 +165,7 @@ button:active{transform:scale(.97)}
 .m-scale{display:flex;justify-content:space-between;gap:4px;font-size:9.5px;color:var(--sub);font-family:var(--mono)}
 .pc-note{font-size:12px;font-weight:600;color:#96521A;line-height:1.45}
 .pc-time{font-size:10.5px;color:var(--sub);font-family:var(--mono)}
-/* ══════════ TRATAMENTO ══════════ */
+/* ══════ TRATAMENTO ══════ */
 .treat{padding:18px 16px 16px;display:flex;flex-direction:column;gap:12px}
 .tstep{display:flex;gap:12px;align-items:flex-start;min-width:0}
 .ts-n{flex:none;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font-family:var(--mono);font-size:12px;font-weight:600;margin-top:2px;background:rgba(13,48,56,.06);color:var(--sub);border:2px solid transparent}
@@ -192,7 +191,7 @@ button:active{transform:scale(.97)}
 .btn.primary{width:100%;background:var(--teal);color:#fff}
 .btn.amberB{width:100%;background:rgba(226,135,67,.12);color:#96521A;border:1.5px solid rgba(226,135,67,.35)}
 .btn.ghostD{width:100%;background:transparent;color:var(--sub);border:1.5px solid var(--line)}
-/* ══════════ FILTRAGEM PELO CLIMA ══════════ */
+/* ══════ FILTRAGEM PELO CLIMA ══════ */
 .ft{display:flex;align-items:center;gap:14px;margin-top:4px;flex-wrap:wrap}
 .ft-h{display:flex;flex-direction:column;flex:none}
 .ft-h strong{font-family:var(--mono);font-size:32px;font-weight:600;letter-spacing:-.02em;line-height:1}
@@ -204,7 +203,7 @@ button:active{transform:scale(.97)}
 .ft-ph.ok{background:rgba(47,191,143,.09);border:1px solid rgba(47,191,143,.28);color:#14724E}
 .ft-ph.bad{background:rgba(226,135,67,.09);border:1px solid rgba(226,135,67,.28);color:#96521A}
 .ft-foot{font-size:11px;color:var(--sub);font-weight:600;margin-top:8px;font-family:var(--mono)}
-/* ══════════ DICA / RODAPÉ ══════════ */
+/* ══════ DICA / RODAPÉ ══════ */
 .tip{padding:15px 16px;display:flex;gap:12px;align-items:flex-start}
 .tip-ico{width:34px;height:34px;flex:none;border-radius:12px;background:rgba(0,122,140,.09);color:var(--teal);display:grid;place-items:center}
 .tip-ico svg{width:17px;height:17px}
@@ -212,7 +211,7 @@ button:active{transform:scale(.97)}
 .offline-note{text-align:center;font-size:11.5px;color:var(--sub);line-height:1.7}
 .offline-note b{color:var(--teal-deep)}
 .pwa-status{text-align:center;font-size:12px;font-weight:700;margin-top:2px}
-/* ══════════ SHEETS ══════════ */
+/* ══════ SHEETS ══════ */
 .scrim{position:fixed;inset:0;background:rgba(9,40,46,.45);z-index:60;opacity:0;visibility:hidden;transition:.35s}
 .scrim.show{opacity:1;visibility:visible}
 .sheet{position:fixed;left:50%;bottom:0;z-index:70;width:100%;max-width:430px;transform:translate(-50%,105%);visibility:hidden;pointer-events:none;background:#fff;border-radius:24px 24px 0 0;padding:8px 20px calc(22px + env(safe-area-inset-bottom));box-shadow:0 -12px 40px rgba(9,48,56,.18);transition:transform .44s cubic-bezier(.32,.72,.24,1),visibility 0s .44s;max-height:92dvh;overflow-y:auto;overscroll-behavior:contain}
@@ -284,7 +283,7 @@ button:active{transform:scale(.97)}
 .v-warn svg{width:17px;height:17px;color:#96521A;flex:none;margin-top:1px}
 .v-warn p{font-size:12.5px;line-height:1.5;color:#96521A;font-weight:600}
 .ins-icon{display:block;width:64px;height:64px;border-radius:16px;margin:0 auto 12px;box-shadow:var(--shadow)}
-/* ══════════ TOASTS ══════════ */
+/* ══════ TOASTS ══════ */
 .toasts{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:90;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none;width:min(430px,calc(100vw - 32px))}
 .toast{display:flex;align-items:center;gap:9px;max-width:100%;background:var(--ink);color:#fff;font-size:13px;font-weight:600;padding:11px 16px;border-radius:14px;opacity:0;transform:translateY(14px);transition:.35s}
 .toast svg{width:15px;height:15px;color:#4FE0AE;flex:none}
@@ -359,7 +358,7 @@ button:active{transform:scale(.97)}
 <div class="v-foot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 4.5 20.8 19.5H3.2Z"/><path d="M12 10.2v3.6"/><circle cx="12" cy="16.6" r=".9" fill="currentColor" stroke="none"/></svg><p><b>Regra de ouro:</b> desligue a bomba antes de girar. Toque no número da posição, toque na manopla ou arraste-a.</p></div>
 </section>
 
-<!-- ══════ LIMPEZA DE BORDAS · VINIL (só aparece com Vinil) ══════ -->
+<!-- ══════ LIMPEZA DE BORDAS · VINIL ══════ -->
 <div id="limpeza-bordas" style="background:#fff; border-radius:16px; padding:16px; box-shadow:0 2px 8px rgba(0,0,0,.08)">
   <h3 style="margin:0 0 8px; font-size:15px">🧽 Limpeza de Bordas · Vinil - 1× por semana</h3>
   <div style="font-size:13px; line-height:1.4; color:#333; display:flex; flex-direction:column; gap:8px">
@@ -369,29 +368,25 @@ button:active{transform:scale(.97)}
   </div>
 </div>
 
-<!-- ══════ POSIÇÃO DOS REGISTROS (manivelas clicáveis) ══════ -->
+<!-- ══════ POSIÇÃO DOS REGISTROS ══════ -->
 <div id="posicao-registros" style="background:#fff; border-radius:16px; padding:16px; box-shadow:0 2px 8px rgba(0,0,0,.08)">
   <h3 style="margin:0 0 12px; font-size:15px">🔧 Posição dos Registros</h3>
   <div style="display:flex; gap:12px; justify-content:space-between">
-
     <div class="reg" data-nome="dreno" onclick="gira(this)" style="text-align:center; flex:1; cursor:pointer">
       <div class="manivela" style="width:60px; height:60px; border-radius:50%; background:#8ca3ad; margin:0 auto; display:flex; align-items:center; justify-content:center; transition:0.35s; transform:rotate(90deg)"> <span style="width:40px; height:6px; background:white; border-radius:3px; display:block"></span> </div>
       <b style="font-size:12px; display:block; margin-top:6px">DRENO</b>
       <small class="status" style="font-size:11px">FECHADO</small>
     </div>
-
     <div class="reg" data-nome="skimmer" onclick="gira(this)" style="text-align:center; flex:1; cursor:pointer">
       <div class="manivela" style="width:60px; height:60px; border-radius:50%; background:#0fb98a; margin:0 auto; display:flex; align-items:center; justify-content:center; transition:0.35s; transform:rotate(0deg)"> <span style="width:40px; height:6px; background:white; border-radius:3px; display:block"></span> </div>
       <b style="font-size:12px; display:block; margin-top:6px">SKIMMER</b>
       <small class="status" style="font-size:11px">ABERTO</small>
     </div>
-
     <div class="reg" data-nome="aspiracao" onclick="gira(this)" style="text-align:center; flex:1; cursor:pointer">
       <div class="manivela" style="width:60px; height:60px; border-radius:50%; background:#0fb98a; margin:0 auto; display:flex; align-items:center; justify-content:center; transition:0.35s; transform:rotate(0deg)"> <span style="width:40px; height:6px; background:white; border-radius:3px; display:block"></span> </div>
       <b style="font-size:12px; display:block; margin-top:6px">ASPIRAÇÃO</b>
       <small class="status" style="font-size:11px">ABERTO</small>
     </div>
-
   </div>
   <div id="alerta-registros" style="margin-top:12px; padding:10px; border-radius:10px; background:#e6f7f0; font-size:12px; transition:0.3s">✅ Filtragem perfeita dia a dia. Skimmer puxa folhas de cima, aspiração do meio.</div>
   <div style="margin-top:10px; padding:10px; border-radius:10px; background:#fff8e1; font-size:12px; font-weight:700; color:#96521A">⚠️ Desligue a bomba antes de girar qualquer registro ou a manopla.</div>
@@ -448,7 +443,7 @@ button:active{transform:scale(.97)}
 <button class="btn primary" id="vsOk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Entendi</button>
 </section>
 
-<!-- ══════ SHEET: DIAGNÓSTICO PÓS-SULFATO ══════ -->
+<!-- ══════ SHEET: DIAGNÓSTICO ══════ -->
 <section class="sheet" id="diagSheet" role="dialog" aria-modal="true" aria-labelledby="dgTitle">
 <div class="grab-zone"><span class="grab"></span></div>
 <header class="sh-head"><span class="sh-ico red"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 4.5 20.8 19.5H3.2Z"/><path d="M12 10.2v3.6"/><circle cx="12" cy="16.6" r=".9" fill="currentColor" stroke="none"/></svg></span><div><h3 id="dgTitle">Diagnóstico</h3><p>Sulfato aplicado · água não clareou</p></div><button class="sh-close" id="dgClose" aria-label="Fechar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button></header>
@@ -524,7 +519,7 @@ function timeAgo(at){const d=Date.now()-at;if(d<6e4)return'agora';if(d<36e5)retu
 function toast(msg,warn){const b=document.createElement('div');b.className='toast'+(warn?' warn':'');b.innerHTML=(warn?ICONS.alert:ICONS.check)+'<span></span>';b.querySelector('span').textContent=msg;$('toasts').appendChild(b);requestAnimationFrame(()=>b.classList.add('show'));setTimeout(()=>{b.classList.remove('show');setTimeout(()=>b.remove(),400);},3200);}
 function renderOnline(){$('offbar').hidden=navigator.onLine;}
 window.addEventListener('offline',renderOnline);
-window.addEventListener('online',()=>{renderOnline();updateWeather();});
+window.addEventListener('online',()=>{renderOnline();try{updateWeather();}catch(e){}});
 
 /* ═══════════ CLIMA: WeatherAPI (cole sua key) → Open-Meteo ═══════════ */
 const WEATHER_API_KEY="";
@@ -566,7 +561,7 @@ function renderLit(){let t=0;LIT.forEach((L,i)=>{const p=L.a*L.b*litProf[i]*1000
 [0,1,2].forEach(i=>{$('litD'+i).value=litProf[i];$('litD'+i).addEventListener('input',e=>{const v=parseFloat(e.target.value);if(!Number.isNaN(v)&&v>0){litProf[i]=v;renderLit();}});$('litD'+i).addEventListener('change',()=>{try{localStorage.setItem('poolapp.lit',JSON.stringify(litProf));}catch(e){}});});
  $('litApply').addEventListener('click',()=>{const t=renderLit();setVolume(Math.max(1000,Math.round(t)));toast('Volume atualizado: '+nf0.format(state.volume)+' L');});
 
-/* ═══════════ TRATAMENTO ORIENTADO (3 etapas com bloqueios) ═══════════ */
+/* ═══════════ TRATAMENTO ORIENTADO ═══════════ */
 const SULFATO_PER_M3=20,SUPER_PER_1000L=28,CLAR_PER_M3=1.95,METAL_PER_M3=10;
 const sulfatoDose=()=>Math.round(SULFATO_PER_M3*m3());
 const superDose=()=>Math.round(SUPER_PER_1000L*state.volume/1000);
@@ -613,11 +608,10 @@ function closeDiag(){const s=$('diagSheet');if(!s.classList.contains('open'))ret
  $('dgClose').addEventListener('click',closeDiag);
  $('dgBack').addEventListener('click',()=>{$('diagResult').hidden=true;$('dgBack').hidden=true;$('diagOpts').style.display='';});
 
-/* ═══════════ REGISTROS — manivelas do Elias (clicáveis + salvas) ═══════════
-   Fonte da verdade = est (localStorage). O gira() lê o ESTADO, não o DOM.  */
+/* ═══════════ REGISTROS — manivelas do Elias ═══════════
+   Fonte da verdade = est (localStorage). gira() lê o ESTADO. */
 let est=JSON.parse(localStorage.getItem('poolapp_registros')||'{"dreno":"fechado","skimmer":"aberto","aspiracao":"aberto"}');
 
-/* pinta as manivelas a partir do estado salvo (sincroniza no reload) */
 function aplicarEstado(){
   ['dreno','skimmer','aspiracao'].forEach(function(n){
     var el=document.querySelector('.reg[data-nome="'+n+'"]');
@@ -630,7 +624,6 @@ function aplicarEstado(){
   });
 }
 
-/* gira um registro ao tocar */
 function gira(el){
   var nome=el.dataset.nome;
   var mani=el.querySelector('.manivela');
@@ -643,17 +636,14 @@ function gira(el){
   check();
 }
 
-/* analisa a combinação dos 3 registros e mostra alerta + dica */
 function check(){
   var d=est.dreno, s=est.skimmer, a=est.aspiracao;
   var box=document.getElementById('alerta-registros');
   var drenoCard=document.querySelector('.reg[data-nome="dreno"]');
   var msg='', cor='#e6f7f0', perigo=false, blink=false;
-
-  /* perigos primeiro */
   if(d=='aberto' && (s=='aberto' || a=='aberto')){
     msg='⚠️ VAI DRENAR! Você abriu o DRENO com Skimmer/Aspiração. A piscina vai esvaziar pro esgoto. Deixe só o DRENO aberto no modo DRENO (5).';
-    cor='#fde8e8'; perigo=true; blink=true;               /* dreno pisca vermelho */
+    cor='#fde8e8'; perigo=true; blink=true;
   }
   else if(d=='fechado' && s=='fechado' && a=='fechado'){
     msg='🛑 PERIGO BOMBA SEM ÁGUA! Abra pelo menos 1 registro ou a bomba queima!';
@@ -673,17 +663,10 @@ function check(){
     msg='💡 Skimmer sozinho bom pra folhas. Aspiração sozinha boa pra sujeira grossa.';
     cor='#fff8e1';
   }
-
   box.style.background=cor;
   box.innerText=msg;
-
-  /* slideDown a cada troca de mensagem */
   box.classList.remove('slide'); void box.offsetWidth; box.classList.add('slide');
-
-  /* animação: card do DRENO pisca vermelho no VAI DRENAR */
   if(drenoCard) drenoCard.classList.toggle('blink', blink);
-
-  /* vibração forte nos perigos */
   if(perigo && navigator.vibrate){ try{ navigator.vibrate([120,60,120]); }catch(e){} }
 }
 
@@ -767,8 +750,6 @@ function fromX(e){if(!currentKey)return;const p=PARAMS[currentKey],r=tBar.getBou
  $('shInput').addEventListener('blur',()=>{if(currentKey)$('shInput').value=state.values[currentKey];});
  $('shSave').addEventListener('click',()=>{if(!currentKey)return;const p=PARAMS[currentKey],v=state.values[currentKey];measures[currentKey]={v,at:Date.now()};persistMeasures();persist();updateCard(currentKey);renderTreat();renderFilterCard();$('shLast').textContent='Última medição: agora · '+new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});toast(p.label+' salvo · '+fmt(v,p.dec)+(p.unit?' '+p.unit:''));});
  $('shClose').addEventListener('click',closeSheet);
-scrim.addEventListener('click',()=>{closeSheet();closeValveSheet();closeDiag();closeInstallSheet();});
-document.addEventListener('keydown',e=>{if(e.key!=='Escape')return;if(sheet.classList.contains('open'))closeSheet();if($('valveSheet').classList.contains('open'))closeValveSheet();if($('diagSheet').classList.contains('open'))closeDiag();if($('installSheet').classList.contains('open'))closeInstallSheet();wPop.classList.remove('show');wChip.setAttribute('aria-expanded','false');});
 const grabZone=$('grabZone');let gy=null,gdy=0;
 grabZone.addEventListener('pointerdown',e=>{gy=e.clientY;gdy=0;grabZone.setPointerCapture(e.pointerId);sheet.style.transition='none';});
 grabZone.addEventListener('pointermove',e=>{if(gy===null)return;gdy=Math.max(0,e.clientY-gy);sheet.style.transform='translate(-50%,'+gdy+'px)';});
@@ -798,7 +779,7 @@ ph=(phv>=7&&phv<=7.4)?'<div class="ft-ph ok">pH '+phv.toLocaleString('pt-BR')+' 
 body.innerHTML='<div class="ft"><div class="ft-h"><strong>'+c.hours+'h</strong><span>por dia</span></div><div class="ft-i"><span class="badge '+c.bc+'"><i></i>'+c.label+'</span><div class="ft-split">'+c.split.map(s=>'<span>'+s+'</span>').join('')+'</div></div></div>'+ph+'<p class="ft-foot">Sugestão automática pelo clima · '+nf0.format(state.volume)+' L — não altera nenhum ajuste seu.</p>';
  $('ftBadge').className='badge '+c.bc;$('ftBadgeT').textContent=c.hours+'h/dia';}
 
-/* ═══════════ BORDAS VINIL — some se o tipo não for Vinil ═══════════ */
+/* ═══════════ BORDAS VINIL ═══════════ */
 function updateBorders(){const act=document.querySelector('#typePills .pill.active');const vinil=act?act.dataset.type==='vinil':true;$('limpeza-bordas').hidden=!vinil;}
 
 /* ═══════════ TIPO DE PISCINA ═══════════ */
@@ -850,26 +831,40 @@ function closeInstallSheet(){if(!installSheet.classList.contains('open'))return;
  $('insClose').addEventListener('click',closeInstallSheet);
  $('insOk').addEventListener('click',closeInstallSheet);
 
-/* ═══════════ INICIALIZAÇÃO ═══════════ */
+/* ═══════════ FECHAMENTO GLOBAL (no fim: tudo já existe aqui) ═══════════ */
+scrim.addEventListener('click',()=>{closeSheet();closeValveSheet();closeDiag();closeInstallSheet();});
+document.addEventListener('keydown',e=>{if(e.key!=='Escape')return;
+if(sheet.classList.contains('open'))closeSheet();
+if($('valveSheet').classList.contains('open'))closeValveSheet();
+if($('diagSheet').classList.contains('open'))closeDiag();
+if($('installSheet').classList.contains('open'))closeInstallSheet();
+wPop.classList.remove('show');wChip.setAttribute('aria-expanded','false');});
+
+/* ═══════════ INICIALIZAÇÃO — blindada ═══════════
+   Bloco 1: app. Bloco 2: clima+dicas SEMPRE tentam, mesmo se o 1 falhar. */
 (function init(){
-buildCards();
-document.querySelectorAll('.pill').forEach(p=>{const on=p.dataset.type===state.type;p.classList.toggle('active',on);p.setAttribute('aria-selected',on);});
-renderTip();
-volInput.value=state.volume;renderVol();
-renderLit();
-refreshAll();
-aplicarEstado();   /* registros: pinta as manivelas do estado salvo */
-check();           /* registros: primeiro alerta */
- $('todayLbl').textContent=new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'short'});
-vLever.classList.add('no-anim');leverAngle=VALVE_POS[valveIndex].angle;vLever.style.transform='rotate('+leverAngle+'deg)';void vLever.offsetHeight;requestAnimationFrame(()=>vLever.classList.remove('no-anim'));
-applyValveVisual();
-renderOnline();
-if(isStandalone())markInstalled();
-updateInstallUI();
-renderWeather();
-updateWeather();
-startWatch();
-setInterval(refreshWeather,600000);
+try{
+  buildCards();
+  document.querySelectorAll('.pill').forEach(p=>{const on=p.dataset.type===state.type;p.classList.toggle('active',on);p.setAttribute('aria-selected',on);});
+  renderTip();
+  volInput.value=state.volume;renderVol();
+  renderLit();
+  refreshAll();          /* cards + tratamento + filtragem + bordas */
+  aplicarEstado();       /* registros: manivelas do estado salvo */
+  check();               /* registros: primeiro alerta */
+  $('todayLbl').textContent=new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'short'});
+  vLever.classList.add('no-anim');leverAngle=VALVE_POS[valveIndex].angle;vLever.style.transform='rotate('+leverAngle+'deg)';void vLever.offsetHeight;requestAnimationFrame(()=>vLever.classList.remove('no-anim'));
+  applyValveVisual();
+  renderOnline();
+  if(isStandalone())markInstalled();
+  updateInstallUI();
+}catch(e){console.warn('[PoolApp] init parcial:',e);}
+try{
+  renderWeather();       /* pinta o último clima salvo + dicas imediatamente */
+  updateWeather();       /* busca clima novo */
+  startWatch();
+  setInterval(refreshWeather,600000);
+}catch(e){console.warn('[PoolApp] clima:',e);}
 })();
 </script>
 </body>
