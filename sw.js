@@ -1,10 +1,8 @@
-/* PoolApp Universal — Service Worker v7 (Elias costa NEGRET'S)
+/* PoolApp Universal — Service Worker v8 (Elias costa NEGRET'S)
    GitHub Pages (/Casa/): tudo relativo.
-   Navegação: NETWORK-FIRST (deploy novo aparece na hora; offline usa cache).
-   Estáticos: CACHE-FIRST com refresh em segundo plano.
-   APIs de clima (open-meteo / weatherapi): NÃO são cacheadas —
-   sempre direto da rede (o app guarda o último clima no localStorage). */
-const CACHE = 'poolapp-v7';
+   Navegação: NETWORK-FIRST. Estáticos: CACHE-FIRST com refresh.
+   APIs de clima: NUNCA cacheadas (fallback offline fica no localStorage). */
+const CACHE = 'poolapp-v8';
 const CORE = ['./', './index.html', './manifest.json'];
 const OPTIONAL = ['./icon-180.png','./icon-192.png','./icon-512.png','./icon-512-maskable.png','./favicon-32.png'];
 
@@ -32,10 +30,9 @@ self.addEventListener('fetch', (e) => {
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
 
-  /* APIs de clima: NUNCA cachear — deixa passar direto (o app tem o fallback no localStorage) */
+  /* APIs de clima: passa direto, sem cache */
   if (url.hostname === 'api.open-meteo.com' || url.hostname === 'api.weatherapi.com') return;
 
-  /* navegação: rede primeiro */
   if (req.mode === 'navigate') {
     e.respondWith(
       fetch(req).then((res) => {
@@ -54,7 +51,6 @@ self.addEventListener('fetch', (e) => {
     return;
   }
 
-  /* mesma origem: cache primeiro + refresh por baixo */
   if (url.origin === location.origin) {
     e.respondWith(
       caches.match(req).then((hit) => {
@@ -71,7 +67,6 @@ self.addEventListener('fetch', (e) => {
     return;
   }
 
-  /* outros cross-origin (Google Fonts etc.): rede primeiro, cache como reserva */
   e.respondWith(
     fetch(req).then((res) => {
       if (res && res.ok) {
