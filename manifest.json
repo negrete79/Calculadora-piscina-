@@ -2,7 +2,7 @@
   "id": "./",
   "name": "PoolApp Universal",
   "short_name": "PoolApp",
-  "description": "Tratamento e manutenção de piscina — pH, cloro, decantação e clima. Funciona offline.",
+  "description": "Tratamento e manutenção de piscina — pH, cloro, decantação, cor da água e clima. Funciona offline.",
   "lang": "pt-BR",
   "dir": "ltr",
   "start_url": "./index.html",
