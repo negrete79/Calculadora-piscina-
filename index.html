@@ -10,9 +10,70 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="PoolApp">
-<link rel="apple-touch-icon" href="./icon-180.png">
-<link rel="icon" href="./icon-180.png">
+<link rel="apple-touch-icon" sizes="180x180" href="./icon-180.png">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='112' fill='%23007A8C'/%3E%3Cpath fill='%23fff' d='M256 88c62 75 105 137 105 189a105 105 0 1 1-210 0c0-52 43-114 105-189Z'/%3E%3C/svg%3E">
 <link rel="manifest" href="./manifest.json">
+<script>
+/* ============================================================
+   MANIFEST DINÂMICO À PROVA DE FALHAS
+   Gera os ícones PNG em canvas e injeta um manifest via Blob.
+   O app é instalável SEM depender de arquivos no servidor.
+   ============================================================ */
+(function(){
+  window.__manifestReady = false;
+  try{
+    function drawIcon(size, maskable){
+      var c = document.createElement('canvas'); c.width = c.height = size;
+      var x = c.getContext('2d');
+      x.fillStyle = '#007A8C';
+      if(maskable){
+        x.fillRect(0, 0, size, size);
+      }else{
+        var r = size * 0.22;
+        x.beginPath();
+        x.moveTo(r,0); x.arcTo(size,0,size,size,r); x.arcTo(size,size,0,size,r);
+        x.arcTo(0,size,0,0,r); x.arcTo(0,0,size,0,r); x.closePath(); x.fill();
+      }
+      var s = maskable ? size * 0.22 : size * 0.30;
+      var cx = size/2, cy = size * 0.46;
+      x.fillStyle = '#fff';
+      x.beginPath();
+      x.moveTo(cx, cy - s);
+      x.bezierCurveTo(cx + s*0.58, cy - s*0.22, cx + s*0.66, cy + s*0.02, cx + s*0.66, cy + s*0.28);
+      x.arc(cx, cy + s*0.28, s*0.66, 0, Math.PI, false);
+      x.bezierCurveTo(cx - s*0.66, cy + s*0.02, cx - s*0.58, cy - s*0.22, cx, cy - s);
+      x.fill();
+      x.fillStyle = 'rgba(0,122,140,.28)';
+      x.beginPath(); x.arc(cx - s*0.22, cy + s*0.32, s*0.13, 0, 7); x.fill();
+      return c.toDataURL('image/png');
+    }
+    var scope = new URL('./', location.href).href;
+    var manifest = {
+      name: 'PoolApp Universal',
+      short_name: 'PoolApp',
+      description: 'Manutenção orientada de piscina de vinil, fibra e alvenaria — funciona 100% offline.',
+      lang: 'pt-BR', dir: 'ltr',
+      id: scope,
+      start_url: new URL('index.html', location.href).href,
+      scope: scope,
+      display: 'standalone',
+      orientation: 'portrait',
+      background_color: '#F2F7F8',
+      theme_color: '#0f5f6e',
+      icons: [
+        { src: drawIcon(192, false), sizes: '192x192', type: 'image/png', purpose: 'any' },
+        { src: drawIcon(512, false), sizes: '512x512', type: 'image/png', purpose: 'any' },
+        { src: drawIcon(512, true),  sizes: '512x512', type: 'image/png', purpose: 'maskable' }
+      ]
+    };
+    var blob = new Blob([JSON.stringify(manifest)], { type: 'application/manifest+json' });
+    var link = document.querySelector('link[rel="manifest"]');
+    if(!link){ link = document.createElement('link'); link.rel = 'manifest'; document.head.appendChild(link); }
+    link.href = URL.createObjectURL(blob);
+    window.__manifestReady = true;
+  }catch(e){ /* falhou? o manifest.json estático do servidor continua valendo */ }
+})();
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@500;600;700&display=swap" rel="stylesheet">
@@ -25,53 +86,67 @@
   --mono:'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-button{font-family:inherit;color:inherit;background:none;border:none;cursor:pointer}
-button:focus-visible,input:focus-visible,summary:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+button{font-family:inherit;color:inherit;background:none;border:none;cursor:pointer;touch-action:manipulation}
+button:focus-visible,input:focus-visible,a:focus-visible,summary:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+html{scroll-behavior:smooth}
+html,body{overflow-x:clip}
+@supports not (overflow:clip){html,body{overflow-x:hidden}}
 body{
   font-family:'Hanken Grotesk',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
   background:var(--bg);
   background-image:radial-gradient(rgba(3,90,103,.055) 1px, transparent 1px);
   background-size:22px 22px;
   color:var(--ink); min-height:100vh;
+  -webkit-text-size-adjust:100%; text-size-adjust:100%;
 }
-#app{max-width:430px;margin:0 auto;padding:calc(12px + env(safe-area-inset-top)) 16px calc(30px + env(safe-area-inset-bottom))}
+#app{max-width:430px;margin:0 auto;padding:calc(12px + env(safe-area-inset-top)) 16px calc(96px + env(safe-area-inset-bottom))}
+section[id],header[id]{scroll-margin-top:12px}
 .mono{font-family:var(--mono)}
-small{font-weight:500}
 
 /* ---------- Header ---------- */
 header.top{display:flex;align-items:center;gap:12px;padding:6px 2px 16px}
 .logo{width:46px;height:46px;border-radius:15px;background:var(--teal);display:grid;place-items:center;box-shadow:0 8px 18px rgba(0,122,140,.32);flex:none}
+.tt{min-width:0}
 .tt h1{font-size:17px;font-weight:800;letter-spacing:-.01em}
 .tt p{font-size:12.5px;font-weight:600;color:rgba(13,48,56,.55)}
-#installBtn{margin-left:auto;display:flex;align-items:center;gap:6px;background:var(--deep);color:#fff;font-weight:700;font-size:12.5px;padding:9px 14px;border-radius:999px;box-shadow:0 6px 14px rgba(3,90,103,.3);transition:transform .15s}
+#installBtn{margin-left:auto;display:flex;align-items:center;gap:6px;background:var(--deep);color:#fff;font-weight:700;font-size:12.5px;padding:9px 14px;border-radius:999px;box-shadow:0 6px 14px rgba(3,90,103,.3);transition:transform .15s;flex:none}
 #installBtn:active{transform:scale(.94)}
+#installBtn[hidden]{display:none}
 
 /* ---------- Cards ---------- */
 .card{background:var(--card);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid var(--line);border-radius:24px;box-shadow:var(--shadow);padding:16px;margin-bottom:14px}
-.shead{display:flex;align-items:center;gap:9px;margin-bottom:12px}
+.shead{display:flex;align-items:center;gap:9px;margin-bottom:12px;min-width:0}
 .sic{width:30px;height:30px;border-radius:10px;background:rgba(0,122,140,.1);color:var(--teal);display:grid;place-items:center;flex:none}
-.shead h2{font-size:12.5px;font-weight:800;letter-spacing:.07em;text-transform:uppercase}
-.chip{margin-left:auto;font-size:10.5px;font-weight:700;background:rgba(13,48,56,.06);color:rgba(13,48,56,.65);padding:4px 10px;border-radius:999px;white-space:nowrap}
+.shead h2{font-size:12.5px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;min-width:0}
+.chip{margin-left:auto;font-size:10.5px;font-weight:700;background:rgba(13,48,56,.06);color:rgba(13,48,56,.65);padding:4px 10px;border-radius:999px;white-space:nowrap;flex:none}
 .chip.net{display:flex;align-items:center;gap:5px}
 .chip.net i{width:7px;height:7px;border-radius:50%;background:var(--mint)}
 .chip.net.off i{background:#8ca3ad}
+.chipbtn{cursor:pointer;transition:background .2s,transform .12s}
+.chipbtn:active{transform:scale(.93)}
 
-/* ---------- Pills / volume ---------- */
-.pills{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
-.pill{padding:9px 16px;border-radius:999px;background:rgba(13,48,56,.05);font-weight:700;font-size:13.5px;transition:all .2s}
+/* ---------- Rótulos + pílulas ---------- */
+.flabel{font-size:11px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:rgba(13,48,56,.5);margin:2px 0 8px}
+.flabel.mt{margin-top:16px}
+.pgrid2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:4px}
+.pill{width:100%;display:flex;align-items:center;justify-content:center;gap:7px;padding:10px 8px;border-radius:999px;background:rgba(13,48,56,.05);font-weight:700;font-size:13px;transition:all .2s;min-width:0}
+.pill svg{flex:none}
 .pill.on{background:var(--teal);color:#fff;box-shadow:0 6px 14px rgba(0,122,140,.3)}
-.stepper{display:flex;align-items:center;gap:10px}
-.stbtn{width:44px;height:44px;flex:none;border-radius:14px;background:rgba(13,48,56,.05);display:grid;place-items:center;transition:transform .12s;color:var(--deep)}
+
+/* ---------- Volume ---------- */
+.stepper{display:grid;grid-template-columns:52px 1fr 52px;gap:10px;align-items:center}
+.stbtn{width:52px;height:50px;border-radius:14px;background:rgba(13,48,56,.05);display:grid;place-items:center;transition:transform .12s;color:var(--deep)}
 .stbtn:active{transform:scale(.9)}
-#volInput{flex:1;min-width:0;height:48px;text-align:center;font-family:var(--mono);font-weight:700;font-size:16px;color:var(--ink);background:rgba(13,48,56,.04);border:1.5px solid transparent;border-radius:14px}
+#volInput{width:100%;min-width:0;height:50px;text-align:center;font-family:var(--mono);font-weight:700;font-size:16px;color:var(--ink);background:rgba(13,48,56,.04);border:1.5px solid transparent;border-radius:14px}
 #volInput:focus{border-color:var(--teal);background:#fff}
 #volLive{text-align:center;font-family:var(--mono);font-size:13px;font-weight:600;color:var(--teal);margin-top:10px}
 .hint{font-size:12px;font-weight:500;color:rgba(13,48,56,.55);margin-top:8px;line-height:1.5}
 
 /* ---------- Litragem ---------- */
-details.litro summary{list-style:none;display:flex;align-items:center;gap:9px;cursor:pointer}
+details.litro summary{list-style:none;display:flex;align-items:center;gap:9px;cursor:pointer;min-width:0}
 details.litro summary::-webkit-details-marker{display:none}
-details.litro summary .chev{margin-left:auto;transition:transform .25s;color:rgba(13,48,56,.5)}
+.summary-title{font-size:12.5px;font-weight:800;letter-spacing:.07em;text-transform:uppercase}
+details.litro summary .chev{margin-left:auto;transition:transform .25s;color:rgba(13,48,56,.5);flex:none}
 details.litro[open] summary .chev{transform:rotate(180deg)}
 .litro-box{margin-top:14px;display:flex;flex-direction:column;gap:12px}
 .lrow{background:rgba(13,48,56,.035);border-radius:16px;padding:10px 12px}
@@ -79,7 +154,7 @@ details.litro[open] summary .chev{transform:rotate(180deg)}
 .lins{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
 .lins input{width:62px;height:36px;text-align:center;font-family:var(--mono);font-size:16px;font-weight:600;border:1.5px solid rgba(13,48,56,.12);border-radius:10px;background:#fff;color:var(--ink)}
 .lins input:focus{border-color:var(--teal)}
-.lins .x{color:rgba(13,48,56,.4);font-weight:700;font-size:12px}
+.lins .sep{color:rgba(13,48,56,.4);font-weight:700;font-size:12px}
 .lout{margin-left:auto;font-family:var(--mono);font-size:13px;font-weight:700;color:var(--teal);white-space:nowrap}
 .ltotal{display:flex;justify-content:space-between;align-items:center;padding:2px 4px;font-weight:800;font-size:14px}
 .ltotal b{font-family:var(--mono);font-size:16px;color:var(--deep)}
@@ -95,16 +170,16 @@ details.litro[open] summary .chev{transform:rotate(180deg)}
 .valve{position:relative;width:min(300px,100%);aspect-ratio:1}
 .valve-body{position:absolute;inset:16%;border-radius:50%;background:#fff;border:1px solid var(--line);
   box-shadow:var(--shadow), inset 0 -10px 20px rgba(3,90,103,.07), inset 0 5px 12px rgba(255,255,255,.95)}
-.vticks,.vticksM{position:absolute;border-radius:50%;pointer-events:none}
-.vticks{inset:18%;background:repeating-conic-gradient(rgba(13,48,56,.14) 0 .8deg, transparent .8deg 6deg);
-  -webkit-mask:radial-gradient(closest-side,transparent 88%,#000 89%);mask:radial-gradient(closest-side,transparent 88%,#000 89%)}
-.vticksM{inset:18%;background:repeating-conic-gradient(from -1.2deg, rgba(0,122,140,.4) 0 2.4deg, transparent 2.4deg 60deg);
-  -webkit-mask:radial-gradient(closest-side,transparent 84%,#000 85%);mask:radial-gradient(closest-side,transparent 84%,#000 85%)}
-.vpos{position:absolute;inset:0;transform:rotate(var(--a));pointer-events:none}
-.vpos-in{position:absolute;left:50%;top:6.5%;transform:translate(-50%,-50%) rotate(calc(var(--a) * -1));display:flex;flex-direction:column;align-items:center;gap:2px;pointer-events:auto}
-.vpos .num{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-family:var(--mono);font-weight:600;font-size:13px;background:rgba(13,48,56,.06);border:1.5px solid transparent;transition:all .25s;color:var(--ink)}
+.vticks,.vticksM{position:absolute;inset:15%;border-radius:50%;pointer-events:none;
+  -webkit-mask:radial-gradient(closest-side,transparent 94%,#000 95%);
+  mask:radial-gradient(closest-side,transparent 94%,#000 95%)}
+.vticks{background:repeating-conic-gradient(rgba(13,48,56,.14) 0 .8deg, transparent .8deg 6deg)}
+.vticksM{background:repeating-conic-gradient(from -1.2deg, rgba(0,122,140,.4) 0 2.4deg, transparent 2.4deg 60deg)}
+.vpos{position:absolute;inset:13%;transform:rotate(var(--a));pointer-events:none;background:none;border:none;padding:0}
+.vpos-in{position:absolute;left:50%;top:0;transform:translate(-50%,-50%) rotate(calc(var(--a) * -1));display:flex;flex-direction:column;align-items:center;gap:2px;pointer-events:auto}
+.vpos .num{width:29px;height:29px;border-radius:50%;display:grid;place-items:center;font-family:var(--mono);font-weight:600;font-size:12.5px;background:rgba(13,48,56,.06);border:1.5px solid transparent;transition:all .25s;color:var(--ink)}
 .vpos.active .num{background:var(--teal);color:#fff;border-color:var(--teal);box-shadow:0 5px 12px rgba(0,122,140,.4)}
-.vpos .lbl{font-size:8.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:rgba(13,48,56,.5);white-space:nowrap;transition:color .25s}
+.vpos .lbl{white-space:normal;width:78px;font-size:8.5px;line-height:1.15;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:rgba(13,48,56,.5);text-align:center;transition:color .25s}
 .vpos.active .lbl{color:var(--teal)}
 .handle{position:absolute;left:50%;top:50%;width:46%;aspect-ratio:1;transform:translate(-50%,-50%);touch-action:none;cursor:grab;z-index:3}
 .handle:active{cursor:grabbing}
@@ -114,8 +189,31 @@ details.litro[open] summary .chev{transform:rotate(180deg)}
 .pom{position:absolute;left:50%;top:10%;transform:translate(-50%,-50%);width:30px;height:30px;border-radius:50%;background:#fff;border:5px solid var(--deep);box-shadow:0 4px 10px rgba(3,90,103,.3)}
 .hub{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:40px;height:40px;border-radius:50%;background:#fff;border:2px solid rgba(3,90,103,.22);display:grid;place-items:center;box-shadow:0 4px 12px rgba(3,90,103,.15)}
 .hub i{width:11px;height:11px;border-radius:50%;background:var(--teal)}
-#valveBadge{display:flex;align-items:center;gap:7px;margin:12px auto 4px;padding:10px 20px;border-radius:999px;font-weight:800;font-size:14px;letter-spacing:.03em;transition:all .3s}
+#valveBadge{display:flex;align-items:center;gap:7px;margin:12px auto 4px;padding:10px 20px;border-radius:999px;font-weight:800;font-size:14px;letter-spacing:.03em;transition:all .3s;width:fit-content}
+#valveBadge.pulse{animation:badgePulse .45s cubic-bezier(.34,1.4,.5,1)}
+@keyframes badgePulse{0%{transform:scale(.9)}55%{transform:scale(1.06)}100%{transform:scale(1)}}
 .vhint{text-align:center;font-size:11.5px;font-weight:500;color:rgba(13,48,56,.5)}
+.vtip{display:flex;align-items:center;gap:10px;margin-top:10px;width:100%;text-align:left;
+  background:rgba(13,48,56,.035);border:1.5px solid rgba(13,48,56,.08);
+  border-left:4px solid var(--tc,#007A8C);
+  border-radius:16px;padding:11px 13px;cursor:pointer}
+.vtip:active{transform:scale(.98)}
+.vtip.in{animation:tipIn .5s cubic-bezier(.22,1.3,.36,1)}
+@keyframes tipIn{0%{opacity:0;transform:translateY(14px) scale(.96)}60%{opacity:1}100%{opacity:1;transform:none}}
+.vtip-ico{font-size:19px;flex:none;animation:icoSwing 2.4s ease-in-out infinite}
+@keyframes icoSwing{0%,100%{transform:rotate(-8deg)}50%{transform:rotate(10deg)}}
+.vtip-txt{flex:1;min-width:0;font-size:12.5px;font-weight:600;line-height:1.45;color:rgba(13,48,56,.85)}
+.vtip-count{flex:none;font-family:var(--mono);font-size:10.5px;font-weight:700;color:rgba(13,48,56,.4)}
+.flowbox{background:rgba(13,48,56,.035);border-radius:16px;padding:12px 10px 8px;margin-bottom:12px}
+.flowbox svg{width:100%;height:auto;display:block}
+.fpipe{stroke:#c9dee3;stroke-width:5;stroke-linecap:round}
+.fwater{stroke:#007A8C;stroke-width:5;stroke-linecap:round;stroke-dasharray:7 7;animation:flowDash 1.1s linear infinite}
+@keyframes flowDash{to{stroke-dashoffset:-28}}
+.fimp{animation:fspin 1.4s linear infinite;transform-origin:30px 40px}
+@keyframes fspin{to{transform:rotate(360deg)}}
+.flbl{font-family:var(--mono);font-size:8px;font-weight:600;fill:rgba(13,48,56,.55);letter-spacing:.06em;text-transform:uppercase}
+.flowcap{font-size:11px;font-weight:600;color:rgba(13,48,56,.55);text-align:center;margin-top:4px}
+.mtit{font-size:11px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--deep);margin:14px 0 8px}
 
 /* ---------- Limpeza ---------- */
 .cleans{display:flex;flex-direction:column;gap:10px}
@@ -124,7 +222,7 @@ details.litro[open] summary .chev{transform:rotate(180deg)}
 
 /* ---------- Registros ---------- */
 .regs{display:flex;gap:10px}
-.reg{flex:1;background:rgba(13,48,56,.03);border:1.5px solid transparent;border-radius:18px;padding:12px 4px 10px;display:flex;flex-direction:column;align-items:center;gap:8px;transition:border-color .35s}
+.reg{flex:1;background:rgba(13,48,56,.03);border:1.5px solid transparent;border-radius:18px;padding:12px 4px 10px;display:flex;flex-direction:column;align-items:center;gap:8px;transition:border-color .35s,background-color .35s}
 .reg:active{transform:scale(.97)}
 .reg-circle{width:60px;height:60px;border-radius:50%;display:grid;place-items:center;transition:background-color .35s,box-shadow .35s}
 .reg-circle .bar{width:27px;height:8px;border-radius:4px;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25);transition:transform .35s cubic-bezier(.34,1.4,.5,1)}
@@ -133,29 +231,33 @@ details.litro[open] summary .chev{transform:rotate(180deg)}
 .reg.open .bar{transform:rotate(0deg)}
 .reg.closed .bar{transform:rotate(90deg)}
 .reg b{font-size:10px;font-weight:800;letter-spacing:.05em}
-.reg span{font-family:var(--mono);font-size:11px;font-weight:600}
-.reg.open span{color:#128a63}
-.reg.closed span{color:#6b8290}
+.reg .st{font-family:var(--mono);font-size:11px;font-weight:600}
+.reg.open .st{color:#128a63}
+.reg.closed .st{color:#6b8290}
 .alerta{margin-top:12px;padding:12px 14px;border-radius:14px;font-size:13.5px;font-weight:700;line-height:1.45;transition:all .3s}
 .a-ok{background:rgba(47,191,143,.14);color:#157a56}
 .a-info{background:rgba(0,122,140,.1);color:var(--deep)}
-.a-drenar{background:rgba(214,69,69,.1);color:var(--red)}
+.a-drenar{background:#fdeaea;color:var(--red);border:1.5px solid rgba(214,69,69,.45);animation:blinkRed 1.1s infinite}
 .a-perigo{background:#fdeaea;color:var(--red);border:1.5px solid rgba(214,69,69,.4);animation:blinkRed 1s infinite}
 @keyframes blinkRed{0%,100%{background:#fdeaea}50%{background:#f6bcbc}}
+.reg.danger{border-color:rgba(214,69,69,.6);background:rgba(214,69,69,.07)}
+.reg.danger b,.reg.danger .st{color:var(--red)}
+.reg.danger .reg-circle{background:#D64545;box-shadow:0 6px 16px rgba(214,69,69,.4);animation:regDanger 1.2s infinite}
+@keyframes regDanger{0%{box-shadow:0 0 0 0 rgba(214,69,69,.5)}70%{box-shadow:0 0 0 14px rgba(214,69,69,0)}100%{box-shadow:0 0 0 0 rgba(214,69,69,0)}}
 .a-note{margin-top:8px;background:rgba(226,135,67,.16);color:#96551f;padding:11px 14px;border-radius:14px;font-size:13px;font-weight:700}
 
 /* ---------- Parâmetros ---------- */
 .pgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.pcard{background:rgba(255,255,255,.92);border:1px solid var(--line);border-radius:18px;padding:12px;display:flex;flex-direction:column;gap:8px;box-shadow:0 4px 12px rgba(3,90,103,.06);transition:transform .15s;text-align:left}
+.pcard{background:rgba(255,255,255,.92);border:1px solid var(--line);border-radius:18px;padding:12px;display:flex;flex-direction:column;gap:8px;box-shadow:0 4px 12px rgba(3,90,103,.06);transition:transform .15s;text-align:left;min-width:0}
 .pcard:active{transform:scale(.97)}
 .pcard.wide{grid-column:span 2}
 .pcard .ph{display:flex;align-items:center;justify-content:space-between;gap:6px}
 .pcard .ph b{font-size:12.5px;font-weight:800}
-.badge{font-size:10px;font-weight:800;padding:3px 9px;border-radius:999px;color:#fff}
-.pval{font-family:var(--mono);font-size:26px;font-weight:700;line-height:1;color:var(--ink)}
+.badge{font-size:10px;font-weight:800;padding:3px 9px;border-radius:999px;color:#fff;white-space:nowrap}
+.pval{display:block;font-family:var(--mono);font-size:26px;font-weight:700;line-height:1;color:var(--ink)}
 .pval i{font-style:normal;font-size:12px;font-weight:600;color:rgba(13,48,56,.5);margin-left:3px}
-.pideal{font-size:10.5px;font-weight:600;color:rgba(13,48,56,.5)}
-.pbar{position:relative;height:6px;border-radius:3px;background:rgba(13,48,56,.08);margin-top:2px}
+.pideal{display:block;font-size:10.5px;font-weight:600;color:rgba(13,48,56,.5)}
+.pbar{position:relative;display:block;height:6px;border-radius:3px;background:rgba(13,48,56,.08);margin-top:2px}
 .pzone{position:absolute;top:0;height:100%;border-radius:3px;background:rgba(47,191,143,.45)}
 .pknob{position:absolute;top:50%;transform:translate(-50%,-50%);width:14px;height:14px;border-radius:50%;background:#fff;border:3.5px solid currentColor;box-shadow:0 2px 6px rgba(13,48,56,.3)}
 
@@ -169,25 +271,32 @@ details.litro[open] summary .chev{transform:rotate(180deg)}
 .ts-n{width:28px;height:28px;flex:none;border-radius:9px;background:var(--deep);color:#fff;display:grid;place-items:center;font-weight:700;font-size:13px}
 .ts-head b{font-size:14px;font-weight:800;display:block}
 .ts-head small{font-size:11px;font-weight:600;color:rgba(13,48,56,.5)}
-.ts-badge{margin-left:auto;font-size:10px;font-weight:800;padding:4px 10px;border-radius:999px;white-space:nowrap}
+.ts-badge{margin-left:auto;font-size:10px;font-weight:800;padding:4px 10px;border-radius:999px;white-space:nowrap;flex:none}
 .ts-badge.okb{background:rgba(47,191,143,.16);color:#157a56}
 .ts-badge.tob{background:rgba(226,135,67,.16);color:#96551f}
 .ts-badge.rb{background:rgba(214,69,69,.12);color:var(--red)}
 .ts-body{font-size:13px;font-weight:600;line-height:1.5;color:rgba(13,48,56,.8);margin-top:6px}
 .ts-body .dose{display:flex;gap:8px;align-items:flex-start;padding:9px 11px;border-radius:12px;background:rgba(226,135,67,.1);margin-top:8px}
-.ts-body .dose b{color:var(--ink)}
 .ts-body .dose.ok{background:rgba(47,191,143,.12)}
 .ts-body .dose small{display:block;font-weight:500;color:rgba(13,48,56,.55)}
 .ts-body .btn{margin-top:10px}
 
+/* ---------- Água colorida & manchas / segurança ---------- */
+.aqbtns{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+.rules{display:flex;flex-direction:column;gap:8px}
+.rule{display:flex;gap:10px;align-items:flex-start;background:rgba(13,48,56,.035);border-radius:14px;padding:11px 12px;font-size:13px;font-weight:600;line-height:1.45}
+.rule.r-danger{background:#fdeaea;color:var(--red);font-weight:800}
+
 /* ---------- Clima ---------- */
-.wchip{width:100%;display:flex;align-items:center;gap:10px;background:rgba(13,48,56,.04);border-radius:16px;padding:12px 14px;text-align:left}
-.w-emoji{font-size:26px;line-height:1}
-.w-temp{font-size:22px;font-weight:700}
-.w-city{font-size:13px;font-weight:700;color:rgba(13,48,56,.65)}
-.w-chev{margin-left:auto;color:rgba(13,48,56,.45);transition:transform .25s}
+.wref{margin-left:0;display:grid;place-items:center;padding:0;width:28px;height:24px;color:var(--deep)}
+.wref:active{transform:scale(.9)}
+#wRefresh:disabled{opacity:.4;pointer-events:none}
+.wchip{width:100%;display:flex;align-items:center;gap:10px;background:rgba(13,48,56,.04);border-radius:16px;padding:12px 14px;text-align:left;min-width:0}
+.w-emoji{font-size:26px;line-height:1;flex:none}
+.w-temp{font-size:22px;font-weight:700;flex:none}
+.w-city{font-size:13px;font-weight:700;color:rgba(13,48,56,.65);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.w-chev{margin-left:auto;color:rgba(13,48,56,.45);transition:transform .25s;flex:none}
 .wchip.open .w-chev{transform:rotate(180deg)}
-.wdetail{overflow:hidden}
 .wd-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:10px}
 .wd-grid div{background:rgba(13,48,56,.035);border-radius:12px;padding:9px 10px}
 .wd-grid small{display:block;font-size:10.5px;font-weight:700;color:rgba(13,48,56,.5);margin-bottom:3px}
@@ -196,7 +305,7 @@ details.litro[open] summary .chev{transform:rotate(180deg)}
 .w-src{margin-top:8px;font-size:11px;font-weight:600;color:rgba(13,48,56,.45)}
 .wfilter{margin-top:12px;padding-top:12px;border-top:1px dashed rgba(13,48,56,.15);display:flex;align-items:center;gap:14px}
 .wf-l small{display:block;font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:rgba(13,48,56,.5)}
-.wf-l b{font-family:var(--mono);font-size:32px;font-weight:700;color:var(--teal);line-height:1.15}
+.wf-l b{font-family:var(--mono);font-size:32px;font-weight:700;color:var(--teal);line-height:1.15;white-space:nowrap}
 #wNote{font-size:12.5px;font-weight:600;line-height:1.5;color:rgba(13,48,56,.7)}
 
 /* ---------- Dica / rodapé ---------- */
@@ -204,6 +313,20 @@ details.litro[open] summary .chev{transform:rotate(180deg)}
 .tip .tic{color:#128a63;flex:none;margin-top:1px}
 .tip p{font-size:13px;font-weight:600;line-height:1.55;color:#0d5c40}
 .foot{margin-top:14px;text-align:center;font-size:11px;font-weight:600;color:rgba(13,48,56,.4);line-height:1.6}
+
+/* ---------- Barra inferior ---------- */
+.bnav{position:fixed;left:50%;transform:translateX(-50%);bottom:0;width:100%;max-width:430px;z-index:120;
+  background:rgba(255,255,255,.92);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  border:1px solid var(--line);border-bottom:none;border-radius:20px 20px 0 0;
+  display:flex;padding:7px 4px calc(7px + env(safe-area-inset-bottom));
+  box-shadow:0 -10px 28px rgba(3,90,103,.14)}
+.bnav a{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:3px;
+  padding:4px 0 2px;font-size:9px;font-weight:800;letter-spacing:.02em;
+  color:rgba(13,48,56,.48);text-decoration:none;border-radius:12px;transition:color .2s}
+.bnav a .bic{width:36px;height:26px;border-radius:10px;display:grid;place-items:center;transition:background .2s}
+.bnav a.on{color:var(--deep)}
+.bnav a.on .bic{background:rgba(0,122,140,.13)}
+.bnav a:active{transform:scale(.94)}
 
 /* ---------- Sheet ---------- */
 .sback{position:fixed;inset:0;background:rgba(13,48,56,.4);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);z-index:140;opacity:0;transition:opacity .3s}
@@ -213,21 +336,19 @@ details.litro[open] summary .chev{transform:rotate(180deg)}
 .sh-grab{width:40px;height:4.5px;border-radius:3px;background:rgba(13,48,56,.18);margin:4px auto 10px;flex:none}
 .sh-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px;flex:none}
 .sh-head h3{font-size:17px;font-weight:800}
-.sh-x{width:32px;height:32px;border-radius:50%;background:rgba(13,48,56,.06);display:grid;place-items:center;color:rgba(13,48,56,.6)}
+.sh-x{width:32px;height:32px;border-radius:50%;background:rgba(13,48,56,.06);display:grid;place-items:center;color:rgba(13,48,56,.6);flex:none}
 .sh-body{overflow-y:auto;-webkit-overflow-scrolling:touch}
 .sh-intro{font-size:13px;font-weight:600;color:rgba(13,48,56,.65);line-height:1.5;margin-bottom:12px}
-
-/* Sheet de medição */
 .m-now{display:flex;align-items:center;gap:10px;background:rgba(13,48,56,.04);border-radius:14px;padding:12px 14px;margin-bottom:12px}
 .m-now span{font-size:12px;font-weight:700;color:rgba(13,48,56,.55)}
 .m-now b{font-family:var(--mono);font-size:22px;font-weight:700;margin-left:auto}
 .m-now b i{font-style:normal;font-size:12px;color:rgba(13,48,56,.5)}
-.m-track{position:relative;height:12px;border-radius:6px;background:rgba(13,48,56,.08);margin:4px 2px 6px}
+.m-track{position:relative;display:block;height:12px;border-radius:6px;background:rgba(13,48,56,.08);margin:4px 2px 6px}
 .m-zone{position:absolute;top:0;height:100%;border-radius:6px;background:rgba(47,191,143,.45)}
 .m-knob{position:absolute;top:50%;transform:translate(-50%,-50%);width:22px;height:22px;border-radius:50%;background:#fff;border:5px solid currentColor;box-shadow:0 3px 8px rgba(13,48,56,.3)}
 .m-lab{display:block;font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:rgba(13,48,56,.5);margin:12px 0 6px}
 .m-row{display:flex;gap:12px;align-items:center}
-.m-row input[type=range]{flex:1;accent-color:var(--teal);height:34px}
+.m-row input[type=range]{flex:1;min-width:0;accent-color:var(--teal);height:34px}
 .m-row input[type=number]{width:96px;height:44px;text-align:center;font-family:var(--mono);font-size:16px;font-weight:700;border:1.5px solid rgba(13,48,56,.15);border-radius:12px;color:var(--ink)}
 .m-row input[type=number]:focus{border-color:var(--teal)}
 .m-dose{margin-top:14px;border-radius:14px;padding:12px 14px;font-size:13px;font-weight:600;line-height:1.55}
@@ -236,15 +357,13 @@ details.litro[open] summary .chev{transform:rotate(180deg)}
 .m-dose.t-warn{background:rgba(214,69,69,.1);color:var(--red)}
 .m-dose small{display:block;font-weight:500;opacity:.8}
 .m-save{margin-top:14px}
-
-/* Sheet válvula / diagnóstico */
 .vs-sum{font-size:13.5px;font-weight:600;line-height:1.55;color:rgba(13,48,56,.8);margin-bottom:12px}
 .vs-step{display:flex;gap:10px;align-items:flex-start;background:rgba(13,48,56,.035);border-radius:13px;padding:11px 12px;margin-bottom:8px;font-size:13px;font-weight:600;line-height:1.45}
 .vs-step .n{font-family:var(--mono);font-weight:700;color:var(--teal);flex:none}
 .vs-warn{display:flex;gap:9px;align-items:center;background:rgba(214,69,69,.1);color:var(--red);border-radius:13px;padding:11px 13px;font-size:13px;font-weight:800;margin-top:4px}
 .diag{border:1.5px solid rgba(13,48,56,.1);border-radius:15px;margin-bottom:9px;overflow:hidden}
 .diag-t{width:100%;display:flex;align-items:center;gap:8px;justify-content:space-between;padding:13px 14px;font-size:14px;font-weight:800;text-align:left}
-.diag-t svg{transition:transform .25s;color:rgba(13,48,56,.45)}
+.diag-t svg{transition:transform .25s;color:rgba(13,48,56,.45);flex:none}
 .diag.open .diag-t svg{transform:rotate(180deg)}
 .diag-b{padding:0 14px 13px;font-size:13px;font-weight:600;line-height:1.5;color:rgba(13,48,56,.8)}
 .diag-b li{margin:0 0 8px 16px}
@@ -253,7 +372,7 @@ details.litro[open] summary .chev{transform:rotate(180deg)}
 .ios-note{background:rgba(0,122,140,.08);border-radius:13px;padding:11px 13px;font-size:12.5px;font-weight:600;color:var(--deep);line-height:1.5}
 
 /* ---------- Toasts ---------- */
-#toasts{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(18px + env(safe-area-inset-bottom));z-index:220;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none;width:100%;max-width:430px;padding:0 16px}
+#toasts{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(88px + env(safe-area-inset-bottom));z-index:220;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none;width:100%;max-width:430px;padding:0 16px}
 .toast{background:var(--ink);color:#fff;padding:11px 18px;border-radius:999px;font-size:13px;font-weight:700;box-shadow:0 10px 26px rgba(13,48,56,.32);opacity:0;transform:translateY(14px);transition:all .3s;max-width:100%;text-align:center}
 .toast.show{opacity:1;transform:none}
 .toast.ok{background:#1d9d73}
@@ -262,6 +381,22 @@ details.litro[open] summary .chev{transform:rotate(180deg)}
 
 input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
 input[type=number]{-moz-appearance:textfield;appearance:textfield}
+
+@media (max-width:379px){
+  .vpos .lbl{width:66px;font-size:8px}
+  .vpos .num{width:26px;height:26px;font-size:11.5px}
+  .card{padding:14px;border-radius:20px}
+  .lins input{width:54px}
+  .pval{font-size:22px}
+  .regs b{font-size:9px}
+  .w-temp{font-size:19px}
+  .bnav a{font-size:8px}
+  .bnav a .bic{width:32px}
+  .pill{font-size:12px}
+}
+@media (min-width:520px){
+  #app{padding-top:24px}
+}
 </style>
 </head>
 <body>
@@ -276,47 +411,63 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
       <h1>PoolApp Universal</h1>
       <p>Piscina · Casa</p>
     </div>
-    <button id="installBtn" hidden>
+    <button id="installBtn">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11m0 0 4.5-4.5M12 15 7.5 10.5M5 20h14"/></svg>
       Instalar app
     </button>
   </header>
 
   <!-- 2 · CONFIGURAÇÃO -->
-  <section class="card">
+  <section class="card" id="sec-config">
     <div class="shead"><span class="sic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M5 7h14M5 12h14M5 17h14"/><circle cx="9" cy="7" r="2.2" fill="#F2F7F8"/><circle cx="15" cy="12" r="2.2" fill="#F2F7F8"/><circle cx="8" cy="17" r="2.2" fill="#F2F7F8"/></svg></span><h2>Configuração</h2></div>
-    <div class="pills" id="typePills">
-      <button class="pill on" data-type="vinil">Vinil</button>
+
+    <div class="flabel">Forma da piscina</div>
+    <div class="pgrid2" id="shapePills">
+      <button class="pill" data-shape="retangular"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2.5" y="7" width="19" height="10" rx="2"/></svg>Retangular</button>
+      <button class="pill" data-shape="quadrada"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="5" width="14" height="14" rx="2.5"/></svg>Quadrada</button>
+      <button class="pill" data-shape="redonda"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="7.5"/></svg>Redonda</button>
+      <button class="pill" data-shape="oval"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="12" rx="9" ry="6"/></svg>Oval</button>
+    </div>
+
+    <div class="flabel mt">Tipo de piscina</div>
+    <div class="pgrid2" id="typePills">
+      <button class="pill" data-type="vinil">Vinil</button>
       <button class="pill" data-type="fibra">Fibra</button>
       <button class="pill" data-type="alvenaria">Alvenaria</button>
       <button class="pill" data-type="infinity">Infinity</button>
     </div>
+
+    <div class="flabel mt">Volume da água</div>
     <div class="stepper">
       <button class="stbtn" id="volMinus" aria-label="Diminuir 100 litros"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 12h12"/></svg></button>
       <input type="number" id="volInput" inputmode="numeric" min="1000" max="300000" step="100" value="45000" aria-label="Volume da piscina em litros">
       <button class="stbtn" id="volPlus" aria-label="Aumentar 100 litros"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 6v12M6 12h12"/></svg></button>
     </div>
     <div id="volLive">45.000 L = 45 m³</div>
-    <p class="hint">Volume total de água para dosar os produtos. Não sabe? Comprimento × largura × profundidade média (m) × 1.000 = litros — ou use a <b>Litragem do projeto</b> abaixo.</p>
+    <p class="hint" id="volHint"></p>
   </section>
 
-  <!-- 3 · LITRAGEM DO PROJETO -->
+  <!-- 3 · LITRAGEM -->
   <details class="card litro">
     <summary>
       <span class="sic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="9" width="18" height="7" rx="2"/><path d="M7 9v3M11 9v3M15 9v3"/></svg></span>
-      <h2 class="shead-h" style="font-size:12.5px;font-weight:800;letter-spacing:.07em;text-transform:uppercase">Litragem do projeto</h2>
+      <span class="summary-title">Litragem do projeto</span>
       <span class="chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="m7 10 5 5 5-5"/></svg></span>
     </summary>
     <div class="litro-box">
       <div id="litroRows"></div>
-      <div class="ltotal"><span>Total do projeto</span><b id="litroTotal">48.588 L</b></div>
+      <div class="ltotal"><span>Total do projeto</span><b id="litroTotal">—</b></div>
       <button class="btn deep" id="applyVol">Aplicar volume total no ajuste</button>
     </div>
   </details>
 
-  <!-- 4 · VÁLVULA DO FILTRO -->
-  <section class="card">
-    <div class="shead"><span class="sic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 12V5.5"/><circle cx="12" cy="12" r="2" fill="currentColor" stroke="none"/></svg></span><h2>Válvula do filtro</h2></div>
+  <!-- 4 · VÁLVULA -->
+  <section class="card" id="sec-valve">
+    <div class="shead">
+      <span class="sic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 12V5.5"/><circle cx="12" cy="12" r="2" fill="currentColor" stroke="none"/></svg></span>
+      <h2>Válvula do filtro</h2>
+      <button class="chip chipbtn" id="vManual">📖 Manual</button>
+    </div>
     <div class="valve-stage">
       <div class="valve" id="valveDial">
         <div class="valve-body"></div>
@@ -333,35 +484,40 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
       </div>
     </div>
     <button id="valveBadge">FILTRAR</button>
-    <p class="vhint">Toque num número ou arraste a manopla · toque no badge para o passo a passo</p>
+    <button class="vtip" id="vTipBox" aria-label="Ver próxima dica">
+      <span class="vtip-ico" id="vTipIco">💡</span>
+      <span class="vtip-txt" id="vTipTxt"></span>
+      <span class="vtip-count" id="vTipCount">1/3</span>
+    </button>
+    <p class="vhint">Arraste a manopla ou toque num número · cada giro traz uma dica nova · toque na dica para ver a próxima</p>
   </section>
 
-  <!-- 5 · LIMPEZA DE BORDAS -->
+  <!-- 5 · LIMPEZA -->
   <section class="card">
     <div class="shead"><span class="sic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 13c2-2.6 4-2.6 6 0s4 2.6 6 0 4-2.6 6 0"/><path d="M3 18c2-2.6 4-2.6 6 0s4 2.6 6 0 4-2.6 6 0"/></svg></span><h2 id="cleanTitle">Limpeza de bordas · Vinil</h2><span class="chip">1x por semana</span></div>
     <div class="cleans" id="cleanList"></div>
   </section>
 
   <!-- 6 · REGISTROS -->
-  <section class="card">
+  <section class="card" id="sec-regs">
     <div class="shead"><span class="sic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="8.5"/><path d="M8 12h8"/></svg></span><h2>Posição dos registros</h2></div>
     <div class="regs" id="regRow">
-      <button class="reg closed" data-k="dreno"><span class="reg-circle"><span class="bar"></span></span><b>DRENO</b><span>Fechado</span></button>
-      <button class="reg open" data-k="skimmer"><span class="reg-circle"><span class="bar"></span></span><b>SKIMMER</b><span>Aberto</span></button>
-      <button class="reg open" data-k="asp"><span class="reg-circle"><span class="bar"></span></span><b>ASPIRAÇÃO</b><span>Aberto</span></button>
+      <button class="reg closed" data-k="dreno"><span class="reg-circle"><span class="bar"></span></span><b>DRENO</b><span class="st">Fechado</span></button>
+      <button class="reg open" data-k="skimmer"><span class="reg-circle"><span class="bar"></span></span><b>SKIMMER</b><span class="st">Aberto</span></button>
+      <button class="reg open" data-k="asp"><span class="reg-circle"><span class="bar"></span></span><b>ASPIRAÇÃO</b><span class="st">Aberto</span></button>
     </div>
     <div class="alerta a-ok" id="alertaReg"></div>
     <div class="a-note">⚠️ Desligue a bomba antes de girar qualquer registro.</div>
   </section>
 
   <!-- 7 · PARÂMETROS -->
-  <section class="card">
+  <section class="card" id="sec-params">
     <div class="shead"><span class="sic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3h4M11 3v5l-5.1 8.4A2.7 2.7 0 0 0 8.2 20.5h7.6a2.7 2.7 0 0 0 2.3-4.1L13 8V3"/><path d="M8.3 14.5h7.4"/></svg></span><h2>Parâmetros</h2><span class="chip">toque para medir</span></div>
     <div class="pgrid" id="paramGrid"></div>
   </section>
 
-  <!-- 8 · TRATAMENTO ORIENTADO -->
-  <section class="card" id="cardTreat">
+  <!-- 8 · TRATAMENTO -->
+  <section class="card" id="sec-treat">
     <div class="shead"><span class="sic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5 13.7 8l4.6 1.4-4.6 1.4L12 15.4l-1.7-4.6L5.7 9.4 10.3 8 12 3.5Z"/><path d="M18.5 15.5v4M16.5 17.5h4"/></svg></span><h2>Tratamento orientado</h2><span class="chip">3 etapas, nesta ordem</span></div>
     <div class="tstep" id="ts1">
       <div class="ts-head"><span class="ts-n mono">1</span><div><b>pH e Alcalinidade</b><small>Equilibrar antes de tudo</small></div><span class="ts-badge" id="tsb1"></span></div>
@@ -377,16 +533,45 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
     </div>
   </section>
 
-  <!-- 10 · FILTRAGEM PELO CLIMA -->
-  <section class="card">
-    <div class="shead"><span class="sic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17a4 4 0 0 1-.6-7.95A5.5 5.5 0 0 1 17.2 7.7 4.1 4.1 0 0 1 16.8 17H7Z"/></svg></span><h2>Filtragem pelo clima</h2><span class="chip net" id="netChip"><i></i>online</span></div>
+  <!-- 8b · ÁGUA COLORIDA & MANCHAS -->
+  <section class="card" id="sec-agua">
+    <div class="shead"><span class="sic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c3.5 4.2 6 7.7 6 10.5a6 6 0 1 1-12 0C6 10.7 8.5 7.2 12 3Z"/><path d="M9.5 13.5c.3 1.6 1.4 2.7 3 3"/></svg></span><h2>Água colorida &amp; manchas</h2><span class="chip">guia de resgate</span></div>
+    <p class="hint" style="margin-top:0">Coloração esverdeada, amarelada ou sépia quase sempre é <b>metal (ferro, cobre, manganês) reagindo com o cloro</b> — mais comum ainda em água de poço, caminhão-pipa, rio ou lago. Identificar a cor e ver o fundo é o primeiro passo.</p>
+    <div class="aqbtns">
+      <button class="btn ghost" id="btnGuiaAgua">🧪 Guia de recuperação — 3 passos</button>
+      <button class="btn ghost" id="btnManchas">🎯 Manchas no fundo da piscina</button>
+    </div>
+  </section>
+
+  <!-- 8c · MANUSEIO SEGURO -->
+  <section class="card" id="sec-seg">
+    <div class="shead"><span class="sic" style="background:rgba(214,69,69,.1);color:var(--red)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 5 6v5c0 4.5 3 8.2 7 10 4-1.8 7-5.5 7-10V6l-7-3Z"/><path d="M12 9v4m0 3v.01"/></svg></span><h2>Manuseio seguro</h2><span class="chip">produtos químicos</span></div>
+    <div class="rules">
+      <div class="rule r-danger">⚠️ Nunca misture cloros de marcas ou composições diferentes — risco de explosão. Nunca misture produtos antes de aplicar.</div>
+      <div class="rule">🪣 Sempre coloque o produto na água do balde — <b>nunca a água sobre o produto</b>.</div>
+      <div class="rule">🧤 Luva, máscara e óculos de proteção. Dosador sempre seco, um medidor por produto.</div>
+      <div class="rule">🏠 Longe de crianças, animais e fontes de calor (churrasqueira, forno, motor do filtro). Embalagem sempre fechada.</div>
+    </div>
+    <div class="aqbtns"><button class="btn ghost" id="btnSeg">Ver lista completa de segurança</button></div>
+  </section>
+
+  <!-- 9 · CLIMA -->
+  <section class="card" id="sec-clima">
+    <div class="shead">
+      <span class="sic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17a4 4 0 0 1-.6-7.95A5.5 5.5 0 0 1 17.2 7.7 4.1 4.1 0 0 1 16.8 17H7Z"/></svg></span>
+      <h2>Filtragem pelo clima</h2>
+      <span class="chip net" id="netChip"><i></i>online</span>
+      <button class="chip wref" id="wRefresh" aria-label="Atualizar clima" title="Atualizar clima">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg>
+      </button>
+    </div>
     <button class="wchip" id="wchip" aria-expanded="false">
       <span class="w-emoji" id="wEmoji">⛅</span>
       <span class="w-temp mono" id="wTemp">--</span>
       <span class="w-city" id="wCity">buscando clima…</span>
       <span class="w-chev"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="m7 10 5 5 5-5"/></svg></span>
     </button>
-    <div class="wdetail" id="wdetail" hidden>
+    <div id="wdetail" hidden>
       <div class="wd-grid">
         <div><small>Umidade</small><b class="mono" id="wHum">--</b></div>
         <div><small>Vento</small><b class="mono" id="wWind">--</b></div>
@@ -394,20 +579,31 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
       </div>
       <p class="w-tip" id="wTip"></p>
       <p class="w-src" id="wSrc"></p>
+      <button class="btn ghost" id="wLoc" style="margin-top:10px">Usar minha localização</button>
     </div>
     <div class="wfilter">
       <div class="wf-l"><small>Filtragem hoje</small><b id="wHours">—</b></div>
-      <p id="wNote">Busque o clima uma vez com internet — depois o app continua funcionando offline.</p>
+      <p id="wNote">Buscando temperatura para calcular as horas de filtro…</p>
     </div>
   </section>
 
-  <!-- 11 · DICA RODAPÉ -->
+  <!-- 10 · DICA -->
   <div class="tip">
     <span class="tic"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 18h5M10 21h4M12 3a6 6 0 0 1 3.6 10.8c-.7.5-1.1 1.3-1.1 2.2h-5c0-.9-.4-1.7-1.1-2.2A6 6 0 0 1 12 3Z"/></svg></span>
     <p id="tipText"></p>
   </div>
   <p class="foot">PoolApp Universal · funciona 100% offline<br>Dados salvos apenas neste aparelho</p>
 </div>
+
+<!-- Barra inferior: 6 itens, na ordem da página -->
+<nav class="bnav" id="bnav" aria-label="Menu principal">
+  <a href="#sec-config" data-t="sec-config"><span class="bic"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 7h14M5 12h14M5 17h14"/><circle cx="9" cy="7" r="2.2" fill="currentColor" stroke="none"/><circle cx="15" cy="12" r="2.2" fill="currentColor" stroke="none"/><circle cx="8" cy="17" r="2.2" fill="currentColor" stroke="none"/></svg></span>Config</a>
+  <a href="#sec-valve" data-t="sec-valve"><span class="bic"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 12V5.5"/><circle cx="12" cy="12" r="2" fill="currentColor" stroke="none"/></svg></span>Válvula</a>
+  <a href="#sec-regs" data-t="sec-regs"><span class="bic"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="8.5"/><path d="M8 12h8"/></svg></span>Registro</a>
+  <a href="#sec-params" data-t="sec-params"><span class="bic"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3h4M11 3v5l-5.1 8.4A2.7 2.7 0 0 0 8.2 20.5h7.6a2.7 2.7 0 0 0 2.3-4.1L13 8V3"/><path d="M8.3 14.5h7.4"/></svg></span>Parâm.</a>
+  <a href="#sec-treat" data-t="sec-treat"><span class="bic"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5 13.7 8l4.6 1.4-4.6 1.4L12 15.4l-1.7-4.6L5.7 9.4 10.3 8 12 3.5Z"/><path d="M18.5 15.5v4M16.5 17.5h4"/></svg></span>Tratam.</a>
+  <a href="#sec-clima" data-t="sec-clima"><span class="bic"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17a4 4 0 0 1-.6-7.95A5.5 5.5 0 0 1 17.2 7.7 4.1 4.1 0 0 1 16.8 17H7Z"/></svg></span>Clima</a>
+</nav>
 
 <!-- Sheet -->
 <div class="sback" id="sback" hidden></div>
@@ -431,19 +627,58 @@ const fmt  = n => Math.round(n).toLocaleString('pt-BR');
 const fmt1 = n => n.toLocaleString('pt-BR',{minimumFractionDigits:1, maximumFractionDigits:1});
 const fmtG = g => g>=1000 ? fmt1(g/1000)+' kg' : fmt(g)+' g';
 const fmtMl= m => m>=1000 ? (m/1000).toLocaleString('pt-BR',{maximumFractionDigits:2})+' L' : fmt(m)+' mL';
+const fmtM3= l => (Math.round(l/100)/10).toLocaleString('pt-BR',{maximumFractionDigits:1});
 const buzz = ms => { try{ navigator.vibrate && navigator.vibrate(ms); }catch(e){} };
+const isObj = v => !!v && typeof v === 'object' && !Array.isArray(v);
+function clampVol(v){ return Math.min(300000, Math.max(1000, Math.round(v/100)*100)); }
+
+/* ================= formas ================= */
+const SHAPES = {
+  retangular:{nome:'retangular', fields:[{k:'c',lab:'Compr.'},{k:'l',lab:'Larg.'},{k:'p',lab:'Prof.'}], calc:r=>r.c*r.l*r.p,
+    formula:'comprimento × largura × profundidade média (m) × 1.000 = litros'},
+  quadrada:{nome:'quadrada', fields:[{k:'c',lab:'Lado'},{k:'p',lab:'Prof.'}], calc:r=>r.c*r.c*r.p,
+    formula:'lado × lado × profundidade média (m) × 1.000 = litros'},
+  redonda:{nome:'redonda', fields:[{k:'c',lab:'Diâm.'},{k:'p',lab:'Prof.'}], calc:r=>r.c*r.c*0.785*r.p,
+    formula:'diâmetro × diâmetro × 0,785 × profundidade (m) × 1.000 = litros'},
+  oval:{nome:'oval', fields:[{k:'c',lab:'Compr.'},{k:'l',lab:'Larg.'},{k:'p',lab:'Prof.'}], calc:r=>r.c*r.l*0.785*r.p,
+    formula:'comprimento × largura × 0,785 × profundidade média (m) × 1.000 = litros'}
+};
 
 /* ================= estado ================= */
-let state  = store.get('poolapp.state', {type:'vinil', volume:45000});
-let valve  = store.get('poolapp.valve', {pos:0});
-let regs   = store.get('poolapp_registros', {dreno:false, skimmer:true, asp:true});
-let params = store.get('poolapp.params', {ph:7.4, cloro:4.0, turbidez:47, alcalinidade:70, dureza:200});
-let treat  = store.get('poolapp.treat', null);
-let litro  = store.get('poolapp.litro', null) || [
+let state = store.get('poolapp.state', {type:'vinil', volume:45000, shape:'retangular'});
+if(!isObj(state)) state = {type:'vinil', volume:45000, shape:'retangular'};
+if(!['vinil','fibra','alvenaria','infinity'].includes(state.type)) state.type = 'vinil';
+if(!SHAPES[state.shape]) state.shape = 'retangular';
+state.volume = clampVol(Number(state.volume) || 45000);
+
+let valve = store.get('poolapp.valve', {pos:0});
+if(typeof valve === 'number') valve = {pos: Math.min(5, Math.max(0, Math.round(valve)))};
+if(!isObj(valve) || !Number.isInteger(valve.pos)) valve = {pos:0};
+
+let regs = store.get('poolapp_registros', {dreno:false, skimmer:true, asp:true});
+if(!isObj(regs)) regs = {dreno:false, skimmer:true, asp:true};
+regs = {dreno:!!regs.dreno, skimmer:!!regs.skimmer, asp:!!regs.asp};
+
+const PDEFAULT = {ph:7.4, cloro:4.0, turbidez:47, alcalinidade:70, dureza:200, cianurico:0};
+let params = store.get('poolapp.params', {...PDEFAULT});
+if(!isObj(params)) params = {...PDEFAULT};
+for(const k in PDEFAULT){ const n = Number(params[k]); params[k] = Number.isFinite(n) ? n : PDEFAULT[k]; }
+
+let treat = store.get('poolapp.treat', null);
+if(!isObj(treat)) treat = null;
+
+let litro = store.get('poolapp.litro', null);
+if(!Array.isArray(litro) || litro.length !== 3) litro = null;
+litro = (litro || [
   {name:'Principal', c:7.80, l:3.80, p:1.40},
   {name:'Hidro',     c:2.60, l:2.60, p:0.90},
   {name:'Quadrado',  c:1.20, l:1.20, p:0.70}
-];
+]).map((r,i)=>({
+  name: (r && String(r.name)) || ['Principal','Hidro','Quadrado'][i],
+  c: Number(r && r.c) || 0,
+  l: Number(r && r.l) || 0,
+  p: Number(r && r.p) || 0
+}));
 
 /* ================= toasts ================= */
 function toast(msg, kind=''){
@@ -473,7 +708,7 @@ function closeSheet(){
 sback.addEventListener('click', closeSheet);
  $('#shX').addEventListener('click', closeSheet);
 
-/* ================= 2 · configuração ================= */
+/* ================= configuração ================= */
 const TIPAS = {
   vinil:'<b>Dica de vinil:</b> use bicarbonato de sódio para corrigir a alcalinidade — nunca cal virada: ela risca e mancha o vinil para sempre.',
   fibra:'<b>Dica de fibra:</b> nunca esvazie a piscina sem acompanhamento — a pressão do solo pode rachar o casco. Mancha de folha sai com pastilha no suporte, nunca solta.',
@@ -501,14 +736,25 @@ function renderType(){
   renderType(); buzz(10);
 });
 
+function renderShape(){
+  const sh = SHAPES[state.shape];
+  document.querySelectorAll('#shapePills .pill').forEach(p=> p.classList.toggle('on', p.dataset.shape===state.shape));
+  $('#volHint').innerHTML = `Piscina ${sh.nome}: <b>${sh.formula}</b>. Ou use a <b>Litragem do projeto</b> abaixo.`;
+  renderLitro();
+}
+ $('#shapePills').addEventListener('click', e=>{
+  const b = e.target.closest('.pill'); if(!b) return;
+  state.shape = b.dataset.shape; store.set('poolapp.state', state);
+  renderShape(); buzz(10);
+});
+
 function renderVolume(){
   $('#volInput').value = state.volume;
-  $('#volLive').textContent = fmt(state.volume) + ' L = ' + fmt(state.volume/1000) + ' m³';
+  $('#volLive').textContent = fmt(state.volume) + ' L = ' + fmtM3(state.volume) + ' m³';
 }
-function clampVol(v){ return Math.min(300000, Math.max(1000, Math.round(v/100)*100)); }
  $('#volInput').addEventListener('input', e=>{
   const v = parseFloat(e.target.value);
-  if(!isNaN(v)){ $('#volLive').textContent = fmt(v)+' L = '+fmt(v/1000)+' m³'; }
+  if(!isNaN(v)){ $('#volLive').textContent = fmt(v)+' L = '+fmtM3(v)+' m³'; }
 });
  $('#volInput').addEventListener('change', e=>{
   let v = parseFloat(e.target.value); if(isNaN(v)) v = state.volume;
@@ -517,34 +763,38 @@ function clampVol(v){ return Math.min(300000, Math.max(1000, Math.round(v/100)*1
  $('#volMinus').addEventListener('click', ()=>{ state.volume = clampVol(state.volume-100); store.set('poolapp.state', state); renderVolume(); renderAllDoses(); });
  $('#volPlus').addEventListener('click',  ()=>{ state.volume = clampVol(state.volume+100); store.set('poolapp.state', state); renderVolume(); renderAllDoses(); });
 
-/* ================= 3 · litragem ================= */
+/* ================= litragem ================= */
 function renderLitro(){
-  $('#litroRows').innerHTML = litro.map((r,i)=>`
-    <div class="lrow" style="margin-bottom:${i<litro.length-1?'10px':'0'}">
+  const sh = SHAPES[state.shape];
+  $('#litroRows').innerHTML = litro.map((r,i)=>{
+    const ins = sh.fields.map((f,fi)=>
+      `<input type="number" step="0.05" min="0.2" data-i="${i}" data-f="${f.k}" value="${r[f.k]}" inputmode="decimal" aria-label="${f.lab}">` +
+      (fi < sh.fields.length-1 ? '<span class="sep">×</span>' : '')
+    ).join('');
+    return `<div class="lrow" style="margin-bottom:10px">
       <div class="lname">${r.name}</div>
-      <div class="lins">
-        <input type="number" step="0.05" min="0.2" data-i="${i}" data-f="c" value="${r.c}" aria-label="Comprimento">×
-        <input type="number" step="0.05" min="0.2" data-i="${i}" data-f="l" value="${r.l}" aria-label="Largura">×
-        <input type="number" step="0.05" min="0.2" data-i="${i}" data-f="p" value="${r.p}" aria-label="Profundidade">
-        <span class="lout">${fmt(r.c*r.l*r.p*1000)} L</span>
-      </div>
-    </div>`).join('');
-  $('#litroTotal').textContent = fmt(litro.reduce((s,r)=>s+r.c*r.l*r.p*1000,0)) + ' L';
+      <div class="lins">${ins}<span class="lout">${fmt(sh.calc(r)*1000)} L</span></div>
+    </div>`;
+  }).join('');
+  $('#litroTotal').textContent = fmt(litro.reduce((s,r)=>s+SHAPES[state.shape].calc(r)*1000,0)) + ' L';
 }
  $('#litroRows').addEventListener('input', e=>{
   const inp = e.target.closest('input'); if(!inp) return;
   const v = parseFloat(inp.value);
-  litro[+inp.dataset.i][inp.dataset.f] = isNaN(v)||v<0.2 ? 0.2 : v;
-  store.set('poolapp.litro', litro); renderLitro();
+  const r = litro[+inp.dataset.i];
+  r[inp.dataset.f] = isNaN(v)||v<0.2 ? 0.2 : v;
+  store.set('poolapp.litro', litro);
+  inp.closest('.lrow').querySelector('.lout').textContent = fmt(SHAPES[state.shape].calc(r)*1000)+' L';
+  $('#litroTotal').textContent = fmt(litro.reduce((s,x)=>s+SHAPES[state.shape].calc(x)*1000,0))+' L';
 });
  $('#applyVol').addEventListener('click', ()=>{
-  const total = litro.reduce((s,r)=>s+r.c*r.l*r.p*1000,0);
+  const total = litro.reduce((s,r)=>s+SHAPES[state.shape].calc(r)*1000,0);
   state.volume = clampVol(total); store.set('poolapp.state', state);
   renderVolume(); renderAllDoses();
   toast(fmt(state.volume)+' L aplicados no volume principal', 'ok');
 });
 
-/* ================= 4 · válvula ================= */
+/* ================= válvula ================= */
 const VALVE = [
  {name:'FILTRAR', a:0, c:'#157a56', bg:'rgba(47,191,143,.16)',
   sum:'A posição do dia a dia: a água é puxada pelos registros, passa pela areia e volta limpa pela junção.',
@@ -565,6 +815,28 @@ const VALVE = [
   sum:'Fecha todas as saídas da válvula. Use apenas com a bomba desligada.',
   steps:['Nunca gire para FECHADO com a bomba ligada.','Use só para trocar areia ou manutenção do filtro.','Para religar a bomba, volte para FILTRAR.']}
 ];
+const VTIPS = [
+ [{ico:'💡', t:'Filtre nas horas de sol (9h–17h): é quando as algas tentam nascer — e o sol ajuda a queimar o cloro residual.'},
+  {ico:'📈', t:'Manômetro 0,3 bar acima da leitura limpa? A areia está entupida: hora de retro-lavar.'},
+  {ico:'⏱️', t:'Filtrar pouco não clareia e filtrar demais só gasta luz — siga as horas calculadas pelo clima lá embaixo.'}],
+ [{ico:'🚿', t:'Pare quando o visor da válvula ficar limpo — 2 a 3 minutos costumam bastar.'},
+  {ico:'🧪', t:'Retro-lave sempre depois de aspirar muita sujeira ou de um choque verde.'},
+  {ico:'🔧', t:'Prenda bem a mangueira de descarte: a água sai com força e ela dança.'}],
+ [{ico:'⏳', t:'30 a 60 segundos bastam para assentar a areia após a retro-lavagem.'},
+  {ico:'🌀', t:'Pulou o enxágue? A areia fina volta pra piscina pela junção em pó.'},
+  {ico:'✅', t:'Terminou? Volte a manopla para FILTRAR antes de religar a bomba.'}],
+ [{ico:'🧲', t:'Ideal para diluir cloro e sulfato sem sujar a areia do filtro.'},
+  {ico:'🔁', t:'Deixe circular 10–15 min após aplicar o produto para homogeneizar tudo.'},
+  {ico:'⚠️', t:'A água circula, mas NÃO filtra — recircular é misturar, não limpar.'}],
+ [{ico:'🛑', t:'Abaixando o nível? Pare antes de a bomba puxar ar — bomba seca queima em minutos.'},
+  {ico:'🧹', t:'Aspiração muito pesada no DRENO poupa a areia do filtro quando a água está sépia.'},
+  {ico:'👀', t:'Nunca deixe o dreno aberto esquecido: ele esvazia a piscina sem avisar.'}],
+ [{ico:'🔒', t:'FECHADO só com a bomba desligada — fechar em operação estrangula e danifica a bomba.'},
+  {ico:'🧰', t:'Troca de areia ou manutenção do filtro: é esta posição que trava tudo.'},
+  {ico:'↩️', t:'Antes de religar, volte sempre para FILTRAR.'}]
+];
+const MSHORT = ['Dia a dia: filtra e devolve limpo','Lava a areia por dentro','Assenta a areia após a lavagem','Circula sem filtrar (diluir produtos)','Despeja água no esgoto','Trava tudo — bomba desligada'];
+
 function buildValve(){
   $('#vposHost').innerHTML = VALVE.map((v,i)=>`
     <button class="vpos" style="--a:${v.a}deg" data-i="${i}" aria-label="${v.name}">
@@ -574,6 +846,8 @@ function buildValve(){
     const b = e.target.closest('.vpos'); if(b) setValve(+b.dataset.i);
   });
 }
+
+let vInit = false, tipIdx = 0;
 function setValve(i){
   valve.pos = i; store.set('poolapp.valve', valve);
   $('#hInner').style.transform = 'rotate('+VALVE[i].a+'deg)';
@@ -582,7 +856,22 @@ function setValve(i){
   badge.textContent = v.name;
   badge.style.background = v.bg; badge.style.color = v.c;
   badge.style.boxShadow = '0 6px 16px ' + v.bg;
+  if(vInit){
+    badge.classList.remove('pulse'); void badge.offsetWidth; badge.classList.add('pulse');
+    buzz(15);
+  }
+  tipIdx = 0; showTip();
 }
+function showTip(){
+  const tips = VTIPS[valve.pos] || VTIPS[0];
+  const k = tipIdx % tips.length, t = tips[k], box = $('#vTipBox');
+  box.classList.remove('in'); void box.offsetWidth; box.classList.add('in');
+  box.style.setProperty('--tc', VALVE[valve.pos].c);
+  $('#vTipIco').textContent = t.ico;
+  $('#vTipTxt').textContent = t.t;
+  $('#vTipCount').textContent = (k+1)+'/'+tips.length;
+}
+ $('#vTipBox').addEventListener('click', ()=>{ tipIdx++; showTip(); buzz(10); });
  $('#valveBadge').addEventListener('click', ()=> openValveSheet(valve.pos));
 function openValveSheet(i){
   const v = VALVE[i];
@@ -594,7 +883,48 @@ function openValveSheet(i){
       Desligue a bomba antes de girar a manopla.
     </div>`);
 }
-/* drag da manopla */
+function openManual(){
+  openSheet('Manual rápido da válvula', `
+    <p class="sh-intro">O caminho da água no seu filtro — e o que cada posição da manopla manda em cada trecho.</p>
+    <div class="flowbox">
+      <svg viewBox="0 0 320 96" aria-hidden="true">
+        <line x1="44" y1="40" x2="88" y2="40" class="fpipe"/>
+        <line x1="44" y1="40" x2="88" y2="40" class="fwater"/>
+        <line x1="128" y1="40" x2="150" y2="40" class="fpipe"/>
+        <line x1="128" y1="40" x2="150" y2="40" class="fwater"/>
+        <line x1="210" y1="40" x2="252" y2="40" class="fpipe"/>
+        <line x1="210" y1="40" x2="252" y2="40" class="fwater"/>
+        <circle cx="30" cy="40" r="13" fill="#fff" stroke="#035A67" stroke-width="2.5"/>
+        <g class="fimp"><path d="M30 32v16M22 40h16" stroke="#007A8C" stroke-width="2.5" stroke-linecap="round"/></g>
+        <rect x="90" y="24" width="36" height="32" rx="9" fill="#035A67"/>
+        <rect x="104" y="13" width="7" height="12" rx="3" fill="#E28743" transform="rotate(35 107.5 19)"/>
+        <rect x="152" y="10" width="56" height="58" rx="12" fill="#fff" stroke="#035A67" stroke-width="2.5"/>
+        <rect x="156" y="14" width="48" height="24" rx="7" fill="#D8F1F5"/>
+        <rect x="156" y="44" width="48" height="20" rx="7" fill="#E8D9B8"/>
+        <path d="M180 26v14" stroke="#007A8C" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="4 4" class="fwater"/>
+        <path d="M262 34c6-7 12-7 18 0s12 7 18 0" fill="none" stroke="#007A8C" stroke-width="2.5" stroke-linecap="round"/>
+        <path d="M262 46c6-7 12-7 18 0s12 7 18 0" fill="none" stroke="#2FBF8F" stroke-width="2.5" stroke-linecap="round"/>
+        <text x="30" y="82" text-anchor="middle" class="flbl">Bomba</text>
+        <text x="108" y="82" text-anchor="middle" class="flbl">Válvula</text>
+        <text x="180" y="82" text-anchor="middle" class="flbl">Areia</text>
+        <text x="276" y="82" text-anchor="middle" class="flbl">Piscina</text>
+      </svg>
+      <p class="flowcap">Os registros puxam → a válvula distribui → a areia retém a sujeira → a água volta limpa pelos jatos</p>
+    </div>
+    <p class="mtit">As 6 posições em uma frase</p>
+    ${VALVE.map((v,i)=>`<div class="vs-step"><span class="n" style="color:${v.c}">${i+1}</span><span><b>${v.name}</b> — ${MSHORT[i]}</span></div>`).join('')}
+    <p class="mtit">Regras de ouro</p>
+    <div class="vs-step"><span class="n">1</span><span>Desligue <b>sempre</b> a bomba antes de girar — girar em carga rasga as lâminas internas da válvula.</span></div>
+    <div class="vs-step"><span class="n">2</span><span>Pressione a manopla para baixo ao girar e deixe ela encaixar no pino.</span></div>
+    <div class="vs-step"><span class="n">3</span><span>Manômetro 0,3 bar acima da leitura limpa = retro-lavar agora.</span></div>
+    <div class="vs-step"><span class="n">4</span><span>Toda retro-lavagem termina com ENXAGUAR de 30–60 s — sem atalho.</span></div>
+    <div class="vs-step"><span class="n">5</span><span>Nunca fique sobre as mangueiras de descarte durante a retro-lavagem.</span></div>
+    <div class="vs-warn">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M12 4 2.8 19.5h18.4L12 4Z"/><path d="M12 10v4m0 3v.5"/></svg>
+      Depois de qualquer posição, religue a bomba apenas em FILTRAR.
+    </div>`);
+}
+ $('#vManual').addEventListener('click', ()=> openManual());
 (function(){
   const handle=$('#valveHandle'), dial=$('#valveDial');
   let dragging=false;
@@ -615,18 +945,20 @@ function openValveSheet(i){
   handle.addEventListener('pointercancel', end);
 })();
 
-/* ================= 6 · registros ================= */
+/* ================= registros ================= */
 function renderRegistros(){
   document.querySelectorAll('.reg').forEach(el=>{
     const aberto = regs[el.dataset.k];
     el.classList.toggle('open', aberto);
     el.classList.toggle('closed', !aberto);
-    el.querySelector('span:last-child').textContent = aberto ? 'Aberto' : 'Fechado';
+    el.querySelector('.st').textContent = aberto ? 'Aberto' : 'Fechado';
   });
   const d=regs.dreno, s=regs.skimmer, a=regs.asp, al=$('#alertaReg');
+  const drenar = d && (s||a), perigo = !d && !s && !a;
+  document.querySelector('.reg[data-k="dreno"]').classList.toggle('danger', drenar);
   let cls, html;
-  if(!d && !s && !a){ cls='a-perigo'; html='🛑 PERIGO — BOMBA SEM ÁGUA! Todos os registros fechados: desligue a bomba e abra um deles.'; }
-  else if(d && (s||a)){ cls='a-drenar'; html='⚠️ VAI DRENAR! Vai esvaziar sem querer — com o dreno aberto e outro registro aberto, a água vai embora.'; }
+  if(perigo){ cls='a-perigo'; html='🛑 PERIGO — BOMBA SEM ÁGUA! Todos os registros fechados: desligue a bomba e abra um deles.'; }
+  else if(drenar){ cls='a-drenar'; html='⚠️ VAI DRENAR! Dreno aberto + outro registro aberto = água esvaziando sem querer. Feche o dreno.'; }
   else if(!d && s && a){ cls='a-ok'; html='✅ Filtragem perfeita dia a dia — skimmer e aspiração puxando, dreno fechado.'; }
   else if(!d && !s && a){ cls='a-info'; html='💡 Modo ASPIRAR! Força total na boca de aspiração — ideal para o pós-sulfato.'; }
   else if(d && !s && !a){ cls='a-ok'; html='✅ Modo DRENO correto — a água vai direto para o esgoto.'; }
@@ -637,27 +969,32 @@ function renderRegistros(){
   const el = e.target.closest('.reg'); if(!el) return;
   regs[el.dataset.k] = !regs[el.dataset.k];
   store.set('poolapp_registros', regs);
-  buzz(40); renderRegistros(); renderTreat();
+  const d=regs.dreno, s=regs.skimmer, a=regs.asp;
+  if(d && (s||a)) buzz([90,70,90,70,180]);
+  else if(!d && !s && !a) buzz([200,80,200]);
+  else buzz(25);
+  renderRegistros(); renderTreat();
 });
 
-/* ================= 7 · parâmetros ================= */
+/* ================= parâmetros ================= */
 const PARAMS = [
  {id:'ph', label:'pH', unit:'', min:6, max:8.4, step:0.1, lo:7, hi:7.4, dec:1, ideal:'ideal 7,0–7,4'},
  {id:'cloro', label:'Cloro', unit:'ppm', min:0, max:10, step:0.5, lo:1, hi:3, dec:1, ideal:'ideal 1–3 ppm'},
  {id:'turbidez', label:'Turbidez', unit:'%', min:0, max:100, step:1, lo:0, hi:20, dec:0, ideal:'ideal 0–20%'},
  {id:'alcalinidade', label:'Alcalinidade', unit:'ppm', min:0, max:240, step:5, lo:80, hi:120, dec:0, ideal:'ideal 80–120 ppm'},
- {id:'dureza', label:'Dureza', unit:'ppm', min:0, max:600, step:10, lo:200, hi:400, dec:0, ideal:'ideal 200–400 ppm'}
+ {id:'dureza', label:'Dureza', unit:'ppm', min:0, max:600, step:10, lo:200, hi:400, dec:0, ideal:'ideal 200–400 ppm'},
+ {id:'cianurico', label:'Cianúrico', unit:'ppm', min:0, max:200, step:5, lo:0, hi:50, dec:0, ideal:'ideal 0–50 ppm'}
 ];
 const statusOf = (p,v)=> v < p.lo ? {t:'Baixo', c:'#E28743'} : v > p.hi ? {t:'Alto', c:'#D64545'} : {t:'Ideal', c:'#2FBF8F'};
 const fmtVal = (p,v)=> v.toLocaleString('pt-BR',{minimumFractionDigits:p.dec, maximumFractionDigits:p.dec});
 
 function renderParams(){
-  $('#paramGrid').innerHTML = PARAMS.map((p,i)=>{
+  $('#paramGrid').innerHTML = PARAMS.map(p=>{
     const v = params[p.id], st = statusOf(p,v);
     const lo = Math.max(0,(p.lo-p.min)/(p.max-p.min)*100);
     const wi = Math.min(100,(p.hi-p.min)/(p.max-p.min)*100) - lo;
     const kn = Math.min(100, Math.max(0,(v-p.min)/(p.max-p.min)*100));
-    return `<button class="pcard ${i===PARAMS.length-1?'wide':''}" data-id="${p.id}">
+    return `<button class="pcard" data-id="${p.id}">
       <span class="ph"><b>${p.label}</b><span class="badge" style="background:${st.c}">${st.t}</span></span>
       <span class="pval">${fmtVal(p,v)}<i>${p.unit}</i></span>
       <span class="pbar"><span class="pzone" style="left:${lo}%;width:${wi}%"></span><span class="pknob" style="left:${kn}%;color:${st.c}"></span></span>
@@ -696,6 +1033,13 @@ function doseFor(p,v){
     if(v>400) return {tone:'t-act', h:'<b>Dureza alta:</b> dilua 20–30% da água e complete com água nova (mais macia).'};
     return {tone:'t-ok', h:'Dureza equilibrada — protege vinil, fibra e metais.'};
   }
+  if(p.id==='cianurico'){
+    if(v>100) return {tone:'t-warn', h:'<b>Cianúrico acima de 100 ppm:</b> drene ~40% da água, complete com água nova e suspenda o cloro estabilizado (dicloro) — o cianúrico só sai com reposição de água.'};
+    if(v>50)  return {tone:'t-act', h:'<b>Acima do ideal:</b> reduza o cloro estabilizado e prefira cloro sem estabilizante até baixar.'};
+    return {tone:'t-ok', h: v<=20
+      ? 'Baixo — ótimo. Usa cloro estabilizado? Meça o cianúrico 1x por mês.'
+      : 'Na faixa ideal — protege o cloro do sol sem travá-lo.'};
+  }
   return {tone:'t-ok', h:''};
 }
 
@@ -706,7 +1050,7 @@ function openMeasure(id){
   const wi = Math.min(100,(p.hi-p.min)/(p.max-p.min)*100) - lo;
   openSheet('Medir '+p.label, `
     <div class="m-now"><span>Medição atual</span><b id="mNow" style="color:${st0.c}">${fmtVal(p,v)} <i>${p.unit}</i></b><span class="badge" id="mBadge" style="background:${st0.c}">${st0.t}</span></div>
-    <div class="m-track"><span class="m-zone" style="left:${lo}%;width:${wi}%"></span><span class="m-knob" id="mKnob" style="left:${Math.min(100,Math.max(0,(v-p.min)/(p.max-p.min)*100))}%;color:${st0.c}"></span></div>
+    <span class="m-track"><span class="m-zone" style="left:${lo}%;width:${wi}%"></span><span class="m-knob" id="mKnob" style="left:${Math.min(100,Math.max(0,(v-p.min)/(p.max-p.min)*100))}%;color:${st0.c}"></span></span>
     <label class="m-lab" for="mRange">Arraste ou digite o valor medido</label>
     <div class="m-row">
       <input type="range" id="mRange" min="${p.min}" max="${p.max}" step="${p.step}" value="${v}">
@@ -739,7 +1083,7 @@ function openMeasure(id){
   });
 }
 
-/* ================= 8 · tratamento ================= */
+/* ================= tratamento ================= */
 function etapa1(){
   const ph=params.ph, at=params.alcalinidade, m3=state.volume/1000, L=[];
   let ok=true;
@@ -750,27 +1094,23 @@ function etapa1(){
   return {ok, L};
 }
 function renderTreat(){
-  const e1 = etapa1(), c = params.cloro, m3 = state.volume/1000;
+  const e1 = etapa1(), c = params.cloro;
   const ok2 = c>=1 && c<=3.5, cAlto = c>3.5, cBaixo = c<1;
-  const b1=$('#tsb1'), b2=$('#tsb2'), b3=$('#tsb3');
-  /* Etapa 1 */
   $('#ts1').className = 'tstep ' + (e1.ok?'ok':'todo');
-  b1.className = 'ts-badge ' + (e1.ok?'okb':'tob');
-  b1.textContent = e1.ok ? 'OK' : 'Ajustar';
+  $('#tsb1').className = 'ts-badge ' + (e1.ok?'okb':'tob');
+  $('#tsb1').textContent = e1.ok ? 'OK' : 'Ajustar';
   $('#tsbody1').innerHTML = e1.ok
     ? `<div class="dose ok">pH e alcalinidade na faixa — água equilibrada, o cloro rende o máximo.</div>`
     : e1.L.map(l=>`<div class="dose">${l}</div>`).join('') + `<small>Após aplicar, filtre 2 h e re-meça antes de liberar a Etapa 2.</small>`;
-  /* Etapa 2 */
   $('#ts2').className = 'tstep ' + (ok2?'ok':'todo');
-  b2.className = 'ts-badge ' + (ok2?'okb':'tob');
-  b2.textContent = ok2 ? 'OK' : (cAlto?'Aguardar':'Dosar');
+  $('#tsb2').className = 'ts-badge ' + (ok2?'okb':'tob');
+  $('#tsb2').textContent = ok2 ? 'OK' : (cAlto?'Aguardar':'Dosar');
   $('#tsbody2').innerHTML = ok2
     ? `<div class="dose ok">Cloro em ${fmtVal(PARAMS[1],c)} ppm — dentro da faixa 1–3 ppm.</div>`
     : cAlto
       ? `<div class="dose">Cloro em ${fmtVal(PARAMS[1],c)} ppm: <b>aguarde</b> — filtre no sol por 6 h e re-teste antes do sulfato.</div>`
-      : `<div class="dose"><b>Supercloração:</b> ${fmtG(Math.round(state.volume*0.028))} (28 g por 1.000 L)<small>Aplique ao entardecer, filtro em RECIRCULAR por 15 min, depois FILTRAR.</small></div>`;
-  /* Etapa 3 */
-  const g = Math.round(20*m3);
+      : `<div class="dose"><b>Supercloração:</b> ${fmtG(Math.round(state.volume*0.028))} (28 g por 1.000 L)<small>Aplique ao entardecer, filtro em RECIRCULAR por 15 min, depois FILTRAR. Vinil/fibra: dilua em balde com água da piscina e espalhe pelas laterais. Azulejo: aplique direto ao longo das laterais.</small></div>`;
+  const g = Math.round(20*state.volume/1000);
   const decantando = treat && (Date.now()-treat.ts) < 24*3600e3;
   const elapsed = treat ? Date.now()-treat.ts : 0;
   const eh = Math.floor(elapsed/3600e3), em = Math.floor(elapsed%3600e3/60e3);
@@ -794,10 +1134,10 @@ function renderTreat(){
       <button class="btn" id="btnConfirm">Confirmar que apliquei — ${fmtG(g)}</button>`;
   }
   $('#ts3').className='tstep '+cls3;
-  b3.className='ts-badge '+b3c; b3.textContent=b3t;
+  $('#tsb3').className='ts-badge '+b3c; $('#tsb3').textContent=b3t;
   $('#tsbody3').innerHTML = body3;
 }
- $('#cardTreat').addEventListener('click', e=>{
+ $('#sec-treat').addEventListener('click', e=>{
   if(e.target.closest('#btnConfirm')){
     treat = {ts: Date.now(), g: Math.round(20*state.volume/1000)};
     store.set('poolapp.treat', treat);
@@ -808,15 +1148,15 @@ function renderTreat(){
 });
 function renderAllDoses(){ renderParams(); renderTreat(); }
 
-/* ================= 9 · diagnóstico ================= */
+/* ================= diagnóstico pós-sulfato ================= */
 function diagList(){
   const vol = state.volume;
   return [
    {t:'Ainda verde (algas)', r:[`Supercloração: ${fmtG(Math.round(vol*0.028))} (28 g por 1.000 L).`,'Escove paredes e fundo antes de aplicar.','Filtro em FILTRAR por 8 h; retro-lave se a pressão subir.']},
    {t:'Turva branca', r:['É alumínio em suspensão: filtre 4–6 h direto.',`Não assentou? Clarificante: ${fmtMl(8*vol/1000)}.`,'Retro-lave 2x ao dia até o visor limpar.']},
-   {t:'Amarelada (metais)', r:[`Ferro/manganês precipitou: NÃO aplique cloro agora.`,`Sequestrante de metais: ${fmtMl(10*vol/1000)}.`,'Filtre 6 h e retro-lave — não mande essa água pelo filtro sem tratar.']},
+   {t:'Amarelada / sépia (metais)', r:['Ferro/cobre/manganês precipitou: NÃO aplique cloro agora.',`Removedor de metais: ${fmtMl(15*vol/1000)} (15 mL/1.000 L), filtro ligado.`,'Filtre 6 h e retro-lave. Guia completo no card “Água colorida & manchas”.']},
    {t:'Esverdeada clara', r:[`Início de algas: choque de ${fmtG(Math.round(15*vol/1000))} (15 g/m³).`,'Escove a linha d’água e os cantos.','Filtre 8 h e re-teste o cloro em 24 h.']},
-   {t:'Fundo sujo / manchado', r:['Sedimento assentou certo! Aspire em modo ASPIRAR (dreno fechado, aspiração aberta).','Movimento lento e reto, sem levantar a nuvem.','Água muito suja? Aspire no DRENO para poupar a areia.']},
+   {t:'Fundo sujo / manchado', r:['Sedimento assentou certo! Aspire em modo ASPIRAR (dreno fechado, aspiração aberta).','Movimento lento e reto, sem levantar a nuvem.','Manchas localizadas? Use o guia “Manchas no fundo”.']},
    {t:'Cristalina — deu certo!', r:['Aspire o fundo em modo ASPIRAR para tirar o sedimento.','Volte os registros: DRENO fechado, SKIMMER e ASPIRAÇÃO abertos.','Manopla em FILTRAR e filtre o tempo indicado pelo clima.']}
   ];
 }
@@ -824,39 +1164,143 @@ function openDiag(){
   const list = diagList();
   openSheet('Diagnóstico pós-sulfato', `
     <p class="sh-intro">Que cara a água está agora, 12–24 h depois do sulfato?</p>
-    ${list.map((d,i)=>`<div class="diag" data-i="${i}">
+    ${list.map(d=>`<div class="diag">
       <button class="diag-t">${d.t}<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="m7 10 5 5 5-5"/></svg></button>
       <div class="diag-b" hidden><ul>${d.r.map(x=>`<li>${x}</li>`).join('')}</ul></div>
     </div>`).join('')}`);
-  $('#shBody').addEventListener('click', function h(e){
-    const t = e.target.closest('.diag-t'); if(!t) return;
-    const d = t.parentElement, b = d.querySelector('.diag-b');
-    const open = b.hidden; b.hidden = !open; d.classList.toggle('open', open);
-  });
 }
+ $('#shBody').addEventListener('click', e=>{
+  const t = e.target.closest('.diag-t'); if(!t) return;
+  const d = t.parentElement, b = d.querySelector('.diag-b');
+  const open = b.hidden; b.hidden = !open; d.classList.toggle('open', open);
+});
 
-/* ================= 10 · clima ================= */
+/* ================= guias: água colorida, manchas, segurança ================= */
+function openWaterGuide(){
+  const m3 = state.volume/1000;
+  openSheet('Recuperação de água colorida', `
+    <p class="sh-intro">Método em 3 passos para água esverdeada, amarelada ou sépia — dosado para os seus ${fmt(state.volume)} L.</p>
+    <p class="mtit">Passo 1 · Avalie antes de tudo</p>
+    <div class="vs-step"><span class="n">✓</span><span>Alcalinidade <b>80–120 ppm</b> · pH <b>7,0–7,4</b> · Cloro livre <b>1–3 ppm</b> — ajuste pelos Parâmetros antes de tratar.</span></div>
+    <div class="vs-step"><span class="n">!</span><span>Ácido cianúrico acima de <b>100 ppm</b>: drene <b>40% da água</b>, complete com água nova e suspenda o cloro estabilizado — o cianúrico só sai com reposição de água.</span></div>
+    <p class="mtit">Passo 2 · Elimine o metal (removedor de metais / sequestrante)</p>
+    <div class="m-dose t-act"><b>Fundo visível (caso leve):</b> ${fmtMl(15*m3)} — 15 mL por 1.000 L<small>Com a filtração ligada, adicione direto na piscina.</small></div>
+    <div class="m-dose t-act"><b>Fundo não visível (caso grave):</b> ${fmtMl(50*m3)} — 50 mL por 1.000 L<small>Com a filtração ligada. Várias manchas espalhadas também usam esta dose.</small></div>
+    <div class="vs-warn" style="margin-top:10px">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M12 4 2.8 19.5h18.4L12 4Z"/><path d="M12 10v4m0 3v.5"/></svg>
+      Não aplique cloro enquanto usa o removedor de metais. A água pode turvar — faz parte do processo.
+    </div>
+    <p class="mtit">Passo 3 · Sanitize (supercloração)</p>
+    <div class="m-dose t-ok"><b>Após a água voltar ao normal, com o filtro ligado:</b> ${fmtG(Math.round(14*m3))} (14 g/1.000 L, cloros concentrados) ou ${fmtG(Math.round(state.volume*0.028))} (28 g/1.000 L, cloro comum ~65%)<small>Confira sempre o rótulo do seu produto — concentrações variam.</small></div>
+    <div class="vs-step" style="margin-top:10px"><span class="n">1</span><span><b>Vinil ou fibra:</b> dilua o cloro em balde com água da própria piscina e espalhe pelas laterais.</span></div>
+    <div class="vs-step"><span class="n">2</span><span><b>Azulejo:</b> com o filtro ligado, aplique o cloro direto na água ao longo das laterais.</span></div>
+    <div class="vs-warn" style="margin-top:4px">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M12 4 2.8 19.5h18.4L12 4Z"/><path d="M12 10v4m0 3v.5"/></svg>
+      Re-teste o cloro em 24 h — deve voltar a 1–3 ppm.
+    </div>`);
+}
+function openStains(){
+  openSheet('Manchas no fundo — tratamento pontual', `
+    <p class="sh-intro">Para <b>poucas manchas localizadas</b> (pontos no fundo), o tratamento é dirigido direto na mancha — dosado para os seus ${fmt(state.volume)} L:</p>
+    <div class="vs-step"><span class="n">1</span><span><b>Aplicação direcionada:</b> use um cano de PVC como guia — uma extremidade sobre a mancha, a outra fora da água.</span></div>
+    <div class="vs-step"><span class="n">2</span><span><b>Despeje pelo cano:</b> com funil e usando luvas, despeje <b>100 mL de removedor de metais</b> dentro do cano, direto sobre a mancha.</span></div>
+    <div class="vs-step"><span class="n">3</span><span><b>Aguarde e esfregue:</b> retire o cano, espere <b>5 minutos</b> para o produto reagir e esfregue a área para soltar a mancha.</span></div>
+    <div class="m-dose t-act"><b>Muitas manchas espalhadas?</b><small>Trate como água colorida de fundo não visível: ${fmtMl(50*state.volume/1000)} de removedor de metais (50 mL/1.000 L) — veja o Guia de recuperação.</small></div>
+    <div class="vs-warn" style="margin-top:10px">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M12 4 2.8 19.5h18.4L12 4Z"/><path d="M12 10v4m0 3v.5"/></svg>
+      Não aplique cloro durante o tratamento com removedor de metais.
+    </div>`);
+}
+function openSeguranca(){
+  openSheet('Manuseio seguro de produtos', `
+    <p class="sh-intro">Vale para qualquer produto de piscina — cloro, corretor, removedor, clarificante.</p>
+    <div class="vs-step"><span class="n">1</span><span>Use <b>somente produtos específicos para piscina</b> e siga as instruções e dosagens da embalagem.</span></div>
+    <div class="vs-step"><span class="n">2</span><span>Manuseie com <b>luva, máscara e óculos de proteção</b>. Não fume durante o manuseio.</span></div>
+    <div class="vs-step"><span class="n">3</span><span><b>Nunca misture cloros</b> de marcas e/ou composições diferentes — risco de explosão. Nunca misture produtos antes de aplicar.</span></div>
+    <div class="vs-step"><span class="n">4</span><span>Sempre coloque o <b>produto na água</b> do balde — nunca a água sobre o produto.</span></div>
+    <div class="vs-step"><span class="n">5</span><span>Mantenha o <b>dosador sempre seco</b> e dentro da embalagem. Use um medidor por produto — não compartilhe entre químicos.</span></div>
+    <div class="vs-step"><span class="n">6</span><span><b>Não devolva</b> o produto excedente à embalagem — risco de contaminação e reação química.</span></div>
+    <div class="vs-step"><span class="n">7</span><span>Mantenha <b>longe de crianças e animais</b>, embalagem sempre fechada após o uso.</span></div>
+    <div class="vs-step"><span class="n">8</span><span>Avoid embalagens danificadas e não armazene perto de fontes de calor — forno, churrasqueira, motor do filtro.</span></div>`);
+}
+ $('#btnGuiaAgua').addEventListener('click', openWaterGuide);
+ $('#btnManchas').addEventListener('click', openStains);
+ $('#btnSeg').addEventListener('click', openSeguranca);
+
+/* ================= clima ================= */
 const FALLBACK = {lat:-18.91, lon:-48.27, city:'Uberlândia'};
+let wBusy = false;
+
 function renderOnline(){
-  const on = navigator.onLine;
-  $('#netChip').classList.toggle('off', !on);
-  $('#netChip').innerHTML = '<i></i>' + (on ? 'online' : 'offline');
+  const on = navigator.onLine, chip = $('#netChip');
+  chip.classList.toggle('off', !on);
+  chip.innerHTML = '<i></i>' + (on ? 'online' : 'offline');
 }
-function getLocation(){
-  return new Promise(res=>{
-    if(!navigator.geolocation) return res(FALLBACK);
-    navigator.geolocation.getCurrentPosition(
-      p=>res({lat:+p.coords.latitude.toFixed(4), lon:+p.coords.longitude.toFixed(4), city:'Sua região'}),
-      ()=>res(FALLBACK), {timeout:6000, maximumAge:600000});
-  });
+function setWeatherMsg(msg){ $('#wCity').textContent='sem dados'; $('#wNote').textContent=msg; }
+function setLoading(on){
+  wBusy = on;
+  $('#wRefresh').disabled = on;
+  if(on) $('#wCity').textContent = 'buscando clima…';
 }
-async function cityName(lat,lon){
+function fetchWeather(lat, lon){
+  const ctl = new AbortController();
+  const to = setTimeout(()=>ctl.abort(), 8000);
+  return fetch('https://api.open-meteo.com/v1/forecast?latitude='+lat+'&longitude='+lon+'&current=temperature_2m,relative_humidity_2m,wind_speed_10m,weather_code&timezone=auto',{signal:ctl.signal})
+    .then(r=>{ if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); })
+    .then(j=>{ if(!j.current || typeof j.current.temperature_2m!=='number') throw new Error('formato'); return j.current; })
+    .finally(()=>clearTimeout(to));
+}
+async function placeName(lat, lon){
+  try{
+    const ctl = new AbortController(); setTimeout(()=>ctl.abort(), 5000);
+    const r = await fetch('https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat='+lat+'&lon='+lon+'&zoom=14&accept-language=pt-BR',{signal:ctl.signal});
+    const j = await r.json();
+    const a = j.address || {};
+    return a.village || a.town || a.suburb || a.city_district || a.hamlet || a.municipality || a.city || '';
+  }catch(e){}
   try{
     const ctl = new AbortController(); setTimeout(()=>ctl.abort(), 4000);
-    const r = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=pt`, {signal:ctl.signal});
+    const r = await fetch('https://api.bigdatacloud.net/data/reverse-geocode-client?latitude='+lat+'&longitude='+lon+'&localityLanguage=pt',{signal:ctl.signal});
     const j = await r.json();
-    return j.city || j.locality || 'Sua região';
-  }catch(e){ return 'Sua região'; }
+    return j.locality || j.city || '';
+  }catch(e){}
+  return '';
+}
+async function locatedCoords(){
+  try{
+    if(!(navigator.permissions && navigator.permissions.query)) return null;
+    const st = await navigator.permissions.query({name:'geolocation'});
+    if(st.state !== 'granted') return null;
+    return await new Promise(res=>{
+      navigator.geolocation.getCurrentPosition(
+        p=>res({lat:+p.coords.latitude.toFixed(4), lon:+p.coords.longitude.toFixed(4)}),
+        ()=>res(null), {timeout:5000, maximumAge:300000});
+    });
+  }catch(e){ return null; }
+}
+async function updateWeather(force){
+  renderOnline();
+  const cached = store.get('poolapp.weather', null);
+  if(cached) renderWeather(cached, true);
+  if(wBusy && !force) return;
+  if(!navigator.onLine){
+    if(!cached) setWeatherMsg('Você está offline. Conecte uma vez para buscar o clima — depois ele fica salvo no app.');
+    return;
+  }
+  if(cached && !force && Date.now()-cached.ts < 30*60e3) return;
+  setLoading(true);
+  try{
+    const loc = await locatedCoords(), gps = !!loc;
+    const lat = gps ? loc.lat : FALLBACK.lat, lon = gps ? loc.lon : FALLBACK.lon;
+    const c = await fetchWeather(lat, lon);
+    const place = await placeName(lat, lon);
+    const city = place || (gps ? 'Sua região' : FALLBACK.city);
+    const w = {temp:c.temperature_2m, hum:c.relative_humidity_2m, wind:c.wind_speed_10m, code:c.weather_code, city, gps, ts:Date.now()};
+    store.set('poolapp.weather', w);
+    renderWeather(w, false);
+  }catch(e){
+    if(!cached) setWeatherMsg('Não foi possível buscar agora. Toque em ↻ para tentar de novo.');
+  }finally{ setLoading(false); }
 }
 function codeInfo(c){
   if(c===0) return ['☀️','Céu limpo'];
@@ -871,26 +1315,25 @@ function codeInfo(c){
   return ['⛈️','Tempestade'];
 }
 function weatherTip(w){
-  const [ , lab] = codeInfo(w.code);
-  if(w.code>=51) return `${lab} por aqui: chuva dilui o cloro — após o temporal, re-dose +20% e re-teste.`;
+  const [, lab] = codeInfo(w.code);
+  if(w.code>=51) return lab+' por aqui: chuva dilui o cloro — após o temporal, re-dose +20% e re-teste.';
   const t = Math.round(w.temp);
-  if(t>=32) return `Com ${t}°C o cloro evapora até 40% mais rápido — re-teste no fim da tarde.`;
-  if(t>=30) return `Calor forte (${t}°C): o cloro sobe rápido — mantenha o teste em dia.`;
-  if(t>=28) return `${t}°C: evaporação moderada, rotina normal de cloro.`;
-  return `${t}°C: calor ameno, evaporação sob controle — dose de rotina.`;
+  if(t>=32) return 'Com '+t+'°C o cloro evapora até 40% mais rápido — re-teste no fim da tarde.';
+  if(t>=30) return 'Calor forte ('+t+'°C): o cloro cai rápido — mantenha o teste em dia.';
+  if(t>=28) return t+'°C: evaporação moderada, rotina normal de cloro.';
+  return t+'°C: calor ameno, evaporação sob controle — dose de rotina.';
 }
 function renderWeather(w, fromCache){
   const [emo] = codeInfo(w.code);
   $('#wEmoji').textContent = emo;
   $('#wTemp').textContent = Math.round(w.temp)+'°';
-  $('#wCity').textContent = w.city;
+  $('#wCity').textContent = w.city || 'Sua região';
   $('#wHum').textContent = Math.round(w.hum)+'%';
   $('#wWind').textContent = Math.round(w.wind)+' km/h';
   $('#wTime').textContent = new Date(w.ts).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
   $('#wTip').textContent = weatherTip(w);
-  $('#wSrc').textContent = fromCache
-    ? 'Dados salvos no aparelho (última busca com internet)'
-    : 'Fonte: Open-Meteo · atualizado agora';
+  $('#wSrc').textContent = (fromCache ? 'Dados salvos no aparelho · última busca ' : 'Open-Meteo · atualizado agora ')
+    + (w.gps ? '· coordenadas do GPS' : '· Uberlândia (padrão)');
   renderFilterFromWeather();
 }
 function renderFilterFromWeather(){
@@ -899,77 +1342,163 @@ function renderFilterFromWeather(){
   let h = w.temp>=30 ? 8 : w.temp>=28 ? 6 : 4;
   const extra = (params.ph<7 || params.ph>7.4) ? 1 : 0;
   $('#wHours').textContent = (h+extra)+' h';
-  $('#wNote').textContent = `${Math.round(w.temp)}°C pede ${h} h de filtro (janela sugerida: 9h–17h)` +
-    (extra ? ' + 1 h extra: o pH fora da faixa reduz a eficiência da cloração.' : '.');
+  $('#wNote').textContent = Math.round(w.temp)+'°C pede '+h+' h de filtro (janela sugerida: 9h–17h)'
+    + (extra ? ' + 1 h extra: o pH fora da faixa reduz a eficiência da cloração.' : '.');
 }
-async function updateWeather(){
-  const cached = store.get('poolapp.weather', null);
-  if(cached) renderWeather(cached, true);
-  try{
-    const loc = await getLocation();
-    const r = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${loc.lat}&longitude=${loc.lon}&current=temperature_2m,relative_humidity_2m,wind_speed_10m,weather_code&timezone=auto`);
-    if(!r.ok) throw 0;
-    const j = await r.json();
-    const city = loc.city==='Sua região' ? await cityName(loc.lat, loc.lon) : loc.city;
-    const w = {temp:j.current.temperature_2m, hum:j.current.relative_humidity_2m, wind:j.current.wind_speed_10m, code:j.current.weather_code, city, ts:Date.now()};
-    store.set('poolapp.weather', w);
-    renderWeather(w, false);
-  }catch(e){
-    if(!cached){
-      $('#wCity').textContent = 'sem dados de clima';
-      $('#wNote').textContent = 'Sem internet e sem clima salvo. Conecte-se uma vez para buscar — depois funciona offline.';
-    }
-  }
-}
+ $('#wRefresh').addEventListener('click', ()=>updateWeather(true));
  $('#wchip').addEventListener('click', ()=>{
   const d = $('#wdetail'), open = d.hidden;
   d.hidden = !open;
   $('#wchip').classList.toggle('open', open);
   $('#wchip').setAttribute('aria-expanded', open);
 });
+ $('#wLoc').addEventListener('click', ()=>{
+  if(!navigator.geolocation) return toast('GPS não disponível neste aparelho','warn');
+  toast('Pedindo permissão de localização…');
+  navigator.geolocation.getCurrentPosition(async p=>{
+    const lat=+p.coords.latitude.toFixed(4), lon=+p.coords.longitude.toFixed(4);
+    try{
+      setLoading(true);
+      const c = await fetchWeather(lat, lon);
+      const place = await placeName(lat, lon);
+      const w = {temp:c.temperature_2m, hum:c.relative_humidity_2m, wind:c.wind_speed_10m, code:c.weather_code,
+                 city: place || 'Sua região', gps:true, ts:Date.now()};
+      store.set('poolapp.weather', w); renderWeather(w,false);
+      toast('Clima da sua região atualizado','ok');
+    }catch(e){ toast('Falhou buscar o clima da sua região','err'); }
+    finally{ setLoading(false); }
+  }, ()=>toast('Permissão de localização negada — usando Uberlândia','warn'), {timeout:8000, maximumAge:300000});
+});
+
+/* ================= menu inferior ================= */
+const bnav = $('#bnav');
+const NAV_IDS = ['sec-config','sec-valve','sec-regs','sec-params','sec-treat','sec-clima'];
+function setActiveNav(id){
+  bnav.querySelectorAll('a').forEach(a=> a.classList.toggle('on', a.dataset.t===id));
+}
+let spyTick = false;
+function spy(){
+  spyTick = false;
+  const doc = document.documentElement;
+  if(innerHeight + scrollY >= doc.scrollHeight - 6){ setActiveNav('sec-clima'); return; }
+  let cur = 'sec-config';
+  for(const id of NAV_IDS){
+    const el = document.getElementById(id);
+    if(el && el.getBoundingClientRect().top <= 140) cur = id;
+  }
+  setActiveNav(cur);
+}
+addEventListener('scroll', ()=>{ if(!spyTick){ spyTick = true; requestAnimationFrame(spy); } }, {passive:true});
+addEventListener('resize', spy);
+bnav.addEventListener('click', e=>{
+  const a = e.target.closest('a'); if(!a) return;
+  setActiveNav(a.dataset.t);
+  buzz(8);
+});
 
 /* ================= PWA / instalação ================= */
 const installBtn = $('#installBtn');
 let deferredPrompt = null;
-const standalone = matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
-const isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent || '');
-function showInstall(){ if(!standalone) installBtn.hidden = false; }
+const isStandalone = () => matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+const uaStr = navigator.userAgent || '';
+const isIOS = /iPhone|iPad|iPod/.test(uaStr) || (/Macintosh/.test(uaStr) && navigator.maxTouchPoints > 1);
+
+function refreshInstallBtn(){ installBtn.hidden = isStandalone(); }
+refreshInstallBtn();
+try{ matchMedia('(display-mode: standalone)').addEventListener('change', refreshInstallBtn); }catch(e){}
+
 addEventListener('beforeinstallprompt', e=>{
-  e.preventDefault(); deferredPrompt = e; showInstall();
+  e.preventDefault();
+  deferredPrompt = e;
+  refreshInstallBtn();
 });
-if(isIOS && !standalone) showInstall();
-if(standalone) installBtn.hidden = true;
-installBtn.addEventListener('click', async ()=>{
-  if(deferredPrompt){
-    deferredPrompt.prompt();
-    const c = await deferredPrompt.userChoice;
-    if(c.outcome==='accepted') toast('Instalando o PoolApp…', 'ok');
-    deferredPrompt = null; installBtn.hidden = true;
-  } else if(isIOS){
-    openSheet('Instalar no iPhone', `
-      <ol class="ios-steps">
-        <li>Abra o PoolApp no <b>Safari</b>.</li>
-        <li>Toque no botão <b>Compartilhar</b> <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M12 3v12M8 7l4-4 4 4"/><path d="M7 11H6a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-6a2 2 0 0 0-2-2h-1"/></svg> na barra de baixo.</li>
-        <li>Role e toque em <b>“Adicionar à Tela de Início”</b>.</li>
-      </ol>
-      <div class="ios-note">Fica com ícone próprio, abre em tela cheia e funciona 100% offline — igual a um app da App Store.</div>`);
+addEventListener('appinstalled', ()=>{
+  deferredPrompt = null;
+  refreshInstallBtn();
+  toast('PoolApp instalado! Abra pela tela de início', 'ok');
+});
+
+async function installChecks(){
+  const mark = ok => ok ? '✅' : '⚠️';
+  const rows = [];
+  const secure = location.protocol === 'https:' || ['localhost','127.0.0.1'].includes(location.hostname);
+  rows.push({s:mark(secure), t:'Página aberta em HTTPS (exigência do navegador)'});
+  rows.push({s:mark(!!window.__manifestReady), t:'Manifest e ícone gerados dentro do próprio app'});
+  let swCtl = false;
+  try{ swCtl = !!(navigator.serviceWorker && navigator.serviceWorker.controller); }catch(e){}
+  rows.push({s:mark(swCtl), t: swCtl
+    ? 'Service Worker ativo e controlando a página'
+    : 'Service Worker ainda não assumiu — feche TODAS as abas do site, reabra e aguarde 3 segundos'});
+  rows.push({s:mark(navigator.onLine), t: navigator.onLine
+    ? 'Conectado à internet'
+    : 'Offline — o navegador só instala com conexão no momento'});
+  return rows;
+}
+async function openInstallHelp(){
+  openSheet('Instalar o app', `
+    <p class="sh-intro">O app já cumpre os requisitos por conta própria. Se o convite não veio, siga o caminho do seu navegador:</p>
+    <div class="vs-step"><span class="n">1</span><span><b>Chrome (Android):</b> menu <b>⋮</b> no topo → <b>Instalar app</b>.</span></div>
+    <div class="vs-step"><span class="n">2</span><span><b>Samsung Internet:</b> menu <b>☰</b> → <b>Adicionar página a</b> → <b>Tela inicial</b>.</span></div>
+    <div class="vs-step"><span class="n">3</span><span><b>Chrome no computador:</b> ícone de instalação na barra de endereço.</span></div>
+    <p class="mtit">Diagnóstico ao vivo</p>
+    <div id="instChecks"><p class="sh-intro">verificando…</p></div>
+    <div class="ios-note">Dica de ouro: depois do primeiro acesso, <b>feche todas as abas</b> do site, reabra e aguarde 3 segundos antes de instalar — é o tempo do Service Worker assumir o controle que o Chrome exige.</div>`);
+  if(!navigator.onLine){
+    $('#instChecks').innerHTML = '<p class="sh-intro">Você está offline — reconecte para verificar.</p>';
+    return;
   }
+  try{
+    const rows = await installChecks();
+    $('#instChecks').innerHTML = rows.map(r=>`<div class="vs-step"><span class="n">${r.s}</span><span>${r.t}</span></div>`).join('');
+  }catch(e){
+    $('#instChecks').innerHTML = '<p class="sh-intro">Não foi possível verificar agora.</p>';
+  }
+}
+function openIosInstall(){
+  openSheet('Instalar no iPhone', `
+    <ol class="ios-steps">
+      <li>Abra o PoolApp no <b>Safari</b>.</li>
+      <li>Toque no botão <b>Compartilhar</b> <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M12 3v12M8 7l4-4 4 4"/><path d="M7 11H6a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-6a2 2 0 0 0-2-2h-1"/></svg> na barra de baixo.</li>
+      <li>Role e toque em <b>“Adicionar à Tela de Início”</b>.</li>
+      <li>Confirme em <b>“Adicionar”</b>.</li>
+    </ol>
+    <div class="ios-note">No iPhone não existe aviso automático — é sempre por aqui.</div>`);
+}
+installBtn.addEventListener('click', async ()=>{
+  buzz(10);
+  if(deferredPrompt){
+    try{
+      deferredPrompt.prompt();
+      const c = await deferredPrompt.userChoice;
+      if(c.outcome==='accepted') toast('Instalando o PoolApp…', 'ok');
+    }catch(err){
+      toast('O navegador recusou o convite agora — tente pelo menu', 'warn');
+    }
+    deferredPrompt = null;
+    refreshInstallBtn();
+    return;
+  }
+  if(isIOS) openIosInstall();
+  else openInstallHelp();
 });
 
 /* ================= init ================= */
 buildValve();
 setValve(valve.pos || 0);
+vInit = true;
 renderType();
+renderShape();
 renderVolume();
-renderLitro();
 renderRegistros();
 renderParams();
 renderTreat();
 renderOnline();
 updateWeather();
+spy();
 
-addEventListener('online', ()=>{ renderOnline(); toast('Conectado — atualizando clima…'); updateWeather(); });
+addEventListener('online',  ()=>{ renderOnline(); toast('Conectado — atualizando clima…'); updateWeather(); });
 addEventListener('offline', ()=>{ renderOnline(); toast('Você está offline — tudo continua funcionando', 'warn'); });
+document.addEventListener('visibilitychange', ()=>{ if(!document.hidden) updateWeather(); });
 
 if('serviceWorker' in navigator){
   addEventListener('load', ()=> navigator.serviceWorker.register('./sw.js').catch(()=>{}));
